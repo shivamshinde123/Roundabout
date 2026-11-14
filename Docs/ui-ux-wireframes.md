@@ -116,7 +116,7 @@ Needs your input · Website redesign                 Filter: [All ▾]
 │          [Reassign]                                             │
 └─────────────────────────────────────────────────────────────────┘
 ```
-Resolved items leave the list after the action succeeds. A failed save keeps the item and shows a retry.
+Inline actions: Approve (review), Reply (question), Mark resolved (blocker), and Open task or Reassign… for the rest. Resolved items leave the list after the action succeeds. In-app alerts are the per-project count, shown in the sidebar and on the "Needs your input (n)" tab. A failed save keeps the item and shows a retry.
 
 ## Activity (diagram 15)
 

@@ -183,3 +183,11 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **The stale-owner guard needs no new code.** Every agent write already checks `assignee = me` and `in_progress` under the row lock, so after a reassign the old agent's `post_update`, `submit_result` and `report_blocker` all get `CONFLICT` (tested and browser-verified).
 - **Reopen with "keep"** keeps the previous agent only if it is still active and has a grant; otherwise the task goes to Backlog unassigned.
 - **Stalled and "Agent can't access"** were already derived in stage 4. This stage adds real-data tests: 25-hour idle work shows Stalled, blocked work never does, and a revoked assignee shows "Agent can't access" until reassigned.
+
+## D-22 · 2026-11-14 · Stage 10: Needs your input, activity, overview
+
+- **The inbox is computed on read** from results, blockers, messages and the card badges. Ordering is review, blocked, question, can't access, stalled, then newest first. A task that is stalled and also has a no-access agent is listed once, as no-access.
+- **In-app alerts are per-project counts** in the sidebar (which links straight to the inbox when non-zero) and on the project's "Needs your input (n)" tab. There's no toast or notification table, which keeps it simple. Optional email alerts are a later extension (atlas diagram 23).
+- **Activity filters are GET query parameters** (`?agent=`, `?handoffs=1`) with a Reset link, so they survive refresh and back/forward (diagram 15, step 04).
+- **The overview** (O1) shows stage counts across boards, the top three inbox items with inline actions, agents with access (status, last check, work), recent results and handoffs, and the boards.
+- `ponytail:` the sidebar and the project layout both compute the inbox per request (O(projects × queries)). Add `react.cache` or a single counts query if it ever shows in timings.

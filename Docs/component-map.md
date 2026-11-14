@@ -19,8 +19,8 @@ The components, what each one is responsible for, and how they connect. Paths ma
 | `server/blockers` | Report, clear and resolve blockers | tasks (lock), events, policy | actions, MCP tools |
 | `server/messages` | Updates, messages, replies, questions, read and answered tracking | tasks (lock), events, policy | actions, MCP tools |
 | `server/results` | Submit, approve and request changes | tasks (lock), messages, events, policy | actions, MCP tools |
-| `server/inbox` | The Needs your input list and its count | db | inbox page, app layout (alert count) |
-| `server/activity` | The project activity feed with agent and handoff filters | db | activity page, project overview |
+| `server/inbox` | Needs your input: pending reviews, open blockers, unanswered questions to the owner, agent-can't-access work and stalled work, ordered by kind then recency, plus per-project counts | db, `tasks.queryCards` | inbox page, overview, project tabs, sidebar alert counts |
+| `server/activity` | Project feed (agent, handoff and type filters) and per-stage counts | db | activity page, overview |
 | `server/mcp/tools` | Registers MCP tools and maps them to services | all services, `lib/schemas` | `api/mcp/route` |
 
 ## UI components

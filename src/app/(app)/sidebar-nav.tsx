@@ -4,23 +4,26 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
-export function SidebarNav({ projects }: { projects: { id: string; name: string }[] }) {
+export function SidebarNav({ projects }: { projects: { id: string; name: string; needsInput: number }[] }) {
   const path = usePathname();
-  const item = (href: string, label: string, active: boolean) => (
+  const item = (href: string, label: string, active: boolean, alerts = 0) => (
     <Link
       key={href}
       href={href}
       aria-current={active ? 'page' : undefined}
-      className={cn('truncate rounded px-2 py-1.5 hover:bg-muted', active && 'bg-muted font-medium')}
+      className={cn('flex items-center justify-between gap-2 rounded px-2 py-1.5 hover:bg-muted', active && 'bg-muted font-medium')}
     >
-      {label}
+      <span className="truncate">{label}</span>
+      {alerts > 0 && (
+        <span className="rounded-full bg-destructive px-1.5 text-xs text-white" aria-label={`${alerts} need your input`}>{alerts}</span>
+      )}
     </Link>
   );
   return (
     <nav aria-label="Main" className="flex flex-1 flex-col gap-1 text-sm">
       <p className="px-2 pt-2 pb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Projects</p>
       {projects.length === 0 && <p className="px-2 text-muted-foreground">No projects yet</p>}
-      {projects.map((p) => item(`/projects/${p.id}`, p.name, path.startsWith(`/projects/${p.id}`)))}
+      {projects.map((p) => item(p.needsInput ? `/projects/${p.id}/inbox` : `/projects/${p.id}`, p.name, path.startsWith(`/projects/${p.id}`), p.needsInput))}
       <div className="mt-4 grid gap-1 border-t pt-2">
         {item('/agents', 'Agents', path.startsWith('/agents'))}
         {item('/settings', 'Settings', path === '/settings')}
