@@ -16,6 +16,7 @@ Chosen 2026-11-14 (decision D-8). It's built around the fixed constraint from `R
 | Agent auth | **Scoped bearer tokens** (D-5) | Random 32-byte token, shown once. A SHA-256 hash is stored on `agent_connections`, and the project grants live in a join table. Checked in the MCP route on every call. |
 | Agent interface | **MCP over Streamable HTTP**, `@modelcontextprotocol/sdk` | The remote MCP transport that Claude Code and Codex both support. Runs stateless inside a Next.js route handler (`/api/mcp`). |
 | Validation | **Zod** | One schema per operation, shared by server actions and MCP tool inputs. The MCP SDK already uses Zod. |
+| Rendering | **Request-time rendering; Cache Components off** (D-14) | Every page is per-user, signed-in, live data, so a prerendered static shell buys nothing and would force a `<Suspense>` boundary around every session read. |
 | Live board updates | **Periodic refresh** (`router.refresh()` every ~10 s plus on window focus) | It's enough to show agent changes without extra infrastructure. `ponytail:` upgrade to Supabase Realtime if a 10 s delay feels slow. |
 | Tests | **Vitest** against a local Supabase (Supabase CLI + Docker) | Cover the task state machine and the policy checks (claims, stale owners, cross-project denial) against a real Postgres. |
 | Hosting | **Vercel** (Hobby during development) | Hosts both the Next.js app and the MCP route. Pick a Vercel function region next to the Supabase region. The Hobby plan is for non-commercial use, so revisit before a public launch. |

@@ -94,7 +94,8 @@ Each action is a `'use server'` function. It reads the session, validates input 
 
 | Area | Actions |
 |---|---|
-| Workspace | `ensureWorkspace()` (called after sign-in and idempotent) |
+| Auth (`(auth)/actions.ts`) | `signIn`, `signUp` (email confirmation via `/auth/callback`), `signInWithGoogle`, `requestPasswordReset` (same reply whether or not the account exists), `updatePassword`; `signOut` and `linkGoogle` in `(app)/settings/actions.ts`. The Google buttons appear only when Supabase reports the provider is enabled. |
+| Workspace | `ensureWorkspace()` (called after sign-in and idempotent; a per-user advisory lock serialises concurrent first sign-ins) |
 | Projects and boards | `createProject({ name })` (also creates the first board, named "Main"), `renameProject`, `createBoard({ projectId, name })`, `renameBoard`, `reorderBoards` |
 | Tasks | `createTask`, `updateTask({ taskId, expectedRevision, …fields })`, `moveTaskStatus({ taskId, expectedRevision, to })` (backlog ↔ todo only), `moveTaskBoard({ taskId, expectedRevision, boardId })`, `assignTask({ taskId, expectedRevision, agentId })` |
 | Review | `approveResult({ resultId, expectedRevision })`, `requestChanges({ resultId, expectedRevision, comment })` |
