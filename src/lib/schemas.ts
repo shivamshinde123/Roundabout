@@ -137,3 +137,8 @@ export const reviewInput = z.object({ resultId: uuid, expectedRevision: revision
 export const requestChangesInput = reviewInput.extend({
   comment: longText.pipe(z.string().trim().min(1, 'Say what needs to change.')),
 });
+
+// ── Recovery ────────────────────────────────────────────────────────────────
+export const reassignTaskInput = z.object({ taskId: uuid, expectedRevision: revision, agentId: uuid.nullable() });
+/** agentId: omitted keeps the current assignee (if still allowed), null leaves it unassigned. */
+export const reopenTaskInput = z.object({ taskId: uuid, expectedRevision: revision, agentId: uuid.nullish() });
