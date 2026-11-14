@@ -8,12 +8,17 @@ export function mcpUrl(siteUrl: string) {
 
 export function setupSnippets(client: AgentClient, url: string, token: string): { label: string; code: string }[] {
   if (client === 'claude_code') {
-    return [{ label: 'Run in a terminal', code: `claude mcp add --transport http roundabout ${url} --header "Authorization: Bearer ${token}"` }];
+    return [
+      // --scope user: available from every folder, not just the one the command ran in (Claude Code's default).
+      { label: 'Run in a terminal (any OS)', code: `claude mcp add --scope user --transport http roundabout ${url} --header "Authorization: Bearer ${token}"` },
+      { label: 'Check it — should say ✓ Connected', code: 'claude mcp get roundabout' },
+    ];
   }
   if (client === 'codex') {
     return [
-      { label: 'Add to ~/.codex/config.toml', code: `[mcp_servers.roundabout]\nurl = "${url}"\nbearer_token_env_var = "ROUNDABOUT_TOKEN"` },
-      { label: 'Set in the shell that runs Codex', code: `export ROUNDABOUT_TOKEN=${token}` },
+      { label: 'Run in a terminal (any OS)', code: `codex mcp add roundabout --url ${url} --bearer-token-env-var ROUNDABOUT_TOKEN` },
+      { label: 'Save the token — Windows PowerShell, then open a new terminal', code: `setx ROUNDABOUT_TOKEN "${token}"` },
+      { label: 'Save the token — macOS / Linux (zsh; use ~/.bashrc for bash), then open a new terminal', code: `echo 'export ROUNDABOUT_TOKEN=${token}' >> ~/.zshrc` },
     ];
   }
   return [

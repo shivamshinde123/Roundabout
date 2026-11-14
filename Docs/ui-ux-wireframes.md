@@ -145,7 +145,7 @@ Projects [☑ Website] [☐ Docs]
 Connect agent — step 2 of 2
 Copy this token now. It won't be shown again.
 [rbt_X9f…………………………………] [Copy]
-Claude Code:  claude mcp add --transport http roundabout <url> --header "Authorization: Bearer …" [Copy]
+Claude Code:  claude mcp add --scope user --transport http roundabout <url> --header "Authorization: Bearer …" [Copy]
 Waiting for first contact… ⟳   (becomes "Connected ✓" once the agent calls whoami)
 ```
 
