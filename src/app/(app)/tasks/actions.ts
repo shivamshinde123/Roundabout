@@ -5,6 +5,7 @@ import { requireOwner } from '@/server/auth';
 import { formAction } from '@/server/actions';
 import { toErrorBody } from '@/server/errors';
 import { assignTask, createTask, moveTaskBoard, moveTaskStatus, updateTask } from '@/server/tasks';
+import { markMessagesRead, postMessage } from '@/server/messages';
 import { parseLinkLines } from '@/lib/schemas';
 import type { FormState } from '@/components/action-form';
 
@@ -83,4 +84,22 @@ export async function moveTaskStatusAction(input: { taskId: string; expectedRevi
   } catch (e) {
     return { ok: false as const, error: toErrorBody(e).message };
   }
+}
+
+export async function postMessageAction(_: FormState, form: FormData): Promise<FormState> {
+  return formAction(async () => {
+    await postMessage(await requireOwner(), {
+      taskId: str(form, 'taskId'),
+      body: str(form, 'body'),
+      to: str(form, 'to') || undefined,
+      replyTo: str(form, 'replyTo') || undefined,
+    });
+    revalidatePath('/projects', 'layout');
+    return { ok: 'Sent.' };
+  });
+}
+
+/** Called by the task panel after it opens; page rendering never writes (D-11). */
+export async function markMessagesReadAction(taskId: string) {
+  await markMessagesRead(await requireOwner(), taskId);
 }

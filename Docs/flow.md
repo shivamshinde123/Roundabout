@@ -2,7 +2,7 @@
 
 A living map of how requests move through the code. Update it whenever an entry point or call path changes. Diagram numbers refer to `Roundabout workflow atlas.html`.
 
-> Status: **scaffolded** (2026-11-14). Built so far: `src/proxy.ts`, `src/lib/supabase/server.ts`, `src/server/db/{schema,client}.ts`, `src/server/{errors,policy,events,idempotency}.ts` (stage 1); `src/server/{auth,workspace}.ts`, `src/app/(auth)/*`, `src/app/auth/callback`, `src/app/(app)/{layout,page,settings}` (stage 2); `src/server/{projects,actions}.ts`, `src/lib/schemas.ts`, `src/app/(app)/projects/**` (stage 3); `src/server/tasks.ts`, `src/app/(app)/tasks/actions.ts`, `src/components/board/*` (stage 4); `src/server/agents.ts`, `src/app/(app)/agents/**`, `src/components/agents/*`, `src/lib/agent-setup.ts` (stage 5). All other paths below are the target design.
+> Status: **scaffolded** (2026-11-14). Built so far: `src/proxy.ts`, `src/lib/supabase/server.ts`, `src/server/db/{schema,client}.ts`, `src/server/{errors,policy,events,idempotency}.ts` (stage 1); `src/server/{auth,workspace}.ts`, `src/app/(auth)/*`, `src/app/auth/callback`, `src/app/(app)/{layout,page,settings}` (stage 2); `src/server/{projects,actions}.ts`, `src/lib/schemas.ts`, `src/app/(app)/projects/**` (stage 3); `src/server/tasks.ts`, `src/app/(app)/tasks/actions.ts`, `src/components/board/*` (stage 4); `src/server/agents.ts`, `src/app/(app)/agents/**`, `src/components/agents/*`, `src/lib/agent-setup.ts` (stage 5); `src/app/api/mcp/route.ts`, `src/server/{mcp/tools,messages,agent-work}.ts`, `src/components/board/{discussion,mark-read}.tsx` (stage 6). All other paths below are the target design.
 
 ## Entry points
 

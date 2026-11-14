@@ -3,6 +3,7 @@ import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { getProject } from '@/server/projects';
 import { getTaskDetail, listAssignableAgents, listBoardTasks } from '@/server/tasks';
+import { listMessages } from '@/server/messages';
 import { FormDialog } from '@/components/form-dialog';
 import { Field } from '@/components/field';
 import { AutoRefresh } from '@/components/board/auto-refresh';
@@ -24,6 +25,7 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
     ? await getTaskDetail(owner, taskParam).catch(() => null)
     : null;
   const panelTask = openTask && openTask.projectId === project.id ? openTask : null;
+  const messages = panelTask ? await listMessages(panelTask.id) : [];
 
   return (
     <section className="grid gap-4">
@@ -39,7 +41,7 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
         <div className="overflow-x-auto pb-2">
           <Board tasks={tasks} newTask={<NewTaskButton boardId={board.id} agents={agents} />} />
         </div>
-        {panelTask && <TaskPanel task={panelTask} agents={agents} boards={project.boards} />}
+        {panelTask && <TaskPanel task={panelTask} agents={agents} boards={project.boards} messages={messages} ownerActorId={owner.actorId} />}
       </div>
       {typeof taskParam === 'string' && !panelTask && (
         <p role="status" className="text-sm text-muted-foreground">That task wasn&apos;t found or you don&apos;t have access.</p>

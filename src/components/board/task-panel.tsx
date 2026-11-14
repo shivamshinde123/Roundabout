@@ -2,6 +2,8 @@ import { FormDialog } from '@/components/form-dialog';
 import { Label } from '@/components/ui/label';
 import { assignTaskAction, moveTaskBoardAction, updateTaskAction } from '@/app/(app)/tasks/actions';
 import { label, type TaskDetail } from '@/server/tasks';
+import type { Message } from '@/server/messages';
+import { Discussion } from './discussion';
 import { TaskBadges } from './badges';
 import { ClosePanel } from './close-panel';
 import { AgentSelect, NativeSelect, TaskFields } from './task-fields';
@@ -16,13 +18,20 @@ export function describeEvent(type: string, data: Record<string, unknown>): stri
     case 'task.moved_board': return 'moved it to another board';
     case 'task.assigned': return data.toAgentId ? 'assigned it' : 'unassigned it';
     case 'task.accepted': return 'accepted it';
+    case 'message.posted': return data.kind === 'update' ? 'posted an update' : data.kind === 'question' ? 'asked a question' : 'posted a message';
     default: return type.replace('.', ' ').replace('_', ' ');
   }
 }
 
 export function TaskPanel({
-  task, agents, boards,
-}: { task: TaskDetail; agents: { id: string; name: string }[]; boards: { id: string; name: string }[] }) {
+  task, agents, boards, messages, ownerActorId,
+}: {
+  task: TaskDetail;
+  agents: { id: string; name: string }[];
+  boards: { id: string; name: string }[];
+  messages: Message[];
+  ownerActorId: string;
+}) {
   const canAssign = task.status === 'backlog' || task.status === 'todo';
   return (
     <aside aria-label={`Task: ${task.title}`} className="grid content-start gap-4 rounded-lg border bg-background p-4 text-sm">
@@ -98,6 +107,8 @@ export function TaskPanel({
           <p className="text-muted-foreground">{task.nextAction}</p>
         </section>
       )}
+
+      <Discussion taskId={task.id} messages={messages} ownerActorId={ownerActorId} agents={agents} />
 
       <section className="grid gap-1">
         <h3 className="font-medium">History</h3>

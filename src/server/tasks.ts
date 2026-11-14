@@ -1,13 +1,14 @@
 import 'server-only';
-import { and, asc, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, sql, type SQL } from 'drizzle-orm';
 import { db, type Tx } from './db/client';
 import { activityEvents, actors, agentConnections, agentProjectGrants, boards, projects, tasks } from './db/schema';
 import { AppError, notFound } from './errors';
 import { appendEvent } from './events';
 import { assertOwner, assertProjectAccess, type Actor } from './policy';
 import {
-  assignTaskInput, createTaskInput, moveTaskBoardInput, moveTaskStatusInput, parse, updateTaskInput, uuid,
+  acceptTaskInput, assignTaskInput, createTaskInput, moveTaskBoardInput, moveTaskStatusInput, parse, updateTaskInput, uuid,
 } from '@/lib/schemas';
+import { once } from './idempotency';
 import type { Link } from './db/schema';
 
 /** D-4: flag waiting/handoff/in-progress work with no activity for this long. */
@@ -20,7 +21,9 @@ export type AgentRef = { id: string; name: string; client: string; status: strin
 export type TaskCard = {
   id: string;
   projectId: string;
+  projectName: string;
   boardId: string;
+  boardName: string;
   title: string;
   status: TaskStatus;
   requireReview: boolean;
@@ -57,7 +60,10 @@ export function deriveBadges(t: {
 const cardColumns = {
   id: tasks.id,
   projectId: tasks.projectId,
+  projectName: projects.name,
   boardId: tasks.boardId,
+  boardName: boards.name,
+  workspaceId: projects.workspaceId,
   title: tasks.title,
   status: tasks.status,
   requireReview: tasks.requireReview,
@@ -87,7 +93,9 @@ function toCard(r: CardRow): TaskCard {
   return {
     id: r.id as string,
     projectId: r.projectId as string,
+    projectName: r.projectName as string,
     boardId: r.boardId as string,
+    boardName: r.boardName as string,
     title: r.title as string,
     status: r.status as TaskStatus,
     requireReview: r.requireReview as boolean,
@@ -120,15 +128,22 @@ async function loadBoard(actor: Actor, boardId: string) {
   return board;
 }
 
-export async function listBoardTasks(actor: Actor, boardId: string): Promise<TaskCard[]> {
-  await loadBoard(actor, boardId);
+/** Cards matching `where`. Callers are responsible for access checks on what they filter by. */
+export async function queryCards(where: SQL | undefined): Promise<TaskCard[]> {
   const rows = await db
     .select(cardColumns)
     .from(tasks)
+    .innerJoin(projects, eq(projects.id, tasks.projectId))
+    .innerJoin(boards, eq(boards.id, tasks.boardId))
     .leftJoin(agentConnections, eq(agentConnections.id, tasks.assigneeAgentId))
-    .where(eq(tasks.boardId, boardId))
+    .where(where)
     .orderBy(asc(tasks.createdAt));
   return rows.map(toCard);
+}
+
+export async function listBoardTasks(actor: Actor, boardId: string): Promise<TaskCard[]> {
+  await loadBoard(actor, boardId);
+  return queryCards(eq(tasks.boardId, boardId));
 }
 
 export type TaskDetail = TaskCard & {
@@ -149,7 +164,6 @@ export async function getTaskDetail(actor: Actor, taskId: string): Promise<TaskD
   const [row] = await db
     .select({
       ...cardColumns,
-      workspaceId: projects.workspaceId,
       instructions: tasks.instructions,
       expectedResult: tasks.expectedResult,
       links: tasks.links,
@@ -159,6 +173,7 @@ export async function getTaskDetail(actor: Actor, taskId: string): Promise<TaskD
     })
     .from(tasks)
     .innerJoin(projects, eq(projects.id, tasks.projectId))
+    .innerJoin(boards, eq(boards.id, tasks.boardId))
     .leftJoin(agentConnections, eq(agentConnections.id, tasks.assigneeAgentId))
     .where(eq(tasks.id, taskId));
   if (!row) throw notFound('Task');
@@ -234,6 +249,11 @@ export async function touchTask(tx: Tx, taskId: string, patch: Partial<typeof ta
     .where(eq(tasks.id, taskId))
     .returning();
   return updated;
+}
+
+/** Record activity (for Stalled, D-4) without changing the revision, e.g. a new message. */
+export async function touchActivity(tx: Tx, taskId: string) {
+  await tx.update(tasks).set({ lastActivityAt: sql`now()` }).where(eq(tasks.id, taskId));
 }
 
 /** The agent must exist in the workspace, not be revoked, and have a grant for the project. */
@@ -357,6 +377,27 @@ export async function assignTask(actor: Actor, input: unknown) {
     await appendEvent(tx, actor, 'task.assigned', { projectId: task.projectId, taskId }, { fromAgentId: task.assigneeAgentId, toAgentId: agentId });
     return updated;
   });
+}
+
+/** The assigned agent claims a To Do task (atlas diagram 09, step 03). Exactly one concurrent claim wins. */
+export async function acceptTask(actor: Actor, input: unknown) {
+  const { taskId, requestId } = parse(acceptTaskInput, input);
+  if (actor.kind !== 'agent') throw new AppError('FORBIDDEN', 'Only the assigned agent can accept a task.');
+  return db.transaction((tx) =>
+    once(tx, actor, requestId, 'accept_task', async () => {
+      const task = await lockTask(tx, actor, taskId);
+      if (task.status !== 'todo' || task.assigneeAgentId !== actor.agentId) {
+        throw new AppError('CONFLICT', 'This task was already accepted, reassigned, or is not assigned to you.', { task: snapshot(task) });
+      }
+      const updated = await touchTask(tx, taskId, { status: 'in_progress' });
+      await appendEvent(tx, actor, 'task.accepted', { projectId: task.projectId, taskId }, {});
+      return snapshotOf(updated);
+    }),
+  );
+}
+
+function snapshotOf(t: typeof tasks.$inferSelect) {
+  return { id: t.id, status: t.status, assigneeAgentId: t.assigneeAgentId, revision: t.revision, nextAction: t.nextAction };
 }
 
 export function label(status: TaskStatus): string {
