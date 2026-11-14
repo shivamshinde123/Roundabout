@@ -2,15 +2,15 @@
 
 A living map of how requests move through the code. Update it whenever an entry point or call path changes. Diagram numbers refer to `Roundabout workflow atlas.html`.
 
-> Status: **scaffolded** (2026-11-14). Built so far: `src/proxy.ts`, `src/lib/supabase/server.ts`, `src/server/db/{schema,client}.ts`, `src/server/{errors,policy,events,idempotency}.ts` (stage 1); `src/server/{auth,workspace}.ts`, `src/app/(auth)/*`, `src/app/auth/callback`, `src/app/(app)/{layout,page,settings}` (stage 2); `src/server/{projects,actions}.ts`, `src/lib/schemas.ts`, `src/app/(app)/projects/**` (stage 3); `src/server/tasks.ts`, `src/app/(app)/tasks/actions.ts`, `src/components/board/*` (stage 4); `src/server/agents.ts`, `src/app/(app)/agents/**`, `src/components/agents/*`, `src/lib/agent-setup.ts` (stage 5); `src/app/api/mcp/route.ts`, `src/server/{mcp/tools,messages,agent-work}.ts`, `src/components/board/{discussion,mark-read}.tsx` (stage 6); `src/server/{handoffs,blockers}.ts`, `src/components/board/coordination.tsx` (stage 7); `src/server/results.ts`, `src/components/board/{results,review}.tsx` (stage 8); `src/server/recovery.ts` (stage 9); `src/server/{inbox,activity}.ts`, `src/lib/events.ts`, `src/components/inbox-list.tsx`, project `inbox`/`activity` pages, the overview, and `(app)/{loading,error}.tsx` (stage 10). All other paths below are the target design.
+> Status: **built** (first release, stages 1–11). Paths 1–6 below describe the implemented code. Each stage's files are listed in `decision.md` (D-13 to D-23).
 
 ## Entry points
 
 | Entry | File | Leads to |
 |---|---|---|
 | Any page request | `src/proxy.ts` (Next.js 16's replacement for `middleware.ts`) | Refreshes the Supabase session cookie (`getClaims()`). Skips static assets and `/api/mcp`. **Not an auth gate**: `(app)/layout.tsx` and every server action call `requireOwner()`, which redirects to `/sign-in`, because the Next.js 16 docs warn that matchers can silently miss Server Functions |
-| Owner pages | `src/app/(app)/**/page.tsx` | `requireOwner()` → read services → render |
-| Owner writes | `src/app/(app)/**/actions.ts` | `requireOwner()` → Zod → service → `revalidatePath` |
+| Owner pages | `src/app/(app)/**/page.tsx` | `requireOwner()` → read services (`tasks`, `inbox`, `activity`, `agents`, `projects`) → render. The `(app)` layout also computes per-project Needs-your-input counts for the sidebar. |
+| Owner writes | `src/app/(app)/{projects,tasks,agents,settings}/actions.ts` | `requireOwner()` → service (Zod inside) → `revalidatePath` |
 | Auth callback | `src/app/auth/callback/route.ts` | `exchangeCodeForSession` → `ensureWorkspace()` → redirect |
 | Agent calls | `src/app/api/mcp/route.ts` | `authenticateAgent()` → MCP server → tool → service |
 
