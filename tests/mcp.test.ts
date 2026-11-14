@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
-import { POST, GET } from '@/app/api/mcp/route';
+import { GET } from '@/app/api/mcp/route';
+import { call, rpc } from './mcp-client';
 import { db } from '@/server/db/client';
 import { agentConnections, taskMessages, tasks } from '@/server/db/schema';
 import { createAgentConnection } from '@/server/agents';
@@ -8,29 +9,6 @@ import { listMessages, postMessage } from '@/server/messages';
 import { createProject } from '@/server/projects';
 import { createTask } from '@/server/tasks';
 import { seedOwner } from './helpers';
-
-let rpcId = 0;
-async function rpc(token: string | null, method: string, params: Record<string, unknown> = {}) {
-  const res = await POST(
-    new Request('http://localhost/api/mcp', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        accept: 'application/json, text/event-stream',
-        ...(token ? { authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({ jsonrpc: '2.0', id: ++rpcId, method, params }),
-    }),
-  );
-  return { status: res.status, body: await res.json() };
-}
-
-/** Call a tool; returns its JSON payload and whether it errored. */
-async function call(token: string, name: string, args: Record<string, unknown> = {}) {
-  const { body } = await rpc(token, 'tools/call', { name, arguments: args });
-  if (body.error) throw new Error(`rpc error: ${JSON.stringify(body.error)}`);
-  return { isError: Boolean(body.result.isError), data: JSON.parse(body.result.content[0].text) };
-}
 
 async function setup() {
   const owner = await seedOwner();

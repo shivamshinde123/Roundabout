@@ -139,7 +139,7 @@ All service errors are `AppError(code, message, details?)`.
 
 ## 12. Testing strategy
 
-Vitest against a local Supabase Postgres. `tests/setup.ts` refuses any non-localhost `DATABASE_URL` and truncates all app tables before each test (`truncate workspaces cascade`). Files run one at a time. Truncating instead of rolling back each test lets tests open several real connections, which the claim-race and concurrent-retry tests need. One test file per service. The minimum checks mirror `Roundabout.md` §8:
+Vitest against a local Supabase Postgres. `tests/setup.ts` refuses any non-localhost `DATABASE_URL`, and before each test deletes **only data owned by `@test.roundabout` users**: activity events, then tasks, then workspaces (which cascades). Developers' local data survives test runs. Tasks are deleted first because their NO ACTION foreign keys to `actors` are checked before the workspace cascade reaches them. Files run one at a time. Truncating instead of rolling back each test lets tests open several real connections, which the claim-race and concurrent-retry tests need. One test file per service. The minimum checks mirror `Roundabout.md` §8:
 
 - claim race (two parallel `acceptTask`, exactly one succeeds)
 - stale owner after reassign
