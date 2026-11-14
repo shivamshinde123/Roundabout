@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireOwner } from '@/server/auth';
 import { listProjects } from '@/server/projects';
+import { inboxCounts } from '@/server/inbox';
 import { Button } from '@/components/ui/button';
 import { signOut } from './settings/actions';
 import { SidebarNav } from './sidebar-nav';
@@ -8,13 +9,13 @@ import { NewProjectButton } from './projects/new-project';
 
 export default async function AppLayout({ children }: LayoutProps<'/'>) {
   const owner = await requireOwner();
-  const projects = await listProjects(owner);
+  const [projects, counts] = await Promise.all([listProjects(owner), inboxCounts(owner)]);
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-60 shrink-0 flex-col gap-2 border-r bg-muted/30 p-4">
         <Link href="/" className="mb-2 text-lg font-semibold tracking-tight">Roundabout</Link>
         <NewProjectButton />
-        <SidebarNav projects={projects} />
+        <SidebarNav projects={projects.map((p) => ({ id: p.id, name: p.name, needsInput: counts[p.id] ?? 0 }))} />
         <form action={signOut}>
           <Button type="submit" variant="ghost" size="sm" className="w-full justify-start">Sign out</Button>
         </form>

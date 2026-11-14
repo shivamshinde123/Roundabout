@@ -1,6 +1,7 @@
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { getProject } from '@/server/projects';
+import { listInbox } from '@/server/inbox';
 import { FormDialog } from '@/components/form-dialog';
 import { Field } from '@/components/field';
 import { createBoardAction, renameProjectAction } from '../actions';
@@ -8,7 +9,9 @@ import { ProjectTabs } from './project-tabs';
 
 export default async function ProjectLayout({ children, params }: LayoutProps<'/projects/[projectId]'>) {
   const { projectId } = await params;
-  const project = await orNotFound(getProject(await requireOwner(), projectId));
+  const owner = await requireOwner();
+  const project = await orNotFound(getProject(owner, projectId));
+  const needsInput = (await listInbox(owner, [project.id])).length;
   return (
     <div className="grid gap-4">
       <header className="flex flex-wrap items-center gap-3">
@@ -19,7 +22,7 @@ export default async function ProjectLayout({ children, params }: LayoutProps<'/
         </FormDialog>
       </header>
       <div className="flex flex-wrap items-center gap-2 border-b pb-2">
-        <ProjectTabs projectId={project.id} boards={project.boards} />
+        <ProjectTabs projectId={project.id} boards={project.boards} needsInput={needsInput} />
         <FormDialog trigger="+ Board" title="Add a board" submitLabel="Add board" action={createBoardAction} variant="ghost">
           <input type="hidden" name="projectId" value={project.id} />
           <Field name="name" label="Board name" />
