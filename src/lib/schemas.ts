@@ -71,3 +71,9 @@ export function parseLinkLines(text: string): unknown[] {
       return b ? { label: a, url: b } : { label: '', url: a };
     });
 }
+
+// ── Agents ───────────────────────────────────────────────────────────────────
+export const agentClient = z.enum(['claude_code', 'codex', 'other']);
+export const createAgentInput = z.object({ name, client: agentClient, projectIds: z.array(uuid).max(200).default([]) });
+export const updateGrantsInput = z.object({ agentId: uuid, projectIds: z.array(uuid).max(200) });
+export const agentIdInput = z.object({ agentId: uuid });

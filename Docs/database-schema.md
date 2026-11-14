@@ -60,7 +60,7 @@ Each connection is one named agent with its own identity, such as "Claude Code â
 |---|---|---|
 | id | uuid PK | |
 | workspace_id | uuid FK â†’ workspaces, on delete cascade | |
-| name | text not null | `unique (workspace_id, lower(name))` |
+| name | text not null | `unique (workspace_id, lower(name)) where status <> 'revoked'` (migration 0002), so a disconnected agent frees its name |
 | client | text not null check in (`'claude_code'`, `'codex'`, `'other'`) | The list grows as more clients are verified (roadmap) |
 | token_hash | bytea unique null | SHA-256 of the bearer token. Null after the connection is revoked. |
 | token_prefix | text null | The first 8 characters of the token, displayed so the owner can recognise it |

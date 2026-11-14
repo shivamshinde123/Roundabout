@@ -97,6 +97,8 @@ The agent's unfinished tasks in a removed project keep it as the assignee and ge
 - On success: `last_contact_at = now()` and `setup → active`. On failure: return HTTP 401 with an MCP error. A token that matches nothing gives no hint about which connection it might belong to.
 - Logs never contain the `Authorization` header or the token.
 
+> **Implementation note (stage 5):** correlated subqueries in board and agent queries name the outer column explicitly (`"tasks"."id"`). Drizzle omits the table name in queries without joins, and an unqualified `id` silently bound to the inner table (found by a test).
+
 ## 8. Stalled detection (D-4)
 
 `STALLED_AFTER = 24h` is a constant in `src/server/tasks.ts`. Stalled is computed in the board and inbox queries (`last_activity_at < now() - interval '24 hours'`). No scheduler or stored flag is used. A task with an open blocker is never marked Stalled. It is already listed in Needs your input as Blocked, and flagging it twice would add noise (D-11).

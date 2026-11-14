@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { db } from '@/server/db/client';
-import { activityEvents, agentConnections, agentProjectGrants, tasks } from '@/server/db/schema';
+import { activityEvents, agentConnections, agentProjectGrants, blockers, handoffs, taskResults, tasks } from '@/server/db/schema';
 import { createBoard, createProject } from '@/server/projects';
 import {
   assignTask, createTask, deriveBadges, getTaskDetail, listAssignableAgents, listBoardTasks,
@@ -153,5 +153,23 @@ describe('tasks', () => {
     expect(await codeOf(listBoardTasks(intruder, board.id))).toBe('NOT_FOUND');
     expect(await codeOf(updateTask(intruder, { taskId: task.id, expectedRevision: 1, title: 'x' }))).toBe('NOT_FOUND');
     expect(await codeOf(getTaskDetail(owner, 'not-a-uuid'))).toBe('NOT_FOUND');
+  });
+
+  it('board cards reflect real blocker, handoff and result rows for that task only', async () => {
+    const { owner, project, board, agent } = await setup();
+    const codex = await seedAgent(owner, [project.id], 'Codex');
+    const busy = await createTask(owner, { boardId: board.id, title: 'Busy' });
+    const quiet = await createTask(owner, { boardId: board.id, title: 'Quiet' });
+    await db.update(tasks).set({ status: 'in_progress', assigneeAgentId: agent.agentId }).where(eq(tasks.id, busy.id));
+    await db.insert(blockers).values({ taskId: busy.id, raisedByActorId: agent.actorId, reason: 'r', question: 'q' });
+    await db.insert(handoffs).values({ taskId: busy.id, fromAgentId: agent.agentId, toAgentId: codex.agentId, reason: 'r', workCompleted: 'w', nextAction: 'n' });
+    await db.insert(taskResults).values({ taskId: busy.id, submittedByAgentId: agent.agentId, summary: 'PR #1', reviewStatus: 'changes_requested', reviewComment: 'c' });
+
+    const cards = await listBoardTasks(owner, board.id);
+    const b = cards.find((c) => c.id === busy.id)!;
+    const q = cards.find((c) => c.id === quiet.id)!;
+    expect(b).toMatchObject({ handoffTo: 'Codex', latestResult: 'PR #1' });
+    expect(b.badges).toEqual(['handoff_pending', 'blocked']);
+    expect(q).toMatchObject({ handoffTo: null, latestResult: null, badges: [] });
   });
 });
