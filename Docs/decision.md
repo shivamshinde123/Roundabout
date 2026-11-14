@@ -115,3 +115,12 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Local Supabase uses ports 643xx.** *Why:* Windows/Hyper-V reserves 54258–54357 on the dev machine, so Supabase's default 54321/54322 can't bind.
 - **CI** (GitHub Actions) runs `supabase db start`, applies migrations, then runs lint, typecheck, tests and build on every PR and push to `main`.
 - **Agent project grants use an explicit foreign key name** (`agent_project_grants_agent_fk`), because the generated one was 64 characters, one over Postgres's identifier limit (migration `0001`).
+
+## D-14 · 2026-11-14 · Stage 2: sign-in and workspace
+
+- **Cache Components and partial prefetching are off.** The Next.js 16.4 template turns them on. *Why:* every Roundabout page is signed-in, per-user live data, so there's no static shell worth prerendering. With them on, every session read must sit inside a `<Suspense>` boundary or the route errors. Revisit only if a public, cacheable page appears.
+- **`ActionForm` submits through `onSubmit` plus a transition** rather than the form `action` prop. *Why:* React 19 resets a form's fields after an action, which wiped the email after a wrong password (found in browser testing).
+- **Google buttons are shown only when Supabase's `/auth/v1/settings` reports Google as enabled.** *Why:* a disabled provider otherwise ends on a raw JSON 400 page.
+- **`ensureWorkspace` serialises the first sign-in per user** with `pg_advisory_xact_lock`. Together with the partial unique indexes, this means a replayed or concurrent callback creates exactly one workspace.
+- **Password-reset requests always give the same reply**, so the form can't be used to discover which emails have accounts.
+- **Local dev account** for manual checks: `tests/fixtures/dev-owner.json` (local Supabase only). Running the test suite truncates its workspace, and the next sign-in recreates it.

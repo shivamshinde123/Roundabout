@@ -1,0 +1,5 @@
+{
+  "note": "Local-only dev account for manual browser checks against local Supabase. Never valid anywhere else.",
+  "email": "dev-owner@roundabout.test",
+  "password": "Dev-Dut68SW_wjc6"
+}

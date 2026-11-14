@@ -17,6 +17,8 @@ Roundabout/
 │   ├── app/
 │   │   ├── layout.tsx             # Root html/body, theme
 │   │   ├── (auth)/                # Signed-out pages
+│   │   │   ├── actions.ts         # signIn, signUp, Google, password reset
+│   │   │   ├── fields.tsx         # Labelled input
 │   │   │   ├── sign-in/page.tsx
 │   │   │   ├── sign-up/page.tsx
 │   │   │   ├── forgot-password/page.tsx
@@ -61,13 +63,15 @@ Roundabout/
 │   │   ├── schemas.ts             # Zod input schemas shared by actions and MCP tools
 │   │   └── supabase/              # Browser + server Supabase clients (auth only)
 │   └── components/
-│       ├── ui/                    # shadcn/ui primitives (generated)
+│       ├── ui/                    # shadcn/ui primitives (generated; Radix + Nova preset, `components.json`)
+│       ├── action-form.tsx        # Server-action form: pending state, announced errors, keeps fields
 │       ├── board/                 # Board, Column, TaskCard, MoveMenu, AutoRefresh
 │       ├── task/                  # TaskPanel, MessageThread, ResultList, HandoffList, BlockerList, History
 │       └── agents/                # ConnectAgentForm, TokenReveal, SetupInstructions
 ├── tests/                         # Vitest, one file per service (tasks.test.ts, handoffs.test.ts, …)
 │   ├── setup.ts                   # Localhost guard + reset before each test
 │   ├── helpers.ts                 # resetDb + seed helpers (owner, project, agent)
+│   ├── fixtures/dev-owner.json    # Local-only account for manual browser checks
 │   └── server-only-stub.ts        # Lets tests import 'server-only' modules
 ├── .github/workflows/ci.yml       # Lint, typecheck, test (Supabase Postgres), build
 ├── public/                        # Static assets

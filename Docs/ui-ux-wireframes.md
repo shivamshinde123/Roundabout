@@ -22,7 +22,7 @@ Low-fidelity layouts for the first release. Diagram numbers refer to the workflo
 │  Forgot password? · Create account │
 └──────────────────────────────┘
 ```
-Error states: invalid credentials, unverified email ("Check your inbox" with a Resend link), Google cancelled (back here with a retry).
+The Google button and divider are shown only when Supabase reports the Google provider is enabled. The email stays filled after a failed attempt. Error states: invalid credentials, unverified email ("Check your inbox" with a Resend link), Google cancelled (back here with a retry).
 
 ## Project overview (O1, diagram 04)
 
