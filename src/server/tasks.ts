@@ -68,14 +68,14 @@ const cardColumns = {
   assigneeName: agentConnections.name,
   assigneeClient: agentConnections.client,
   assigneeStatus: agentConnections.status,
-  assigneeHasAccess: sql<boolean>`exists (select 1 from ${agentProjectGrants} g
-    where g.agent_connection_id = ${tasks.assigneeAgentId} and g.project_id = ${tasks.projectId})`,
-  blocked: sql<boolean>`exists (select 1 from blockers b where b.task_id = ${tasks.id} and b.status = 'open')`,
+  assigneeHasAccess: sql<boolean>`exists (select 1 from agent_project_grants g
+    where g.agent_connection_id = "tasks"."assignee_agent_id" and g.project_id = "tasks"."project_id")`,
+  blocked: sql<boolean>`exists (select 1 from blockers b where b.task_id = "tasks"."id" and b.status = 'open')`,
   handoffTo: sql<string | null>`(select ac.name from handoffs h join agent_connections ac on ac.id = h.to_agent_id
-    where h.task_id = ${tasks.id} and h.status = 'pending')`,
-  latestResult: sql<string | null>`(select r.summary from task_results r where r.task_id = ${tasks.id}
+    where h.task_id = "tasks"."id" and h.status = 'pending')`,
+  latestResult: sql<string | null>`(select r.summary from task_results r where r.task_id = "tasks"."id"
     order by r.created_at desc limit 1)`,
-  stale: sql<boolean>`${tasks.lastActivityAt} < now() - make_interval(hours => ${STALLED_AFTER_HOURS})`,
+  stale: sql<boolean>`"tasks"."last_activity_at" < now() - make_interval(hours => ${STALLED_AFTER_HOURS})`,
 };
 
 type CardRow = { [K in keyof typeof cardColumns]: unknown } & Record<string, unknown>;
@@ -142,7 +142,7 @@ export type TaskDetail = TaskCard & {
 };
 
 /** Display name for an actor: agent connection name, or "You" for the owner. */
-const actorName = sql<string>`coalesce((select ac.name from agent_connections ac where ac.id = ${actors.agentConnectionId}), 'You')`;
+const actorName = sql<string>`coalesce((select ac.name from agent_connections ac where ac.id = "actors"."agent_connection_id"), 'You')`;
 
 export async function getTaskDetail(actor: Actor, taskId: string): Promise<TaskDetail> {
   if (!uuid.safeParse(taskId).success) throw notFound('Task');

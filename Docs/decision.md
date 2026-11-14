@@ -142,3 +142,11 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Card badges are computed in one board query** (subqueries for blocker, pending handoff, latest result and grant) and turned into labels by the pure, tested `deriveBadges`.
 - **`updateTask` patches** leave absent fields unchanged, and an empty repository or branch clears it. *Why:* the create schema's defaults would otherwise have nulled fields on every edit.
 - `ponytail:` **history timestamps are formatted on the server** (server time zone). Format them on the client if hosted time-zone differences matter.
+
+## D-17 · 2026-11-14 · Stage 5: agent connections
+
+- **The token is returned in server-action state** and rendered once on the client (`TokenReveal`). It never goes into a URL, a redirect or stored page data. Only its SHA-256 hash and an 8-character display prefix are stored.
+- **`authenticateAgent` loads grants on every request** and records `last_contact_at`, moving `setup` to `active`. The UI labels this "last successful check (a recorded check, not live availability)" (§3).
+- **Disconnected agents free their name.** The unique name index is partial (`where status <> 'revoked'`, migration 0002). *Why:* browser testing showed that disconnecting "Claude Code" would otherwise block reconnecting under the same name.
+- **Correlated subqueries use table-qualified outer columns.** *Why:* Drizzle drops the table name in join-less queries, and a test caught `id` binding to the inner table, which zeroed the work counts.
+- **Reconnect uses a plain dialog** (`SimpleDialog`) that hosts the token form. Disconnect uses a confirmation dialog that explains what is kept.

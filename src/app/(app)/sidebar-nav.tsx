@@ -21,7 +21,10 @@ export function SidebarNav({ projects }: { projects: { id: string; name: string 
       <p className="px-2 pt-2 pb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Projects</p>
       {projects.length === 0 && <p className="px-2 text-muted-foreground">No projects yet</p>}
       {projects.map((p) => item(`/projects/${p.id}`, p.name, path.startsWith(`/projects/${p.id}`)))}
-      <div className="mt-4 border-t pt-2">{item('/settings', 'Settings', path === '/settings')}</div>
+      <div className="mt-4 grid gap-1 border-t pt-2">
+        {item('/agents', 'Agents', path.startsWith('/agents'))}
+        {item('/settings', 'Settings', path === '/settings')}
+      </div>
     </nav>
   );
 }

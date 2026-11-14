@@ -15,6 +15,13 @@
       "when": 1794641437341,
       "tag": "0001_grants_fk_name",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794643816392,
+      "tag": "0002_agent_name_active_only",
+      "breakpoints": true
     }
   ]
 }

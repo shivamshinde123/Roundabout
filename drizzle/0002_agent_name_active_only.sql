@@ -1,0 +1,2 @@
+DROP INDEX "agent_connections_workspace_name";--> statement-breakpoint
+CREATE UNIQUE INDEX "agent_connections_workspace_name" ON "agent_connections" USING btree ("workspace_id",lower("name")) WHERE status <> 'revoked';

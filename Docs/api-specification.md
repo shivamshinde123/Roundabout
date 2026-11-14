@@ -101,7 +101,7 @@ Each action is a `'use server'` function. It reads the session, validates input 
 | Review | `approveResult({ resultId, expectedRevision })`, `requestChanges({ resultId, expectedRevision, comment })` |
 | Recovery | `reassignTask({ taskId, expectedRevision, agentId \| null })`, `reopenTask({ taskId, expectedRevision, agentId? })`, `cancelHandoff({ handoffId })` |
 | Communication | `postMessage({ taskId, body, toAgentId?, replyTo?, links? })`, `resolveBlocker({ blockerId, resolution })`, `markMessagesRead({ taskId })` (called by the task panel after it opens) |
-| Agents | `createAgentConnection({ name, client, projectIds })` (returns the raw token once), `updateAgentGrants({ agentId, projectIds })`, `rotateAgentToken({ agentId })` (also returns the token once), `revokeAgent({ agentId })` |
+| Agents (`src/app/(app)/agents/actions.ts`) | `createAgentAction({ name, client, projectIds })` and `rotateTokenAction({ agentId })` return the raw token in action state, shown once and never placed in a URL. `updateGrantsAction({ agentId, projectIds })` cancels pending handoffs in removed projects. `revokeAgentAction({ agentId })` is idempotent. Names are unique among non-revoked connections. |
 
 ## 3. Route handlers
 

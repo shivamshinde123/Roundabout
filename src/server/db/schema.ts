@@ -56,7 +56,8 @@ export const agentConnections = pgTable('agent_connections', {
   createdAt: createdAt(),
   revokedAt: ts('revoked_at'),
 }, (t) => [
-  uniqueIndex('agent_connections_workspace_name').on(t.workspaceId, sql`lower(${t.name})`),
+  // Disconnected agents free their name, so "Claude Code" can be connected again (D-17).
+  uniqueIndex('agent_connections_workspace_name').on(t.workspaceId, sql`lower(${t.name})`).where(sql`status <> 'revoked'`),
   check('agent_connections_client_check', oneOf('client', AGENT_CLIENTS)),
   check('agent_connections_status_check', oneOf('status', AGENT_STATUSES)),
 ]).enableRLS();
