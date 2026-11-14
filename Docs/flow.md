@@ -2,7 +2,7 @@
 
 A living map of how requests move through the code. Update it whenever an entry point or call path changes. Diagram numbers refer to `Roundabout workflow atlas.html`.
 
-> Status: **scaffolded** (2026-11-14). Built so far: `src/proxy.ts`, `src/lib/supabase/server.ts`, `src/server/db/{schema,client}.ts`. All other paths below are the target design.
+> Status: **scaffolded** (2026-11-14). Built so far: `src/proxy.ts`, `src/lib/supabase/server.ts`, `src/server/db/{schema,client}.ts`, `src/server/{errors,policy,events,idempotency}.ts` (stage 1). All other paths below are the target design.
 
 ## Entry points
 
