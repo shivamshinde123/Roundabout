@@ -9,8 +9,8 @@ Values live in `.env.local` for local development and in Vercel project settings
 | `NEXT_PUBLIC_SITE_URL` | yes | yes | `http://localhost:3000` | Absolute URL for auth redirects and the MCP endpoint shown on Connect agent |
 | `NEXT_PUBLIC_SUPABASE_URL` | yes | yes | `http://127.0.0.1:64321` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | yes | yes | `sb_publishable_…` (the legacy anon key also works) | Supabase Auth from the browser and server. It can read no app data, because RLS has no policies. |
-| `DATABASE_URL` | yes | **no** | `postgresql://postgres.<ref>:<pw>@aws-0-<region>.pooler.supabase.com:6543/postgres` | App runtime connection through the **transaction pooler**. postgres.js must use `prepare: false`. |
-| `DIRECT_URL` | migrations only | **no** | `postgresql://postgres:<pw>@db.<ref>.supabase.co:5432/postgres` | Session or direct connection for `drizzle-kit migrate`. Not set on Vercel. |
+| `DATABASE_URL` | yes | **no** | `postgresql://postgres.<ref>:<pw>@aws-1-<region>.pooler.supabase.com:6543/postgres` | App runtime connection through the **transaction pooler**. postgres.js must use `prepare: false`. |
+| `DIRECT_URL` | migrations only | **no** | `postgresql://postgres.<ref>:<pw>@aws-1-<region>.pooler.supabase.com:5432/postgres` | **Session pooler** for `drizzle-kit migrate`. The direct `db.<ref>.supabase.co` host is IPv6-only, which most home networks can't reach. Not set on Vercel. |
 
 There's no service-role key: the app never calls Supabase admin APIs. Add `SUPABASE_SECRET_KEY` (server-only) only if account deletion or a similar admin feature needs it.
 
@@ -34,6 +34,10 @@ There's no service-role key: the app never calls Supabase admin APIs. Add `SUPAB
 | Idempotency key retention | 7 days (no cleanup job yet) | `src/server/idempotency.ts` | technical design §5 |
 
 Turn one of these into an environment variable only when it needs different values in different environments.
+
+## Hosted values (production)
+
+On the dev machine, the hosted values sit in the gitignored file `.env.hosted`, which includes the database password. To run migrations against production: `set -a; . ./.env.hosted; set +a; npx drizzle-kit migrate` (the exported `DIRECT_URL` wins over `.env.local`). Vercel's production environment has `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `DATABASE_URL` (marked sensitive). `NEXT_PUBLIC_*` values are inlined at build time, so redeploy after changing them.
 
 ## Secrets guidance
 
