@@ -45,18 +45,15 @@ In the app, open **Agents → Connect agent**, then choose the client and the pr
 
 **Claude Code**
 ```bash
-claude mcp add --transport http roundabout http://localhost:3000/api/mcp --header "Authorization: Bearer rbt_…"
+claude mcp add --scope user --transport http roundabout http://localhost:3000/api/mcp --header "Authorization: Bearer rbt_…"
 claude mcp get roundabout   # should show: Status: ✓ Connected
 ```
 
-**Codex** (`~/.codex/config.toml`)
-```toml
-[mcp_servers.roundabout]
-url = "http://localhost:3000/api/mcp"
-bearer_token_env_var = "ROUNDABOUT_TOKEN"
-```
+**Codex**
 ```bash
-export ROUNDABOUT_TOKEN=rbt_…
+codex mcp add roundabout --url http://localhost:3000/api/mcp --bearer-token-env-var ROUNDABOUT_TOKEN
+setx ROUNDABOUT_TOKEN "rbt_…"                       # Windows PowerShell; open a new terminal afterwards
+echo 'export ROUNDABOUT_TOKEN=rbt_…' >> ~/.zshrc    # macOS / Linux (zsh)
 ```
 
 Ask the agent to call `list_assignments` when it starts. Assigned work waits until the agent checks.

@@ -18,18 +18,19 @@ Both call the same functions in `src/server/` and return the same error codes (`
 - **Output:** each tool returns a JSON **object** (never a bare array) as one text content block, plus `structuredContent` with the same object.
 - **Implemented (stage 6):** `whoami`, `list_assignments`, `get_task`, `list_agents`, `accept_task`, `post_update`, `post_message`, `create_task`. Stage 7 added `propose_handoff`, `respond_to_handoff`, `report_blocker` and `clear_blocker`, and `get_task` now includes `handoffs` and `blockers`. Stage 8 added `submit_result`, and `get_task` includes `results` with review status and comments. Errors set `isError: true` and return `{ "error": { "code", "message", "details"? } }`.
 
-### Client setup (to be verified end to end, §3)
+### Client setup (shown on Connect agent by `src/lib/agent-setup.ts`; D-26)
 
-**Claude Code**
+**Claude Code.** `--scope user` makes Roundabout available in every folder. Claude Code's default scope is the current folder only.
 ```bash
-claude mcp add --transport http roundabout https://<host>/api/mcp --header "Authorization: Bearer rbt_..."
+claude mcp add --scope user --transport http roundabout https://<host>/api/mcp --header "Authorization: Bearer rbt_..."
+claude mcp get roundabout   # ✓ Connected
 ```
 
-**Codex** (`~/.codex/config.toml`)
-```toml
-[mcp_servers.roundabout]
-url = "https://<host>/api/mcp"
-bearer_token_env_var = "ROUNDABOUT_TOKEN"
+**Codex.** Add the server, then save the token where Codex can read it, and open a new terminal.
+```bash
+codex mcp add roundabout --url https://<host>/api/mcp --bearer-token-env-var ROUNDABOUT_TOKEN
+setx ROUNDABOUT_TOKEN "rbt_..."                       # Windows PowerShell
+echo 'export ROUNDABOUT_TOKEN=rbt_...' >> ~/.zshrc    # macOS / Linux (zsh)
 ```
 
 ### Shared shapes
