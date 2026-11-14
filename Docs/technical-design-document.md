@@ -135,7 +135,7 @@ All service errors are `AppError(code, message, details?)`.
 
 ## 12. Testing strategy
 
-Vitest against a local Supabase Postgres, with each test run inside a transaction that is rolled back afterwards. One test file per service. The minimum checks mirror `Roundabout.md` §8:
+Vitest against a local Supabase Postgres. `tests/setup.ts` refuses any non-localhost `DATABASE_URL` and truncates all app tables before each test (`truncate workspaces cascade`). Files run one at a time. Truncating instead of rolling back each test lets tests open several real connections, which the claim-race and concurrent-retry tests need. One test file per service. The minimum checks mirror `Roundabout.md` §8:
 
 - claim race (two parallel `acceptTask`, exactly one succeeds)
 - stale owner after reassign

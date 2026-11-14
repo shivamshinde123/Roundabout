@@ -55,7 +55,7 @@ export async function acceptTask(actor: Actor, input: AcceptTaskInput): Promise<
 
 ## Tests
 
-- One `tests/<service>.test.ts` per service, run against local Supabase. Wrap each test in a transaction that is rolled back.
+- One `tests/<service>.test.ts` per service, run against local Supabase. The shared setup resets the database before each test. Build data with the seed helpers in `tests/helpers.ts` (`seedOwner`, `seedProject`, `seedAgent`).
 - A bug fix comes with a test that reproduces the bug.
 
 ## Commits

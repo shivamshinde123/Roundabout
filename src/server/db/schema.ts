@@ -71,10 +71,14 @@ export const projects = pgTable('projects', {
 ]).enableRLS();
 
 export const agentProjectGrants = pgTable('agent_project_grants', {
-  agentConnectionId: uuid('agent_connection_id').notNull().references(() => agentConnections.id, { onDelete: 'cascade' }),
+  agentConnectionId: uuid('agent_connection_id').notNull(),
   projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
   createdAt: createdAt(),
-}, (t) => [primaryKey({ columns: [t.agentConnectionId, t.projectId] })]).enableRLS();
+}, (t) => [
+  primaryKey({ columns: [t.agentConnectionId, t.projectId] }),
+  // Explicit name: the generated one is 64 chars, over Postgres's 63-char identifier limit.
+  foreignKey({ columns: [t.agentConnectionId], foreignColumns: [agentConnections.id], name: 'agent_project_grants_agent_fk' }).onDelete('cascade'),
+]).enableRLS();
 
 export const actors = pgTable('actors', {
   id: id(),

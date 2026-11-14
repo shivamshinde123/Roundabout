@@ -108,3 +108,10 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **`proxy.ts` only refreshes the session and does no redirecting.** Sign-in is enforced by `requireOwner()` in the `(app)` layout and in every server action. *Why:* the Next.js 16 docs say a proxy matcher can silently miss Server Functions, so checking inside each one is the reliable gate.
 - **Local Supabase config** (`supabase/config.toml`): email confirmation on, manual identity linking on (§2), redirect URL `http://localhost:3000/auth/callback`. Google is configured but turned off until OAuth credentials exist.
 - **The schema is generated** into `drizzle/0000_init.sql`. It has 14 tables with RLS on all of them, foreign keys to `auth.users`, and partial unique indexes. Drizzle's `schemaFilter: ['public']` leaves Supabase's `auth` schema alone.
+
+## D-13 · 2026-11-14 · Stage 1: tests, local ports, CI
+
+- **Tests reset the database rather than rolling back** each test. *Why:* the claim-race and concurrent-retry tests need real concurrent connections, which a single rolled-back transaction can't provide. A guard refuses any non-localhost `DATABASE_URL`.
+- **Local Supabase uses ports 643xx.** *Why:* Windows/Hyper-V reserves 54258–54357 on the dev machine, so Supabase's default 54321/54322 can't bind.
+- **CI** (GitHub Actions) runs `supabase db start`, applies migrations, then runs lint, typecheck, tests and build on every PR and push to `main`.
+- **Agent project grants use an explicit foreign key name** (`agent_project_grants_agent_fk`), because the generated one was 64 characters, one over Postgres's identifier limit (migration `0001`).
