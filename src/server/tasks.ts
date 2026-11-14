@@ -30,6 +30,9 @@ export type TaskCard = {
   assignee: AgentRef | null;
   nextAction: string | null;
   latestResult: string | null;
+  pendingResultId: string | null;
+  /** Who completed (agent, review off) or approved (owner) a Done task. */
+  completedBy: string | null;
   handoffTo: string | null;
   badges: TaskBadge[];
   revision: number;
@@ -79,6 +82,9 @@ const cardColumns = {
   blocked: sql<boolean>`exists (select 1 from blockers b where b.task_id = "tasks"."id" and b.status = 'open')`,
   handoffTo: sql<string | null>`(select ac.name from handoffs h join agent_connections ac on ac.id = h.to_agent_id
     where h.task_id = "tasks"."id" and h.status = 'pending')`,
+  completedBy: sql<string | null>`(select coalesce(ac.name, 'you') from actors a left join agent_connections ac on ac.id = a.agent_connection_id
+    where a.id = "tasks"."completed_by_actor_id")`,
+  pendingResultId: sql<string | null>`(select r.id from task_results r where r.task_id = "tasks"."id" and r.review_status = 'pending')`,
   latestResult: sql<string | null>`(select r.summary from task_results r where r.task_id = "tasks"."id"
     order by r.created_at desc limit 1)`,
   stale: sql<boolean>`"tasks"."last_activity_at" < now() - make_interval(hours => ${STALLED_AFTER_HOURS})`,
@@ -104,6 +110,8 @@ function toCard(r: CardRow): TaskCard {
     lastActivityAt: r.lastActivityAt as Date,
     assignee,
     latestResult: r.latestResult as string | null,
+    pendingResultId: r.pendingResultId as string | null,
+    completedBy: r.completedBy as string | null,
     handoffTo: r.handoffTo as string | null,
     badges: deriveBadges({
       status: r.status as TaskStatus,

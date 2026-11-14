@@ -8,6 +8,7 @@ import { assignTask, createTask, moveTaskBoard, moveTaskStatus, updateTask } fro
 import { markMessagesRead, postMessage } from '@/server/messages';
 import { cancelHandoff } from '@/server/handoffs';
 import { resolveBlocker } from '@/server/blockers';
+import { approveResult, requestChanges } from '@/server/results';
 import { parseLinkLines } from '@/lib/schemas';
 import type { FormState } from '@/components/action-form';
 
@@ -119,5 +120,33 @@ export async function resolveBlockerAction(_: FormState, form: FormData): Promis
     const res = await resolveBlocker(await requireOwner(), { blockerId: str(form, 'blockerId'), resolution: str(form, 'resolution') });
     refresh(res.project_id);
     return { ok: 'Blocker resolved.' };
+  });
+}
+
+/** Approve from the board (drop on Done), the Move menu, or the task panel. */
+export async function approveResultAction(input: { resultId: string; expectedRevision: number }) {
+  try {
+    const { projectId } = await approveResult(await requireOwner(), input);
+    refresh(projectId);
+    return { ok: true as const };
+  } catch (e) {
+    return { ok: false as const, error: toErrorBody(e).message };
+  }
+}
+
+export async function approveResultFormAction(_: FormState, form: FormData): Promise<FormState> {
+  const res = await approveResultAction({ resultId: str(form, 'resultId') ?? '', expectedRevision: Number(str(form, 'expectedRevision')) });
+  return res.ok ? { ok: 'Approved.' } : { error: res.error };
+}
+
+export async function requestChangesAction(_: FormState, form: FormData): Promise<FormState> {
+  return formAction(async () => {
+    const { projectId } = await requestChanges(await requireOwner(), {
+      resultId: str(form, 'resultId'),
+      expectedRevision: str(form, 'expectedRevision'),
+      comment: str(form, 'comment'),
+    });
+    refresh(projectId);
+    return { ok: 'Changes requested.' };
   });
 }

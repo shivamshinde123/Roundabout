@@ -5,6 +5,8 @@ import { label, type TaskDetail } from '@/server/tasks';
 import type { Message } from '@/server/messages';
 import { Discussion } from './discussion';
 import { BlockerList, HandoffList } from './coordination';
+import { ResultList } from './results';
+import type { ResultView } from '@/server/results';
 import type { BlockerView } from '@/server/blockers';
 import type { HandoffView } from '@/server/handoffs';
 import { TaskBadges } from './badges';
@@ -28,13 +30,17 @@ export function describeEvent(type: string, data: Record<string, unknown>): stri
     case 'handoff.superseded': return 'superseded the handoff';
     case 'blocker.reported': return 'reported a blocker';
     case 'blocker.resolved': return 'resolved a blocker';
+    case 'result.submitted': return `submitted a result: ${data.summary ?? ''}`;
+    case 'review.approved': return 'approved the result';
+    case 'review.changes_requested': return 'requested changes';
+    case 'task.completed': return 'completed the task';
     case 'message.posted': return data.kind === 'update' ? 'posted an update' : data.kind === 'question' ? 'asked a question' : 'posted a message';
     default: return type.replace('.', ' ').replace('_', ' ');
   }
 }
 
 export function TaskPanel({
-  task, agents, boards, messages, ownerActorId, handoffs, blockers,
+  task, agents, boards, messages, ownerActorId, handoffs, blockers, results,
 }: {
   task: TaskDetail;
   agents: { id: string; name: string }[];
@@ -43,6 +49,7 @@ export function TaskPanel({
   ownerActorId: string;
   handoffs: HandoffView[];
   blockers: BlockerView[];
+  results: ResultView[];
 }) {
   const canAssign = task.status === 'backlog' || task.status === 'todo';
   return (
@@ -88,6 +95,7 @@ export function TaskPanel({
         )}
       </div>
 
+      <ResultList results={results} revision={task.revision} />
       <BlockerList taskId={task.id} blockers={blockers} />
 
       <section className="grid gap-1">

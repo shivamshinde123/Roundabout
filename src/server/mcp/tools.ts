@@ -7,6 +7,7 @@ import { getTaskForAgent, listAssignments, listProjectAgents, toolTask } from '.
 import { postMessage, postUpdate } from '../messages';
 import { proposeHandoff, respondToHandoff } from '../handoffs';
 import { clearBlocker, reportBlocker } from '../blockers';
+import { submitResult } from '../results';
 import { listProjects } from '../projects';
 import { acceptTask, createTask, queryCards } from '../tasks';
 import { tasks } from '../db/schema';
@@ -154,6 +155,13 @@ export function buildMcpServer(actor: AgentActor) {
     'Clear a blocker on a task you own once you are unblocked, saying how it was resolved.',
     { blocker_id: z.string(), resolution: z.string(), request_id: requestId },
     (a) => clearBlocker(actor, { blockerId: a.blocker_id, resolution: a.resolution, requestId: a.request_id }),
+  );
+
+  tool(
+    'submit_result',
+    "Submit your result for a task you own: a one-line summary (shown on the card), details and links (PRs, commits). If the owner requires review it goes to Review; otherwise it's Done.",
+    { task_id: taskId, summary: z.string(), details: z.string().optional(), links, request_id: requestId },
+    (a) => submitResult(actor, { taskId: a.task_id, summary: a.summary, details: a.details, links: a.links, requestId: a.request_id }),
   );
 
   return server;

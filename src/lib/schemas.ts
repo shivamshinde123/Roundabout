@@ -124,3 +124,16 @@ export const resolveBlockerInput = z.object({
   resolution: shortText.pipe(z.string().min(1, 'Say how it was resolved.')),
   requestId,
 });
+
+// ── Results and review ──────────────────────────────────────────────────────
+export const submitResultInput = z.object({
+  taskId: uuid,
+  summary: shortText.pipe(z.string().min(1, 'Summarise the result.')),
+  details: longText.default(''),
+  links: links.default([]),
+  requestId,
+});
+export const reviewInput = z.object({ resultId: uuid, expectedRevision: revision });
+export const requestChangesInput = reviewInput.extend({
+  comment: longText.pipe(z.string().trim().min(1, 'Say what needs to change.')),
+});

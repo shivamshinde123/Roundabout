@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useId, useTransition, type ReactNode } from 'react';
+import { useId, useState, useTransition, type ReactNode } from 'react';
 import {
   DndContext, KeyboardSensor, PointerSensor, useDraggable, useDroppable, useSensor, useSensors, type DragEndEvent,
 } from '@dnd-kit/core';
@@ -13,9 +13,10 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { moveTaskStatusAction } from '@/app/(app)/tasks/actions';
+import { approveResultAction, moveTaskStatusAction } from '@/app/(app)/tasks/actions';
 import type { TaskCard, TaskStatus } from '@/server/tasks';
 import { TaskBadges } from './badges';
+import { RequestChangesDialog } from './review';
 
 export const COLUMNS: { status: TaskStatus; label: string }[] = [
   { status: 'backlog', label: 'Backlog' },
@@ -26,10 +27,18 @@ export const COLUMNS: { status: TaskStatus; label: string }[] = [
 ];
 
 /** Board moves the owner can make by dragging or the Move menu (technical-design-document.md §3). */
-export function ownerMoves(status: TaskStatus): TaskStatus[] {
-  if (status === 'backlog') return ['todo'];
-  if (status === 'todo') return ['backlog'];
+export function ownerMoves(task: Pick<TaskCard, 'status' | 'pendingResultId'>): TaskStatus[] {
+  if (task.status === 'backlog') return ['todo'];
+  if (task.status === 'todo') return ['backlog'];
+  // Review → Done approves; Review → In Progress requests changes (opens a comment dialog).
+  if (task.status === 'review' && task.pendingResultId) return ['done', 'in_progress'];
   return [];
+}
+
+/** Menu wording for each board move. */
+export function moveLabel(task: Pick<TaskCard, 'status'>, to: TaskStatus): string {
+  if (task.status === 'review') return to === 'done' ? 'Approve' : 'Request changes…';
+  return `Move to ${COLUMNS.find((c) => c.status === to)!.label}`;
 }
 
 const labelOf = (s: TaskStatus) => COLUMNS.find((c) => c.status === s)!.label;
@@ -39,16 +48,24 @@ export function Board({ tasks, newTask }: { tasks: TaskCard[]; newTask: ReactNod
   const [, startTransition] = useTransition();
   const dndId = useId(); // stable ids avoid a server/client aria-describedby mismatch
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor));
+  const [changesFor, setChangesFor] = useState<TaskCard | null>(null);
 
   const move = (task: TaskCard, to: TaskStatus) => {
     if (task.status === to) return;
-    if (!ownerMoves(task.status).includes(to)) {
+    if (!ownerMoves(task).includes(to)) {
       toast.error(`Can't move from ${labelOf(task.status)} to ${labelOf(to)}. Use the task's actions instead.`);
       return;
     }
+    if (task.status === 'review' && to === 'in_progress') {
+      setChangesFor(task);
+      return;
+    }
     startTransition(async () => {
-      const res = await moveTaskStatusAction({ taskId: task.id, expectedRevision: task.revision, to });
+      const res = task.status === 'review'
+        ? await approveResultAction({ resultId: task.pendingResultId!, expectedRevision: task.revision })
+        : await moveTaskStatusAction({ taskId: task.id, expectedRevision: task.revision, to });
       if (!res.ok) toast.error(res.error);
+      else if (task.status === 'review') toast.success(`Approved “${task.title}”.`);
       router.refresh();
     });
   };
@@ -82,6 +99,15 @@ export function Board({ tasks, newTask }: { tasks: TaskCard[]; newTask: ReactNod
           </Column>
         ))}
       </div>
+      {changesFor && (
+        <RequestChangesDialog
+          open
+          onOpenChange={(open) => !open && setChangesFor(null)}
+          resultId={changesFor.pendingResultId!}
+          revision={changesFor.revision}
+          title={changesFor.title}
+        />
+      )}
     </DndContext>
   );
 }
@@ -105,7 +131,7 @@ function Column({ status, label, count, children }: { status: TaskStatus; label:
 
 function Card({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) => void }) {
   const path = usePathname();
-  const draggable = ownerMoves(task.status).length > 0;
+  const draggable = ownerMoves(task).length > 0;
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, isDragging } = useDraggable({ id: task.id, disabled: !draggable });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
   const detailLine =
@@ -149,6 +175,9 @@ function Card({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) => vo
         )}
       </p>
       {detailLine && <p className="line-clamp-2 text-xs">{detailLine}</p>}
+      {task.status === 'done' && task.completedBy && (
+        <p className="text-xs text-muted-foreground">{task.requireReview ? 'Approved by' : 'Completed by'} {task.completedBy}</p>
+      )}
       <TaskBadges task={task} />
     </article>
   );
@@ -156,7 +185,7 @@ function Card({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) => vo
 
 function MoveMenu({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) => void }) {
   const path = usePathname();
-  const moves = ownerMoves(task.status);
+  const moves = ownerMoves(task);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -171,9 +200,9 @@ function MoveMenu({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) =
         {moves.length > 0 && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel>Move to</DropdownMenuLabel>
+            <DropdownMenuLabel>{task.status === 'review' ? 'Review' : 'Move'}</DropdownMenuLabel>
             {moves.map((to) => (
-              <DropdownMenuItem key={to} onSelect={() => onMove(to)}>{labelOf(to)}</DropdownMenuItem>
+              <DropdownMenuItem key={to} onSelect={() => onMove(to)}>{moveLabel(task, to)}</DropdownMenuItem>
             ))}
           </>
         )}
