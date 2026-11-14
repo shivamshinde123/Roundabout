@@ -191,3 +191,16 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Activity filters are GET query parameters** (`?agent=`, `?handoffs=1`) with a Reset link, so they survive refresh and back/forward (diagram 15, step 04).
 - **The overview** (O1) shows stage counts across boards, the top three inbox items with inline actions, agents with access (status, last check, work), recent results and handoffs, and the boards.
 - `ponytail:` the sidebar and the project layout both compute the inbox per request (O(projects × queries)). Add `react.cache` or a single counts query if it ever shows in timings.
+
+## D-23 · 2026-11-14 · Stage 11: end-to-end verification and hardening
+
+- **The §8 scenario is automated** in one test (`tests/release-scenario.test.ts`): sign-in, two boards, two agents and a restricted project; pickup; update; handoff; review with request changes then approve; review-off completion; blocker; reassign with stale-owner rejection; a three-way simultaneous claim; cross-project denial; revocation; and history intact.
+- **Real-client checks** on the dev machine:
+  - **Claude Code 2.1.81:** `claude mcp add --transport http … --header "Authorization: Bearer …"` (local scope) and `claude mcp get` reported **✓ Connected** against `/api/mcp`. The entry was removed afterwards.
+  - **Codex 0.148.0:** `codex mcp add … --url … --bearer-token-env-var ROUNDABOUT_TOKEN` gave `transport: streamable_http` with bearer auth, which matches the snippet Roundabout shows. Codex's `list` and `get` don't probe the server, and a live Codex tool call would need a model run, so that stays in the owner's manual stage 12 checklist. The entry was removed afterwards.
+  - **Every tool:** the official MCP SDK client (`StreamableHTTPClientTransport`) exercised all of them during stages 6–10.
+- **Hardening:** a "Skip to content" link (first Tab stop, which focuses `<main>`), and security headers on every route (`X-Frame-Options: DENY`, `frame-ancestors 'none'`, `nosniff`, a strict referrer policy, and a permissions policy). Every server-action module calls `requireOwner()`.
+- **Known limits, not blocking release:**
+  - No rate limiting on `/api/mcp`. Add one per token if a client misbehaves.
+  - History timestamps are formatted in the server's time zone (D-16).
+  - Pointer drag-and-drop is now browser-verified: Backlog → To Do moved the card, and To Do → In Progress was refused with the toast and the card stayed. This closes the gap noted in D-16.
