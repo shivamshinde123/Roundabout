@@ -150,3 +150,12 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Disconnected agents free their name.** The unique name index is partial (`where status <> 'revoked'`, migration 0002). *Why:* browser testing showed that disconnecting "Claude Code" would otherwise block reconnecting under the same name.
 - **Correlated subqueries use table-qualified outer columns.** *Why:* Drizzle drops the table name in join-less queries, and a test caught `id` binding to the inner table, which zeroed the work counts.
 - **Reconnect uses a plain dialog** (`SimpleDialog`) that hosts the token form. Disconnect uses a confirmation dialog that explains what is kept.
+
+## D-18 · 2026-11-14 · Stage 6: MCP server
+
+- **The MCP endpoint is stateless and builds a fresh `McpServer` per request** on the SDK's `WebStandardStreamableHTTPServerTransport` with `enableJsonResponse: true`. Auth happens before the server is built. A bad token gets HTTP 401 with `WWW-Authenticate: Bearer error="invalid_token"`, and `GET` and `DELETE` get 405.
+- **Tool results are always objects** (for example `{ agents: [...] }`). *Why:* text content and `structuredContent` must carry the same shape, and a test caught them diverging for arrays.
+- **Messages don't bump the task revision.** See technical design §9.
+- **Owner replies use the same `postMessage` service as agents.** A reply to a question addressed to you marks it answered. Read receipts are set by `get_task` for agents, and by a server action fired after the task panel opens for the owner.
+- **Verified with the official SDK client** (`Client` with `StreamableHTTPClientTransport`) against the dev server: initialize, list tools, every tool, idempotent `accept_task` replay, an owner answer, and the read receipt. Real Claude Code and Codex configuration is still to be tested (§3, stage 11).
+- **Approval:** the owner approved `gh pr merge --admin`, because `main` has lock-branch protection (2026-11-14).

@@ -77,3 +77,19 @@ export const agentClient = z.enum(['claude_code', 'codex', 'other']);
 export const createAgentInput = z.object({ name, client: agentClient, projectIds: z.array(uuid).max(200).default([]) });
 export const updateGrantsInput = z.object({ agentId: uuid, projectIds: z.array(uuid).max(200) });
 export const agentIdInput = z.object({ agentId: uuid });
+
+// ── Agent work (MCP) ─────────────────────────────────────────────────────────
+export const requestId = z.string().trim().min(1).max(200).optional();
+const body = z.string().trim().min(1, 'Write a message.').max(20_000);
+export const acceptTaskInput = z.object({ taskId: uuid, requestId });
+export const postUpdateInput = z.object({ taskId: uuid, body, nextAction: shortText.optional(), links: links.optional(), requestId });
+export const postMessageInput = z.object({
+  taskId: uuid,
+  body,
+  to: z.union([z.literal('owner'), uuid]).optional(),
+  replyTo: uuid.optional(),
+  kind: z.enum(['message', 'question']).default('message'),
+  links: links.default([]),
+  requestId,
+});
+export const listAssignmentsInput = z.object({ projectId: uuid.optional() });

@@ -105,6 +105,8 @@ The agent's unfinished tasks in a removed project keep it as the assignee and ge
 
 ## 9. Read receipts and answered questions
 
+- Messages update `last_activity_at` but **not** `revision` (`touchActivity`). *Why:* otherwise every agent message would make the owner's open edit form fail with a conflict. A `post_update` that changes `next_action` does bump the revision.
+
 - `read_at` is set the first time the **recipient** loads a directed message.
   - For an agent, this happens inside `get_task`, which is already a tool call.
   - For the owner, the task panel calls the `markMessagesRead` server action after it opens. Page rendering never writes to the database.

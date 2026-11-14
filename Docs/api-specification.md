@@ -15,7 +15,8 @@ Both call the same functions in `src/server/` and return the same error codes (`
 - **Auth:** `Authorization: Bearer rbt_…`, a scoped token created under Connect agent (D-5). A missing, invalid or revoked token returns HTTP 401.
 - **Scope:** every tool is limited to the projects granted to the connection. Anything outside that scope returns `NOT_FOUND`.
 - **Idempotency:** every mutating tool accepts an optional `request_id` (a UUID). Sending the same `request_id` again replays the first result.
-- **Output:** each tool returns one text content block containing JSON, plus `structuredContent` with the same object. Errors set `isError: true` and return `{ "error": { "code", "message", "details"? } }`.
+- **Output:** each tool returns a JSON **object** (never a bare array) as one text content block, plus `structuredContent` with the same object.
+- **Implemented (stage 6):** `whoami`, `list_assignments`, `get_task`, `list_agents`, `accept_task`, `post_update`, `post_message`, `create_task`. Handoff, blocker and result tools arrive in stages 7–8. Errors set `isError: true` and return `{ "error": { "code", "message", "details"? } }`.
 
 ### Client setup (to be verified end to end, §3)
 
@@ -60,9 +61,9 @@ ActorRef = { kind: 'human' | 'agent'; id; name }
 | Tool | Mutates | Input | Returns | Rules |
 |---|---|---|---|---|
 | `whoami` | no | — | `{ agent: AgentRef, projects: {id,name,boards:{id,name}[]}[] }` | The connection test (atlas diagram 05, step 04). Marks the connection `active`. |
-| `list_assignments` | no | `{ project_id? }` | `{ waiting: TaskSummary[], in_progress: TaskSummary[], handoffs_to_me: Handoff[], answers: { task_id, message }[] }` | `waiting`: tasks in todo assigned to me. `in_progress`: tasks I own. `handoffs_to_me`: pending handoffs addressed to me. `answers`: unread messages sent to me. |
+| `list_assignments` | no | `{ project_id? }` | `{ waiting: TaskSummary[], in_progress: TaskSummary[], handoffs_to_me: Handoff[], unread_messages: { task_id, count }[] }` | `waiting`: tasks in todo assigned to me. `in_progress`: tasks I own. `handoffs_to_me`: pending handoffs addressed to me. `unread_messages`: counts of unread messages sent to me, per task (read them with `get_task`). |
 | `get_task` | marks messages read | `{ task_id }` | `TaskDetail` | Requires a project grant. Sets `read_at` on messages sent to me. |
-| `list_agents` | no | `{ project_id }` | `AgentRef[]` | Other active agents with access to the project, used to choose a handoff recipient. |
+| `list_agents` | no | `{ project_id }` | `{ agents: AgentRef[] }` | Other active agents with access to the project, used to choose a handoff recipient. |
 | `accept_task` | yes | `{ task_id, request_id? }` | `TaskSummary` | Requires me as assignee and `status = 'todo'`. Moves the task to `in_progress`. A lost race returns `CONFLICT`. |
 | `post_update` | yes | `{ task_id, body, next_action?, links?, request_id? }` | `Message` | Requires me as owner and `in_progress`. Updates the card's `next_action`. |
 | `post_message` | yes | `{ task_id, body, to?: 'owner' \| agent_id, reply_to?: message_id, kind?: 'message'\|'question', links?, request_id? }` | `Message` | Any agent with a project grant can post. A `question` sent to the owner appears in Needs your input. |
