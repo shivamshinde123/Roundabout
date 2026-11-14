@@ -162,4 +162,4 @@ Waiting for first contact… ⟳   (becomes "Connected ✓" once the agent calls
 | Loading | Skeleton cards. No spinners on refresh, because it happens silently in the background |
 | Load error | Inline banner: "Couldn't load. [Retry]" |
 | Conflict | Toast: "This task changed since you opened it. Showing the latest." The board refreshes |
-| No access / missing | "Not found or you don't have access" with a link back to the overview |
+| No access / missing | "Not found or you don't have access" with a link back to the overview (`src/app/not-found.tsx`; malformed ids are treated the same) |

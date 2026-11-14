@@ -1,6 +1,6 @@
 'use client';
 
-import { startTransition, useActionState, type FormEvent, type ReactNode } from 'react';
+import { startTransition, useActionState, useEffect, type FormEvent, type ReactNode } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -16,13 +16,19 @@ export function ActionForm({
   submitLabel,
   children,
   className,
+  onSuccess,
 }: {
   action: (state: FormState, form: FormData) => Promise<FormState>;
   submitLabel: string;
   children?: ReactNode;
   className?: string;
+  /** Called after an action returns `{ ok }`, e.g. to close a dialog. */
+  onSuccess?: () => void;
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
+  useEffect(() => {
+    if (state?.ok) onSuccess?.();
+  }, [state, onSuccess]);
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
