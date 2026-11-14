@@ -11,7 +11,8 @@ The components, what each one is responsible for, and how they connect. Paths ma
 | `server/errors` | `AppError` and its codes | — | everything |
 | `server/events` | Appends `activity_events` inside the caller's transaction | db | every mutating service |
 | `server/idempotency` | Claims and stores `request_id` results | db | MCP-facing service calls |
-| `server/workspace` | `ensureWorkspace`; creates, renames and lists projects and boards | db, events | auth callback, actions |
+| `server/workspace` | `ensureWorkspace` | db | auth callback, `requireOwner` |
+| `server/projects` | Create, rename, reorder and list projects and boards | db, events, policy, `lib/schemas` | project actions, layouts |
 | `server/agents` | Agent connections, grants, token rotation, revocation, agent profile data | db, events, policy | agent actions, `auth` |
 | `server/tasks` | Task CRUD, the state machine, assign, accept, reassign, reopen, moves, card badges, Stalled | db, events, policy, idempotency | actions, MCP tools, inbox |
 | `server/handoffs` | Propose, respond, cancel and supersede handoffs | tasks (lock), events, policy | actions, MCP tools |

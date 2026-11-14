@@ -49,7 +49,9 @@ Roundabout/
 │   │   ├── errors.ts              # AppError + codes
 │   │   ├── events.ts              # append() activity events
 │   │   ├── idempotency.ts
-│   │   ├── workspace.ts           # ensureWorkspace, projects, boards
+│   │   ├── workspace.ts           # ensureWorkspace
+│   │   ├── projects.ts            # projects + boards (create/rename/reorder/list)
+│   │   ├── actions.ts             # formAction() + orNotFound() helpers for actions/pages
 │   │   ├── agents.ts              # connections, grants, rotate, revoke
 │   │   ├── tasks.ts               # CRUD, state machine, assign/accept/reassign/reopen, badges
 │   │   ├── handoffs.ts

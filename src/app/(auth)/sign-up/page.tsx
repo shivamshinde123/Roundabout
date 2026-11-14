@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ActionForm } from '@/components/action-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { signUp } from '../actions';
-import { Field } from '../fields';
+import { Field } from '@/components/field';
 
 export default function SignUpPage() {
   return (

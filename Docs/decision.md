@@ -124,3 +124,10 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **`ensureWorkspace` serialises the first sign-in per user** with `pg_advisory_xact_lock`. Together with the partial unique indexes, this means a replayed or concurrent callback creates exactly one workspace.
 - **Password-reset requests always give the same reply**, so the form can't be used to discover which emails have accounts.
 - **Local dev account** for manual checks: `tests/fixtures/dev-owner.json` (local Supabase only). Running the test suite truncates its workspace, and the next sign-in recreates it.
+
+## D-15 · 2026-11-14 · Stage 3: projects and boards
+
+- **Projects and boards live in `server/projects.ts`**, and `workspace.ts` keeps only `ensureWorkspace`. *Why:* they're separate concerns, and `projects.ts` will be imported by many pages.
+- **Duplicate names are caught by the case-insensitive unique indexes** and mapped from Postgres `23505` to a friendly `VALIDATION` error. *Why:* the database is the source of truth, and a pre-check would race.
+- **Create actions call `revalidatePath('/', 'layout')` before redirecting.** *Why:* browser testing showed a new board's tab missing until reload, because layouts aren't re-rendered by a redirect alone.
+- **Malformed ids are NOT_FOUND.** A non-UUID id would otherwise reach Postgres and come back as a 500.

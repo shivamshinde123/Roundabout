@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { isGoogleSignInEnabled } from '@/lib/supabase/server';
 import { signIn, signInWithGoogle } from '../actions';
-import { Field } from '../fields';
+import { Field } from '@/components/field';
 
 export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
   const { error } = await searchParams;

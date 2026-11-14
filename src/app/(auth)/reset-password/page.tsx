@@ -1,7 +1,7 @@
 import { ActionForm } from '@/components/action-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { updatePassword } from '../actions';
-import { Field } from '../fields';
+import { Field } from '@/components/field';
 
 // Reached from the recovery email via /auth/callback, which signs the user in first.
 export default function ResetPasswordPage() {
