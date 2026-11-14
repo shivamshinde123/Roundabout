@@ -6,6 +6,7 @@ import { getTaskDetail, listAssignableAgents, listBoardTasks } from '@/server/ta
 import { listMessages } from '@/server/messages';
 import { listHandoffs } from '@/server/handoffs';
 import { listBlockers } from '@/server/blockers';
+import { listResults } from '@/server/results';
 import { FormDialog } from '@/components/form-dialog';
 import { Field } from '@/components/field';
 import { AutoRefresh } from '@/components/board/auto-refresh';
@@ -27,9 +28,9 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
     ? await getTaskDetail(owner, taskParam).catch(() => null)
     : null;
   const panelTask = openTask && openTask.projectId === project.id ? openTask : null;
-  const [messages, handoffs, blockers] = panelTask
-    ? await Promise.all([listMessages(panelTask.id), listHandoffs(panelTask.id), listBlockers(panelTask.id)])
-    : [[], [], []];
+  const [messages, handoffs, blockers, results] = panelTask
+    ? await Promise.all([listMessages(panelTask.id), listHandoffs(panelTask.id), listBlockers(panelTask.id), listResults(panelTask.id)])
+    : [[], [], [], []];
 
   return (
     <section className="grid gap-4">
@@ -45,7 +46,7 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
         <div className="overflow-x-auto pb-2">
           <Board tasks={tasks} newTask={<NewTaskButton boardId={board.id} agents={agents} />} />
         </div>
-        {panelTask && <TaskPanel task={panelTask} agents={agents} boards={project.boards} messages={messages} ownerActorId={owner.actorId} handoffs={handoffs} blockers={blockers} />}
+        {panelTask && <TaskPanel task={panelTask} agents={agents} boards={project.boards} messages={messages} ownerActorId={owner.actorId} handoffs={handoffs} blockers={blockers} results={results} />}
       </div>
       {typeof taskParam === 'string' && !panelTask && (
         <p role="status" className="text-sm text-muted-foreground">That task wasn&apos;t found or you don&apos;t have access.</p>

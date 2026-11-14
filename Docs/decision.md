@@ -167,3 +167,12 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **`needs` on a blocker is the owner by default.** Answering a blocker sends a message and doesn't resolve it: either the agent clears it (`clear_blocker`) or the owner marks it resolved (atlas diagram 11, step 04).
 - **Tests delete only test-owned data** (supersedes the "truncate" note in D-13). *Why:* each test run wiped the developer's browser-test data. Deletion order is activity events, tasks, then workspaces, because Postgres checks NO ACTION foreign keys before the workspace cascade reaches tasks.
 - **Verified with the SDK client as two agents**: create, accept, blocker reported and cleared, a second blocker, handoff proposed and seen by the recipient. In the browser the owner saw "Handoff → Codex" and "Blocked" on the card, resolved the blocker and cancelled the handoff.
+
+## D-20 · 2026-11-14 · Stage 8: results and review
+
+- **`submit_result` follows `require_review`:** `pending` plus Review, or `not_required` plus Done with the agent as `completed_by`. Submitting supersedes any pending handoff, because that work is now under review or done.
+- **Review actions lock the task, check `expectedRevision`, and require the task in Review with that submission pending.** A second approval or a stale form gets `CONFLICT`.
+- **Request changes is one transaction:** the result is marked `changes_requested` with the comment, the task returns to In Progress with next action "Address requested changes", and a message to the submitting agent says "Changes requested: …". Earlier submissions are always kept.
+- **Review on the board:** `ownerMoves` allows Review → Done (approve) and Review → In Progress (a comment dialog), and only while a submission is pending. The menu labels are Approve and Request changes….
+- **Done cards show "Approved by you" or "Completed by \<agent\>"** (`Roundabout.md` §4).
+- **Verified:** a real SDK client submitted, the owner requested changes from the card menu, the agent resubmitted, and the owner approved. The card reached Done with both submissions listed.
