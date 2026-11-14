@@ -27,7 +27,7 @@ export function FormDialog({
       <DialogTrigger asChild>
         <Button variant={variant} size="sm">{trigger}</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>

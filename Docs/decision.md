@@ -131,3 +131,14 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Duplicate names are caught by the case-insensitive unique indexes** and mapped from Postgres `23505` to a friendly `VALIDATION` error. *Why:* the database is the source of truth, and a pre-check would race.
 - **Create actions call `revalidatePath('/', 'layout')` before redirecting.** *Why:* browser testing showed a new board's tab missing until reload, because layouts aren't re-rendered by a redirect alone.
 - **Malformed ids are NOT_FOUND.** A non-UUID id would otherwise reach Postgres and come back as a 500.
+
+## D-16 · 2026-11-14 · Stage 4: tasks and the Kanban board
+
+- **Drag starts from a grip handle, not the whole card.** *Why:* dnd-kit's keyboard sensor starts a drag on Enter or Space anywhere inside the draggable, so Enter on the title link would have started a drag instead of opening the task.
+- **Owner board moves are only Backlog ↔ To Do** (`ownerMoves`). Other columns only accept drops wired to their own action (review, stage 8). An invalid drop shows a toast and the server rejects it too (`INVALID_STATE`).
+- **`DndContext` gets a `useId()` id.** *Why:* its default global counter differed between server and client and caused a hydration mismatch, which browser testing caught.
+- **The Geist font variable is named `--font-sans`.** *Why:* shadcn's `@theme inline` maps `font-sans` to `var(--font-sans)`, but the template named it `--font-geist-sans`, so every page fell back to Times. Turbopack's on-disk cache also had to be cleared (`rm -rf .next`) to pick up the CSS fix.
+- **Native `<select>` and checkbox** in task forms. *Why:* they're accessible and post with the form directly, with no hidden-input plumbing. The unused shadcn select, checkbox and tooltip were removed.
+- **Card badges are computed in one board query** (subqueries for blocker, pending handoff, latest result and grant) and turned into labels by the pure, tested `deriveBadges`.
+- **`updateTask` patches** leave absent fields unchanged, and an empty repository or branch clears it. *Why:* the create schema's defaults would otherwise have nulled fields on every edit.
+- `ponytail:` **history timestamps are formatted on the server** (server time zone). Format them on the client if hosted time-zone differences matter.

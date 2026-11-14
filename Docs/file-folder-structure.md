@@ -33,6 +33,7 @@ Roundabout/
 │   │   │   │   ├── activity/page.tsx
 │   │   │   │   ├── boards/[boardId]/page.tsx   # Kanban board + ?task= side panel
 │   │   │   │   └── actions.ts     # Task, board and review server actions
+│   │   │   ├── tasks/actions.ts   # Task server actions (create, edit, move, assign)
 │   │   │   ├── agents/
 │   │   │   │   ├── page.tsx       # Agent list
 │   │   │   │   ├── new/page.tsx   # Connect agent (shows the token once)
@@ -67,7 +68,7 @@ Roundabout/
 │   └── components/
 │       ├── ui/                    # shadcn/ui primitives (generated; Radix + Nova preset, `components.json`)
 │       ├── action-form.tsx        # Server-action form: pending state, announced errors, keeps fields
-│       ├── board/                 # Board, Column, TaskCard, MoveMenu, AutoRefresh
+│       ├── board/                 # board.tsx (Board/Column/Card/MoveMenu, dnd-kit), badges, task-fields, new-task, task-panel, close-panel, auto-refresh
 │       ├── task/                  # TaskPanel, MessageThread, ResultList, HandoffList, BlockerList, History
 │       └── agents/                # ConnectAgentForm, TokenReveal, SetupInstructions
 ├── tests/                         # Vitest, one file per service (tasks.test.ts, handoffs.test.ts, …)
