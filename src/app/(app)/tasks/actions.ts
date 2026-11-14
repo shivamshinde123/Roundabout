@@ -6,6 +6,8 @@ import { formAction } from '@/server/actions';
 import { toErrorBody } from '@/server/errors';
 import { assignTask, createTask, moveTaskBoard, moveTaskStatus, updateTask } from '@/server/tasks';
 import { markMessagesRead, postMessage } from '@/server/messages';
+import { cancelHandoff } from '@/server/handoffs';
+import { resolveBlocker } from '@/server/blockers';
 import { parseLinkLines } from '@/lib/schemas';
 import type { FormState } from '@/components/action-form';
 
@@ -102,4 +104,20 @@ export async function postMessageAction(_: FormState, form: FormData): Promise<F
 /** Called by the task panel after it opens; page rendering never writes (D-11). */
 export async function markMessagesReadAction(taskId: string) {
   await markMessagesRead(await requireOwner(), taskId);
+}
+
+export async function cancelHandoffAction(_: FormState, form: FormData): Promise<FormState> {
+  return formAction(async () => {
+    const { projectId } = await cancelHandoff(await requireOwner(), { handoffId: str(form, 'handoffId') });
+    refresh(projectId);
+    return { ok: 'Handoff cancelled.' };
+  });
+}
+
+export async function resolveBlockerAction(_: FormState, form: FormData): Promise<FormState> {
+  return formAction(async () => {
+    const res = await resolveBlocker(await requireOwner(), { blockerId: str(form, 'blockerId'), resolution: str(form, 'resolution') });
+    refresh(res.project_id);
+    return { ok: 'Blocker resolved.' };
+  });
 }

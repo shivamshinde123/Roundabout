@@ -5,6 +5,8 @@ import { toErrorBody } from '../errors';
 import { recordAgentError } from '../agents';
 import { getTaskForAgent, listAssignments, listProjectAgents, toolTask } from '../agent-work';
 import { postMessage, postUpdate } from '../messages';
+import { proposeHandoff, respondToHandoff } from '../handoffs';
+import { clearBlocker, reportBlocker } from '../blockers';
 import { listProjects } from '../projects';
 import { acceptTask, createTask, queryCards } from '../tasks';
 import { tasks } from '../db/schema';
@@ -113,6 +115,45 @@ export function buildMcpServer(actor: AgentActor) {
       const [card] = await queryCards(eq(tasks.id, task.id));
       return toolTask(card);
     },
+  );
+
+  tool(
+    'propose_handoff',
+    'Offer a task you own to another agent with access to the project (see list_agents). You stay the owner until they accept. Include what you did and what is next.',
+    {
+      task_id: taskId, to_agent_id: z.string(), reason: z.string(), work_completed: z.string(), next_action: z.string(),
+      links, request_id: requestId,
+    },
+    (a) => proposeHandoff(actor, {
+      taskId: a.task_id, toAgentId: a.to_agent_id, reason: a.reason, workCompleted: a.work_completed,
+      nextAction: a.next_action, links: a.links, requestId: a.request_id,
+    }),
+  );
+
+  tool(
+    'respond_to_handoff',
+    "Accept or decline a handoff offered to you (from list_assignments.handoffs_to_me). Accepting makes you the task's owner.",
+    { handoff_id: z.string(), decision: z.enum(['accept', 'decline']), reason: z.string().optional(), request_id: requestId },
+    (a) => respondToHandoff(actor, { handoffId: a.handoff_id, decision: a.decision, reason: a.reason, requestId: a.request_id }),
+  );
+
+  tool(
+    'report_blocker',
+    "Report what blocks a task you own, with a specific question. The owner sees it in Needs your input. `needs` is 'owner' (default) or an agent id; name any missing access in `missing_resource`.",
+    {
+      task_id: taskId, reason: z.string(), question: z.string(), needs: z.string().optional(),
+      missing_resource: z.string().optional(), request_id: requestId,
+    },
+    (a) => reportBlocker(actor, {
+      taskId: a.task_id, reason: a.reason, question: a.question, needs: a.needs, missingResource: a.missing_resource, requestId: a.request_id,
+    }),
+  );
+
+  tool(
+    'clear_blocker',
+    'Clear a blocker on a task you own once you are unblocked, saying how it was resolved.',
+    { blocker_id: z.string(), resolution: z.string(), request_id: requestId },
+    (a) => clearBlocker(actor, { blockerId: a.blocker_id, resolution: a.resolution, requestId: a.request_id }),
   );
 
   return server;

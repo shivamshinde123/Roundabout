@@ -159,3 +159,11 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Owner replies use the same `postMessage` service as agents.** A reply to a question addressed to you marks it answered. Read receipts are set by `get_task` for agents, and by a server action fired after the task panel opens for the owner.
 - **Verified with the official SDK client** (`Client` with `StreamableHTTPClientTransport`) against the dev server: initialize, list tools, every tool, idempotent `accept_task` replay, an owner answer, and the read receipt. Real Claude Code and Codex configuration is still to be tested (§3, stage 11).
 - **Approval:** the owner approved `gh pr merge --admin`, because `main` has lock-branch protection (2026-11-14).
+
+## D-19 · 2026-11-14 · Stage 7: handoffs and blockers
+
+- **Handoff locking order is task, then handoff.** Accept re-checks that the handoff is still pending, the sender still owns the task in progress, and the recipient still has project access (via `lockTask`), then moves ownership and the handoff status in one transaction. Accepting copies the handoff's `next_action` onto the card.
+- **One pending handoff per task** is checked in the transaction for a friendly `CONFLICT`, with the partial unique index as a backstop.
+- **`needs` on a blocker is the owner by default.** Answering a blocker sends a message and doesn't resolve it: either the agent clears it (`clear_blocker`) or the owner marks it resolved (atlas diagram 11, step 04).
+- **Tests delete only test-owned data** (supersedes the "truncate" note in D-13). *Why:* each test run wiped the developer's browser-test data. Deletion order is activity events, tasks, then workspaces, because Postgres checks NO ACTION foreign keys before the workspace cascade reaches tasks.
+- **Verified with the SDK client as two agents**: create, accept, blocker reported and cleared, a second blocker, handoff proposed and seen by the recipient. In the browser the owner saw "Handoff → Codex" and "Blocked" on the card, resolved the blocker and cancelled the handoff.

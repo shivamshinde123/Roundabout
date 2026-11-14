@@ -4,6 +4,9 @@ import { assignTaskAction, moveTaskBoardAction, updateTaskAction } from '@/app/(
 import { label, type TaskDetail } from '@/server/tasks';
 import type { Message } from '@/server/messages';
 import { Discussion } from './discussion';
+import { BlockerList, HandoffList } from './coordination';
+import type { BlockerView } from '@/server/blockers';
+import type { HandoffView } from '@/server/handoffs';
 import { TaskBadges } from './badges';
 import { ClosePanel } from './close-panel';
 import { AgentSelect, NativeSelect, TaskFields } from './task-fields';
@@ -18,19 +21,28 @@ export function describeEvent(type: string, data: Record<string, unknown>): stri
     case 'task.moved_board': return 'moved it to another board';
     case 'task.assigned': return data.toAgentId ? 'assigned it' : 'unassigned it';
     case 'task.accepted': return 'accepted it';
+    case 'handoff.proposed': return 'proposed a handoff';
+    case 'handoff.accepted': return 'accepted the handoff';
+    case 'handoff.declined': return 'declined the handoff';
+    case 'handoff.cancelled': return 'cancelled the handoff';
+    case 'handoff.superseded': return 'superseded the handoff';
+    case 'blocker.reported': return 'reported a blocker';
+    case 'blocker.resolved': return 'resolved a blocker';
     case 'message.posted': return data.kind === 'update' ? 'posted an update' : data.kind === 'question' ? 'asked a question' : 'posted a message';
     default: return type.replace('.', ' ').replace('_', ' ');
   }
 }
 
 export function TaskPanel({
-  task, agents, boards, messages, ownerActorId,
+  task, agents, boards, messages, ownerActorId, handoffs, blockers,
 }: {
   task: TaskDetail;
   agents: { id: string; name: string }[];
   boards: { id: string; name: string }[];
   messages: Message[];
   ownerActorId: string;
+  handoffs: HandoffView[];
+  blockers: BlockerView[];
 }) {
   const canAssign = task.status === 'backlog' || task.status === 'todo';
   return (
@@ -76,6 +88,8 @@ export function TaskPanel({
         )}
       </div>
 
+      <BlockerList taskId={task.id} blockers={blockers} />
+
       <section className="grid gap-1">
         <h3 className="font-medium">Instructions</h3>
         <p className="whitespace-pre-wrap text-muted-foreground">{task.instructions || 'None yet.'}</p>
@@ -107,6 +121,8 @@ export function TaskPanel({
           <p className="text-muted-foreground">{task.nextAction}</p>
         </section>
       )}
+
+      <HandoffList handoffs={handoffs} />
 
       <Discussion taskId={task.id} messages={messages} ownerActorId={ownerActorId} agents={agents} />
 

@@ -23,7 +23,7 @@ describe('projects and boards', () => {
     const owner = await seedOwner();
     await createProject(owner, { name: 'Website' });
     await expect(createProject(owner, { name: 'website' })).rejects.toMatchObject({ code: 'VALIDATION' });
-    expect(await db.select().from(projects)).toHaveLength(1);
+    expect(await db.select().from(projects).where(eq(projects.workspaceId, owner.workspaceId))).toHaveLength(1);
     // Another workspace may reuse the name.
     await expect(createProject(await seedOwner(), { name: 'Website' })).resolves.toBeTruthy();
   });

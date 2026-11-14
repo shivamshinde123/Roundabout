@@ -6,6 +6,8 @@ import { notFound } from './errors';
 import { assertProjectAccess, type AgentActor } from './policy';
 import { getTaskDetail, queryCards, type TaskCard, type TaskDetail } from './tasks';
 import { listMessages, markMessagesRead, type Message } from './messages';
+import { listHandoffs } from './handoffs';
+import { listBlockers } from './blockers';
 import { listAssignmentsInput, parse, uuid } from '@/lib/schemas';
 
 /** Agent-facing task shape (api-specification.md "Shared shapes"). */
@@ -77,7 +79,7 @@ export async function listAssignments(actor: AgentActor, input: unknown) {
 /** Full task context for an agent; marks messages addressed to it as read. */
 export async function getTaskForAgent(actor: AgentActor, taskId: string) {
   const task: TaskDetail = await getTaskDetail(actor, taskId);
-  const messages = await listMessages(task.id);
+  const [messages, handoffList, blockerList] = await Promise.all([listMessages(task.id), listHandoffs(task.id), listBlockers(task.id)]);
   await markMessagesRead(actor, task.id);
   return {
     ...toolTask(task),
@@ -87,6 +89,14 @@ export async function getTaskForAgent(actor: AgentActor, taskId: string) {
     repository: task.repository,
     branch: task.branch,
     messages: messages.map(toolMessage),
+    handoffs: handoffList.map((h) => ({
+      id: h.id, from: h.from, to: h.to, status: h.status, reason: h.reason, work_completed: h.workCompleted,
+      next_action: h.nextAction, links: h.links, decline_reason: h.declineReason, created_at: h.createdAt.toISOString(),
+    })),
+    blockers: blockerList.map((b) => ({
+      id: b.id, status: b.status, reason: b.reason, question: b.question, missing_resource: b.missingResource,
+      raised_by: b.raisedBy.name, needs: b.needs, resolution: b.resolution, created_at: b.createdAt.toISOString(),
+    })),
     history: task.history.map((h) => ({ type: h.type, by: h.actorName, data: h.data, at: h.createdAt.toISOString() })),
   };
 }

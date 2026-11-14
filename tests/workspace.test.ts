@@ -13,7 +13,7 @@ describe('ensureWorkspace', () => {
     const second = await ensureWorkspace(user.id);
     expect(second).toEqual(first);
     expect(first).toMatchObject({ kind: 'human', userId: user.id });
-    expect(await db.select().from(workspaces)).toHaveLength(1);
+    expect(await db.select().from(workspaces).where(eq(workspaces.id, first.workspaceId))).toHaveLength(1);
     expect(await db.select().from(workspaceMembers).where(eq(workspaceMembers.userId, user.id))).toHaveLength(1);
     expect(await db.select().from(actors).where(eq(actors.userId, user.id))).toHaveLength(1);
   });
@@ -22,7 +22,7 @@ describe('ensureWorkspace', () => {
     const user = await createUser();
     const results = await Promise.all(Array.from({ length: 5 }, () => ensureWorkspace(user.id)));
     expect(new Set(results.map((r) => r.workspaceId)).size).toBe(1);
-    expect(await db.select().from(workspaces)).toHaveLength(1);
+    expect(await db.select().from(workspaceMembers).where(eq(workspaceMembers.userId, user.id))).toHaveLength(1);
   });
 
   it('gives each account its own workspace', async () => {

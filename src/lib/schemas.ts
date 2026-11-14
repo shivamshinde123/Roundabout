@@ -93,3 +93,34 @@ export const postMessageInput = z.object({
   requestId,
 });
 export const listAssignmentsInput = z.object({ projectId: uuid.optional() });
+
+// ── Handoffs and blockers ───────────────────────────────────────────────────
+export const proposeHandoffInput = z.object({
+  taskId: uuid,
+  toAgentId: uuid,
+  reason: shortText.pipe(z.string().min(1, 'Say why you are handing off.')),
+  workCompleted: longText.pipe(z.string().trim().min(1, 'Summarise the work completed.')),
+  nextAction: shortText.pipe(z.string().min(1, 'Say what the next agent should do.')),
+  links: links.default([]),
+  requestId,
+});
+export const respondHandoffInput = z.object({
+  handoffId: uuid,
+  decision: z.enum(['accept', 'decline']),
+  reason: shortText.optional(),
+  requestId,
+});
+export const handoffIdInput = z.object({ handoffId: uuid });
+export const reportBlockerInput = z.object({
+  taskId: uuid,
+  reason: shortText.pipe(z.string().min(1, 'Say what is blocking you.')),
+  question: shortText.pipe(z.string().min(1, 'Ask a specific question.')),
+  needs: z.union([z.literal('owner'), uuid]).optional(),
+  missingResource: shortText.optional(),
+  requestId,
+});
+export const resolveBlockerInput = z.object({
+  blockerId: uuid,
+  resolution: shortText.pipe(z.string().min(1, 'Say how it was resolved.')),
+  requestId,
+});
