@@ -216,3 +216,9 @@ Details are in `technical-design-document.md` and `database-schema.md`.
   - Supabase's built-in email sender only delivers to members of the Supabase org, at about 2 emails an hour. That's fine for the single owner. Add custom SMTP before inviting anyone else.
   - Free projects pause after about a week of inactivity.
   - The owner's own account, the agent connections, and the manual §8 run, including a live Codex tool call, are done by hand on production.
+
+## D-25 · 2026-11-14 · Email links opened in another browser
+
+- **Symptom:** the owner's first production sign-up showed "That link is invalid or has expired." Supabase had confirmed the email (`email_confirmed_at` was set), but `exchangeCodeForSession` failed with `pkce_code_verifier_not_found`. The PKCE verifier cookie lives in the browser that submitted sign-up, and the link was opened in a different one.
+- **Fix:** when the verifier is missing, the callback says what really happened. For a confirmation, it shows the notice "Your email is confirmed. Sign in to continue." on the sign-in page. For a password reset, it asks the user to open the link in the browser where they requested it.
+- **Not done: token_hash email links, which work in any browser.** *Why:* they need custom email templates, and Supabase refuses template changes on Free projects that use the built-in email sender (`entitlement_required`). When custom SMTP is added (it's also needed before inviting anyone, see D-24), switch the confirmation and recovery templates to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=…` and verify them in the callback with `verifyOtp`.
