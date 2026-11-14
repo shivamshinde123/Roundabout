@@ -25,7 +25,7 @@ export function ConnectAgentForm({ projects }: { projects: { id: string; name: s
   if (state?.token && state.client && state.url) {
     return (
       <div className="grid gap-4">
-        <h2 className="text-lg font-medium">Step 2 of 2 · Configure {CLIENT_LABELS[state.client]}</h2>
+        <h2 className="text-lg font-medium">Step 2 of 2 · Copy your token and set up {CLIENT_LABELS[state.client]}</h2>
         <TokenReveal client={state.client} token={state.token} url={state.url} />
         <Link href={`/agents/${state.agentId}`} className="underline">Go to the agent&apos;s page</Link>
       </div>

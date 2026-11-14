@@ -142,10 +142,15 @@ Name     [Claude Code – laptop]
 Projects [☑ Website] [☐ Docs]
 [Create connection]
 
-Connect agent — step 2 of 2
-Copy this token now. It won't be shown again.
-[rbt_X9f…………………………………] [Copy]
-Claude Code:  claude mcp add --scope user --transport http roundabout <url> --header "Authorization: Bearer …" [Copy]
+Connect agent — step 2 of 2 · Copy your token and set up Claude Code
+Copy this now. It won't be shown again.
+Your token  [rbt_X9f…………………………………] [Copy]
+Set up Claude Code
+ (1) Add Roundabout to Claude Code: run this in a terminal
+     claude mcp add --scope user --transport http roundabout <url> --header "Authorization: Bearer …" [Copy]
+ (2) Check the connection:  claude mcp get roundabout [Copy]   It should say ✓ Connected.
+ (3) Open Claude Code and ask it to call Roundabout's whoami tool.
+     (Codex: (1) codex mcp add …  (2) save the token: Windows setx / macOS-Linux ~/.zshrc, then a new terminal  (3) whoami)
 Waiting for first contact… ⟳   (becomes "Connected ✓" once the agent calls whoami)
 ```
 
