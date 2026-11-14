@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Roundabout
 
-## Getting Started
+A private workspace where one owner assigns tasks to AI coding agents (Claude Code and Codex first) and follows their work, handoffs, blockers and reviews on one Kanban board.
 
-First, run the development server:
+- Product requirements: [Docs/Roundabout.md](Docs/Roundabout.md)
+- Decisions: [Docs/decision.md](Docs/decision.md)
+- Engineering docs: everything else in [Docs/](Docs/)
+
+## Stack
+
+Next.js 16 (App Router, TypeScript) on Vercel · Supabase Postgres + Auth · Drizzle · MCP (Streamable HTTP) at `/api/mcp` · Vitest. See [Docs/tech-stack.md](Docs/tech-stack.md).
+
+## Local setup
+
+Requires Node 22+ and Docker Desktop (running) for local Supabase.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run db:start            # starts local Supabase; prints the publishable key
+cp .env.example .env.local  # paste the publishable key into NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+npm run db:migrate          # applies drizzle/ migrations
+npm run dev                 # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Script | What it does |
+|---|---|
+| `dev` / `build` / `start` | Next.js |
+| `lint` / `typecheck` | ESLint CLI / `tsc --noEmit` |
+| `test` | Vitest (`tests/**/*.test.ts`), against local Supabase |
+| `db:start` / `db:stop` | Local Supabase (Docker) |
+| `db:generate` | Generate a SQL migration after editing `src/server/db/schema.ts` |
+| `db:migrate` | Apply migrations to `DIRECT_URL` |
