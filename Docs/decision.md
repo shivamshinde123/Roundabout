@@ -204,3 +204,15 @@ Details are in `technical-design-document.md` and `database-schema.md`.
   - No rate limiting on `/api/mcp`. Add one per token if a client misbehaves.
   - History timestamps are formatted in the server's time zone (D-16).
   - Pointer drag-and-drop is now browser-verified: Backlog → To Do moved the card, and To Do → In Progress was refused with the toast and the card stayed. This closes the gap noted in D-16.
+
+## D-24 · 2026-11-14 · Stage 12: deploy
+
+- **Choices (the owner's):** Supabase project `roundabout` in the owner's default org, region `us-east-1`; Vercel personal Hobby project `roundabout`, functions in `iad1` next to the database; Google sign-in **skipped for now**. The app already hides the Google button when the provider is off (stage 2), so turning it on later is a Supabase setting plus an OAuth client, with no code change.
+- **Production URL:** https://roundabout-orcin.vercel.app. Supabase Auth's site URL and allow-list point at its `/auth/callback`, plus localhost. Manual identity linking is on, as it is locally. Email confirmation is on.
+- **Migrations go over the session pooler (port 5432), not the direct host.** *Why:* the direct `db.<ref>` host is IPv6-only and the dev machine has no IPv6 route. The runtime uses the transaction pooler (6543), as planned in D-8.
+- **Deploys go through the Vercel CLI, not Git integration.** *Why:* the Vercel GitHub app has no access to the private repo, and granting it is the owner's call. CI still gates `main`.
+- **Smoke checks on production:** `/` redirects to `/sign-in`; the sign-up page renders with no console errors and no Google button; security headers are present; `/api/mcp` returns 401 "Missing or malformed bearer token" without a token, and 401 "Invalid or revoked token" for an unknown `rbt_` token. That second check proves the function reaches the database through the pooler.
+- **Known limits:**
+  - Supabase's built-in email sender only delivers to members of the Supabase org, at about 2 emails an hour. That's fine for the single owner. Add custom SMTP before inviting anyone else.
+  - Free projects pause after about a week of inactivity.
+  - The owner's own account, the agent connections, and the manual §8 run, including a live Codex tool call, are done by hand on production.
