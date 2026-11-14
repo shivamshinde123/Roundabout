@@ -176,3 +176,10 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Review on the board:** `ownerMoves` allows Review → Done (approve) and Review → In Progress (a comment dialog), and only while a submission is pending. The menu labels are Approve and Request changes….
 - **Done cards show "Approved by you" or "Completed by \<agent\>"** (`Roundabout.md` §4).
 - **Verified:** a real SDK client submitted, the owner requested changes from the card menu, the agent resubmitted, and the owner approved. The card reached Done with both submissions listed.
+
+## D-21 · 2026-11-14 · Stage 9: reassign, reopen, stalled and no-access work
+
+- **Reassign applies to In Progress and Review work.** Before pickup, the owner uses Assign; for Done work, Reopen. Reassign supersedes a pending handoff and review, then moves the task to To Do for the new agent or to Backlog if unassigned, and clears the next action.
+- **The stale-owner guard needs no new code.** Every agent write already checks `assignee = me` and `in_progress` under the row lock, so after a reassign the old agent's `post_update`, `submit_result` and `report_blocker` all get `CONFLICT` (tested and browser-verified).
+- **Reopen with "keep"** keeps the previous agent only if it is still active and has a grant; otherwise the task goes to Backlog unassigned.
+- **Stalled and "Agent can't access"** were already derived in stage 4. This stage adds real-data tests: 25-hour idle work shows Stalled, blocked work never does, and a revoked assignee shows "Agent can't access" until reassigned.

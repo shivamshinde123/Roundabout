@@ -1,6 +1,6 @@
 import { FormDialog } from '@/components/form-dialog';
 import { Label } from '@/components/ui/label';
-import { assignTaskAction, moveTaskBoardAction, updateTaskAction } from '@/app/(app)/tasks/actions';
+import { assignTaskAction, moveTaskBoardAction, reassignTaskAction, reopenTaskAction, updateTaskAction } from '@/app/(app)/tasks/actions';
 import { label, type TaskDetail } from '@/server/tasks';
 import type { Message } from '@/server/messages';
 import { Discussion } from './discussion';
@@ -23,6 +23,8 @@ export function describeEvent(type: string, data: Record<string, unknown>): stri
     case 'task.moved_board': return 'moved it to another board';
     case 'task.assigned': return data.toAgentId ? 'assigned it' : 'unassigned it';
     case 'task.accepted': return 'accepted it';
+    case 'task.reassigned': return data.toAgentId ? 'reassigned it' : 'moved it back to Backlog';
+    case 'task.reopened': return 'reopened it';
     case 'handoff.proposed': return 'proposed a handoff';
     case 'handoff.accepted': return 'accepted the handoff';
     case 'handoff.declined': return 'declined the handoff';
@@ -52,6 +54,7 @@ export function TaskPanel({
   results: ResultView[];
 }) {
   const canAssign = task.status === 'backlog' || task.status === 'todo';
+  const canReassign = task.status === 'in_progress' || task.status === 'review';
   return (
     <aside aria-label={`Task: ${task.title}`} className="grid content-start gap-4 rounded-lg border bg-background p-4 text-sm">
       <header className="flex items-start justify-between gap-2">
@@ -80,6 +83,34 @@ export function TaskPanel({
               <Label htmlFor="assign-agent">Agent</Label>
               <AgentSelect id="assign-agent" name="agentId" agents={agents} defaultValue={task.assignee?.id} />
               {agents.length === 0 && <p className="text-xs text-muted-foreground">Connect an agent with access to this project first.</p>}
+            </div>
+          </FormDialog>
+        )}
+        {canReassign && (
+          <FormDialog trigger="Reassign" title="Reassign this task" submitLabel="Reassign" action={reassignTaskAction}>
+            <input type="hidden" name="taskId" value={task.id} />
+            <input type="hidden" name="expectedRevision" value={task.revision} />
+            <div className="grid gap-2">
+              <Label htmlFor="reassign-agent">New agent</Label>
+              <AgentSelect id="reassign-agent" name="agentId" agents={agents.filter((a) => a.id !== task.assignee?.id)} emptyLabel="Nobody (move to Backlog)" />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {task.assignee?.name ?? 'The current agent'} loses the task immediately; their later updates are rejected. Results,
+              messages and history stay on the task. Any pending handoff or review is set aside.
+            </p>
+          </FormDialog>
+        )}
+        {task.status === 'done' && (
+          <FormDialog trigger="Reopen" title="Reopen this task" submitLabel="Reopen" action={reopenTaskAction}>
+            <input type="hidden" name="taskId" value={task.id} />
+            <input type="hidden" name="expectedRevision" value={task.revision} />
+            <div className="grid gap-2">
+              <Label htmlFor="reopen-agent">Assign to</Label>
+              <select id="reopen-agent" name="agentId" defaultValue="keep" className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm">
+                {task.assignee && <option value="keep">Keep {task.assignee.name}</option>}
+                <option value="">Nobody (Backlog)</option>
+                {agents.filter((a) => a.id !== task.assignee?.id).map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
             </div>
           </FormDialog>
         )}

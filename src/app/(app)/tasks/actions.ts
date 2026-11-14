@@ -9,6 +9,7 @@ import { markMessagesRead, postMessage } from '@/server/messages';
 import { cancelHandoff } from '@/server/handoffs';
 import { resolveBlocker } from '@/server/blockers';
 import { approveResult, requestChanges } from '@/server/results';
+import { reassignTask, reopenTask } from '@/server/recovery';
 import { parseLinkLines } from '@/lib/schemas';
 import type { FormState } from '@/components/action-form';
 
@@ -148,5 +149,30 @@ export async function requestChangesAction(_: FormState, form: FormData): Promis
     });
     refresh(projectId);
     return { ok: 'Changes requested.' };
+  });
+}
+
+export async function reassignTaskAction(_: FormState, form: FormData): Promise<FormState> {
+  return formAction(async () => {
+    const task = await reassignTask(await requireOwner(), {
+      taskId: str(form, 'taskId'),
+      expectedRevision: str(form, 'expectedRevision'),
+      agentId: str(form, 'agentId') || null,
+    });
+    refresh(task.projectId);
+    return { ok: task.assigneeAgentId ? 'Reassigned. It waits for the new agent to pick it up.' : 'Moved to Backlog.' };
+  });
+}
+
+export async function reopenTaskAction(_: FormState, form: FormData): Promise<FormState> {
+  return formAction(async () => {
+    const choice = str(form, 'agentId');
+    const task = await reopenTask(await requireOwner(), {
+      taskId: str(form, 'taskId'),
+      expectedRevision: str(form, 'expectedRevision'),
+      agentId: choice === 'keep' ? undefined : choice || null,
+    });
+    refresh(task.projectId);
+    return { ok: 'Reopened.' };
   });
 }
