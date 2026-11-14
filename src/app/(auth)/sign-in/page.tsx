@@ -8,7 +8,7 @@ import { signIn, signInWithGoogle } from '../actions';
 import { Field } from '@/components/field';
 
 export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
-  const { error } = await searchParams;
+  const { error, notice } = await searchParams;
   const google = await isGoogleSignInEnabled();
   return (
     <Card>
@@ -18,6 +18,9 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
       <CardContent className="grid gap-4">
         {typeof error === 'string' && (
           <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>
+        )}
+        {typeof notice === 'string' && (
+          <Alert><AlertDescription>{notice}</AlertDescription></Alert>
         )}
         {google && (
           <>
