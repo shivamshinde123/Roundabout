@@ -17,3 +17,57 @@ export function parse<T extends z.ZodType>(schema: T, input: unknown): z.infer<T
   if (result.success) return result.data;
   throw new AppError('VALIDATION', result.error.issues[0].message, { issues: result.error.issues });
 }
+
+// ── Tasks ────────────────────────────────────────────────────────────────────
+export const link = z.object({
+  label: z.string().trim().max(200).default(''),
+  url: z.url({ protocol: /^https?$/, error: 'Links must be http(s) URLs.' }).max(2048),
+});
+export const links = z.array(link).max(20, 'Use at most 20 links.');
+const longText = z.string().max(20_000, 'Use at most 20,000 characters.');
+const shortText = z.string().trim().max(1_000, 'Use at most 1,000 characters.');
+const optionalText = z.string().trim().max(200).optional().transform((v) => (v ? v : null));
+/** For patches: absent stays undefined (unchanged); empty string clears to null. */
+const patchText = z.string().trim().max(200).optional().transform((v) => (v === undefined ? undefined : v || null));
+const revision = z.coerce.number().int().positive();
+
+export const title = z.string().trim().min(1, 'Enter a title.').max(200, 'Use at most 200 characters.');
+export const createTaskInput = z.object({
+  boardId: uuid,
+  title,
+  instructions: longText.default(''),
+  expectedResult: longText.default(''),
+  links: links.default([]),
+  repository: optionalText,
+  branch: optionalText,
+  status: z.enum(['backlog', 'todo']).default('backlog'),
+  assigneeAgentId: uuid.nullish(),
+  requireReview: z.boolean().default(true),
+});
+export const updateTaskInput = z.object({
+  taskId: uuid,
+  expectedRevision: revision,
+  title: title.optional(),
+  instructions: longText.optional(),
+  expectedResult: longText.optional(),
+  links: links.optional(),
+  repository: patchText,
+  branch: patchText,
+  requireReview: z.boolean().optional(),
+  nextAction: shortText.optional(),
+});
+export const moveTaskStatusInput = z.object({ taskId: uuid, expectedRevision: revision, to: z.enum(['backlog', 'todo']) });
+export const moveTaskBoardInput = z.object({ taskId: uuid, expectedRevision: revision, boardId: uuid });
+export const assignTaskInput = z.object({ taskId: uuid, expectedRevision: revision, agentId: uuid.nullable() });
+
+/** "label | https://…" or a bare URL per line → links. Blank lines are ignored. */
+export function parseLinkLines(text: string): unknown[] {
+  return text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [a, b] = line.split('|').map((s) => s.trim());
+      return b ? { label: a, url: b } : { label: '', url: a };
+    });
+}

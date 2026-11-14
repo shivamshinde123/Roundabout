@@ -2,17 +2,32 @@ import { notFound } from 'next/navigation';
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { getProject } from '@/server/projects';
+import { getTaskDetail, listAssignableAgents, listBoardTasks } from '@/server/tasks';
 import { FormDialog } from '@/components/form-dialog';
 import { Field } from '@/components/field';
+import { AutoRefresh } from '@/components/board/auto-refresh';
+import { Board } from '@/components/board/board';
+import { NewTaskButton } from '@/components/board/new-task';
+import { TaskPanel } from '@/components/board/task-panel';
 import { renameBoardAction } from '../../../actions';
 
-export default async function BoardPage({ params }: PageProps<'/projects/[projectId]/boards/[boardId]'>) {
+export default async function BoardPage({ params, searchParams }: PageProps<'/projects/[projectId]/boards/[boardId]'>) {
   const { projectId, boardId } = await params;
-  const project = await orNotFound(getProject(await requireOwner(), projectId));
+  const { task: taskParam } = await searchParams;
+  const owner = await requireOwner();
+  const project = await orNotFound(getProject(owner, projectId));
   const board = project.boards.find((b) => b.id === boardId); // also rejects malformed ids
   if (!board) notFound();
+
+  const [tasks, agents] = await Promise.all([listBoardTasks(owner, board.id), listAssignableAgents(owner, project.id)]);
+  const openTask = typeof taskParam === 'string'
+    ? await getTaskDetail(owner, taskParam).catch(() => null)
+    : null;
+  const panelTask = openTask && openTask.projectId === project.id ? openTask : null;
+
   return (
     <section className="grid gap-4">
+      <AutoRefresh />
       <div className="flex items-center gap-2">
         <h2 className="text-lg font-medium">{board.name}</h2>
         <FormDialog trigger="Rename board" title="Rename board" submitLabel="Save" action={renameBoardAction} variant="ghost">
@@ -20,7 +35,15 @@ export default async function BoardPage({ params }: PageProps<'/projects/[projec
           <Field name="name" label="Board name" defaultValue={board.name} />
         </FormDialog>
       </div>
-      <p className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">No tasks yet.</p>
+      <div className={panelTask ? 'grid gap-4 xl:grid-cols-[1fr_24rem]' : 'grid'}>
+        <div className="overflow-x-auto pb-2">
+          <Board tasks={tasks} newTask={<NewTaskButton boardId={board.id} agents={agents} />} />
+        </div>
+        {panelTask && <TaskPanel task={panelTask} agents={agents} boards={project.boards} />}
+      </div>
+      {typeof taskParam === 'string' && !panelTask && (
+        <p role="status" className="text-sm text-muted-foreground">That task wasn&apos;t found or you don&apos;t have access.</p>
+      )}
     </section>
   );
 }

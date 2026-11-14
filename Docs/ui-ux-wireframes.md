@@ -60,7 +60,7 @@ Development ▾   [+ New task]                                     ↻ updated 6
 └──────────────┘└──────────────┘└──────────────┘└──────────────┘└──────────────┘
 ```
 
-**Card anatomy (O3):** title · owning or assigned agent · `Next:` line (in progress) or `Result:` line (review and done) · badges · a ⦿ icon when review is required · the `[⋯]` menu with Move to…, Assign, Reassign and Open. Long titles wrap to two lines and are then truncated, with the full title in the panel.
+**Card anatomy (O3):** a grip handle (⋮⋮) is the drag source, so Enter on the title opens the task rather than starting a drag; title · owning or assigned agent · `Next:` line (in progress) or `Result:` line (review and done) · badges · a ⦿ icon when review is required · the `[⋯]` menu with Move to…, Assign, Reassign and Open. Long titles wrap to two lines and are then truncated, with the full title in the panel.
 
 ## Task panel (diagrams 04, 10–14)
 
