@@ -18,7 +18,13 @@ export function setupSteps(client: AgentClient, url: string, token: string): Set
   if (client === 'claude_code') {
     return [
       {
-        title: 'Add Roundabout to Claude Code: run this in a terminal',
+        // `claude mcp add` won't replace an existing entry, so a reconnect would silently keep the old token.
+        title: 'Remove any older Roundabout entry: run this in a terminal',
+        blocks: [{ code: 'claude mcp remove roundabout -s user' }],
+        note: 'If it says no server was found, that’s fine. It just means this is your first setup.',
+      },
+      {
+        title: 'Add Roundabout to Claude Code',
         // --scope user: available from every folder, not just the one the command ran in (Claude Code's default).
         blocks: [{ code: `claude mcp add --scope user --transport http roundabout ${url} --header "Authorization: Bearer ${token}"` }],
       },

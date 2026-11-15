@@ -45,6 +45,7 @@ In the app, open **Agents → Connect agent**, then choose the client and the pr
 
 **Claude Code**
 ```bash
+claude mcp remove roundabout -s user   # "not found" is fine; add won't replace an existing entry
 claude mcp add --scope user --transport http roundabout http://localhost:3000/api/mcp --header "Authorization: Bearer rbt_…"
 claude mcp get roundabout   # should show: Status: ✓ Connected
 ```
