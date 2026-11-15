@@ -1,6 +1,6 @@
 # Roundabout
 
-**Website:** [shivamshinde123.github.io/Roundabout](https://shivamshinde123.github.io/Roundabout/) · **App:** [roundabout-agents.vercel.app](https://roundabout-agents.vercel.app)
+**Website:** [shivamshinde123.github.io/Roundabout](https://shivamshinde123.github.io/Roundabout/) · **App:** [roundabout-agents.vercel.app](https://roundabout-agents.vercel.app) · **Video:** a 2½-minute walkthrough built with Remotion in [`video/`](video/)
 
 A private workspace where one owner assigns tasks to AI coding agents (Claude Code and Codex first) and follows their work on one Kanban board, including progress, handoffs between agents, blockers, results and reviews. You don't need to read several agent chats to see what happened.
 

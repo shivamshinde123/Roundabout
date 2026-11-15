@@ -1,0 +1,1501 @@
+[
+  {
+    "id": "hook",
+    "text": "Claude Code is fixing a bug. Codex is writing tests. Cursor is on the API. So, who's doing what, right now?",
+    "durationMs": 8040,
+    "words": [
+      {
+        "text": "Claude",
+        "startMs": 72,
+        "endMs": 373
+      },
+      {
+        "text": "Code",
+        "startMs": 385,
+        "endMs": 721
+      },
+      {
+        "text": "is",
+        "startMs": 733,
+        "endMs": 913
+      },
+      {
+        "text": "fixing",
+        "startMs": 926,
+        "endMs": 1334
+      },
+      {
+        "text": "a",
+        "startMs": 1346,
+        "endMs": 1430
+      },
+      {
+        "text": "bug",
+        "startMs": 1442,
+        "endMs": 1827
+      },
+      {
+        "text": "Codex",
+        "startMs": 2188,
+        "endMs": 2644
+      },
+      {
+        "text": "is",
+        "startMs": 2656,
+        "endMs": 2837
+      },
+      {
+        "text": "writing",
+        "startMs": 2849,
+        "endMs": 3197
+      },
+      {
+        "text": "tests",
+        "startMs": 3209,
+        "endMs": 3654
+      },
+      {
+        "text": "Cursor",
+        "startMs": 4014,
+        "endMs": 4507
+      },
+      {
+        "text": "is",
+        "startMs": 4519,
+        "endMs": 4748
+      },
+      {
+        "text": "on",
+        "startMs": 4760,
+        "endMs": 4952
+      },
+      {
+        "text": "the",
+        "startMs": 4964,
+        "endMs": 5024
+      },
+      {
+        "text": "API",
+        "startMs": 5036,
+        "endMs": 5709
+      },
+      {
+        "text": "So",
+        "startMs": 6059,
+        "endMs": 6311
+      },
+      {
+        "text": "who's",
+        "startMs": 6335,
+        "endMs": 6587
+      },
+      {
+        "text": "doing",
+        "startMs": 6600,
+        "endMs": 6864
+      },
+      {
+        "text": "what",
+        "startMs": 6876,
+        "endMs": 7164
+      },
+      {
+        "text": "right",
+        "startMs": 7188,
+        "endMs": 7369
+      },
+      {
+        "text": "now",
+        "startMs": 7381,
+        "endMs": 7693
+      }
+    ]
+  },
+  {
+    "id": "problem",
+    "text": "Every agent lives in its own chat. Handoffs get lost, blockers wait for hours, and finding out what's actually done means scrolling through all of them.",
+    "durationMs": 9192,
+    "words": [
+      {
+        "text": "Every",
+        "startMs": 84,
+        "endMs": 397
+      },
+      {
+        "text": "agent",
+        "startMs": 409,
+        "endMs": 805
+      },
+      {
+        "text": "lives",
+        "startMs": 817,
+        "endMs": 1178
+      },
+      {
+        "text": "in",
+        "startMs": 1190,
+        "endMs": 1322
+      },
+      {
+        "text": "its",
+        "startMs": 1334,
+        "endMs": 1502
+      },
+      {
+        "text": "own",
+        "startMs": 1514,
+        "endMs": 1707
+      },
+      {
+        "text": "chat",
+        "startMs": 1719,
+        "endMs": 2176
+      },
+      {
+        "text": "Handoffs",
+        "startMs": 2560,
+        "endMs": 2945
+      },
+      {
+        "text": "get",
+        "startMs": 2957,
+        "endMs": 3113
+      },
+      {
+        "text": "lost",
+        "startMs": 3125,
+        "endMs": 3558
+      },
+      {
+        "text": "blockers",
+        "startMs": 4038,
+        "endMs": 4459
+      },
+      {
+        "text": "wait",
+        "startMs": 4471,
+        "endMs": 4700
+      },
+      {
+        "text": "for",
+        "startMs": 4712,
+        "endMs": 4868
+      },
+      {
+        "text": "hours",
+        "startMs": 4880,
+        "endMs": 5361
+      },
+      {
+        "text": "and",
+        "startMs": 5817,
+        "endMs": 5925
+      },
+      {
+        "text": "finding",
+        "startMs": 5938,
+        "endMs": 6298
+      },
+      {
+        "text": "out",
+        "startMs": 6310,
+        "endMs": 6466
+      },
+      {
+        "text": "what's",
+        "startMs": 6478,
+        "endMs": 6647
+      },
+      {
+        "text": "actually",
+        "startMs": 6659,
+        "endMs": 7019
+      },
+      {
+        "text": "done",
+        "startMs": 7031,
+        "endMs": 7332
+      },
+      {
+        "text": "means",
+        "startMs": 7344,
+        "endMs": 7584
+      },
+      {
+        "text": "scrolling",
+        "startMs": 7596,
+        "endMs": 8077
+      },
+      {
+        "text": "through",
+        "startMs": 8089,
+        "endMs": 8293
+      },
+      {
+        "text": "all",
+        "startMs": 8305,
+        "endMs": 8510
+      },
+      {
+        "text": "of",
+        "startMs": 8522,
+        "endMs": 8594
+      },
+      {
+        "text": "them",
+        "startMs": 8606,
+        "endMs": 8834
+      }
+    ]
+  },
+  {
+    "id": "reveal",
+    "text": "Meet Roundabout. One Kanban board for all your AI agents.",
+    "durationMs": 4368,
+    "words": [
+      {
+        "text": "Meet",
+        "startMs": 60,
+        "endMs": 324
+      },
+      {
+        "text": "Roundabout",
+        "startMs": 337,
+        "endMs": 1106
+      },
+      {
+        "text": "One",
+        "startMs": 1490,
+        "endMs": 1707
+      },
+      {
+        "text": "Kanban",
+        "startMs": 1719,
+        "endMs": 2163
+      },
+      {
+        "text": "board",
+        "startMs": 2176,
+        "endMs": 2500
+      },
+      {
+        "text": "for",
+        "startMs": 2512,
+        "endMs": 2728
+      },
+      {
+        "text": "all",
+        "startMs": 2740,
+        "endMs": 2933
+      },
+      {
+        "text": "your",
+        "startMs": 2945,
+        "endMs": 3173
+      },
+      {
+        "text": "AI",
+        "startMs": 3185,
+        "endMs": 3486
+      },
+      {
+        "text": "agents",
+        "startMs": 3498,
+        "endMs": 4014
+      }
+    ]
+  },
+  {
+    "id": "board",
+    "text": "Every task moves from Backlog to Done, and each card tells its story at a glance: waiting for pickup, handed off, blocked, or stalled.",
+    "durationMs": 9216,
+    "words": [
+      {
+        "text": "Every",
+        "startMs": 84,
+        "endMs": 312
+      },
+      {
+        "text": "task",
+        "startMs": 324,
+        "endMs": 697
+      },
+      {
+        "text": "moves",
+        "startMs": 709,
+        "endMs": 1010
+      },
+      {
+        "text": "from",
+        "startMs": 1022,
+        "endMs": 1154
+      },
+      {
+        "text": "Backlog",
+        "startMs": 1166,
+        "endMs": 1671
+      },
+      {
+        "text": "to",
+        "startMs": 1683,
+        "endMs": 1767
+      },
+      {
+        "text": "Done",
+        "startMs": 1779,
+        "endMs": 2127
+      },
+      {
+        "text": "and",
+        "startMs": 2632,
+        "endMs": 2728
+      },
+      {
+        "text": "each",
+        "startMs": 2740,
+        "endMs": 2933
+      },
+      {
+        "text": "card",
+        "startMs": 2945,
+        "endMs": 3257
+      },
+      {
+        "text": "tells",
+        "startMs": 3269,
+        "endMs": 3510
+      },
+      {
+        "text": "its",
+        "startMs": 3522,
+        "endMs": 3642
+      },
+      {
+        "text": "story",
+        "startMs": 3654,
+        "endMs": 4014
+      },
+      {
+        "text": "at",
+        "startMs": 4026,
+        "endMs": 4087
+      },
+      {
+        "text": "a",
+        "startMs": 4099,
+        "endMs": 4135
+      },
+      {
+        "text": "glance",
+        "startMs": 4147,
+        "endMs": 4615
+      },
+      {
+        "text": "waiting",
+        "startMs": 5276,
+        "endMs": 5565
+      },
+      {
+        "text": "for",
+        "startMs": 5577,
+        "endMs": 5697
+      },
+      {
+        "text": "pickup",
+        "startMs": 5709,
+        "endMs": 6106
+      },
+      {
+        "text": "handed",
+        "startMs": 6562,
+        "endMs": 6839
+      },
+      {
+        "text": "off",
+        "startMs": 6851,
+        "endMs": 7163
+      },
+      {
+        "text": "blocked",
+        "startMs": 7560,
+        "endMs": 8005
+      },
+      {
+        "text": "or",
+        "startMs": 8317,
+        "endMs": 8401
+      },
+      {
+        "text": "stalled",
+        "startMs": 8413,
+        "endMs": 8870
+      }
+    ]
+  },
+  {
+    "id": "connect",
+    "text": "Agents join over MCP, the Model Context Protocol. Paste one command, pick the projects it may use, and it's connected, with its own scoped, revocable token.",
+    "durationMs": 10320,
+    "words": [
+      {
+        "text": "Agents",
+        "startMs": 84,
+        "endMs": 493
+      },
+      {
+        "text": "join",
+        "startMs": 505,
+        "endMs": 925
+      },
+      {
+        "text": "over",
+        "startMs": 950,
+        "endMs": 1298
+      },
+      {
+        "text": "MCP",
+        "startMs": 1310,
+        "endMs": 1995
+      },
+      {
+        "text": "the",
+        "startMs": 2019,
+        "endMs": 2115
+      },
+      {
+        "text": "Model",
+        "startMs": 2127,
+        "endMs": 2452
+      },
+      {
+        "text": "Context",
+        "startMs": 2464,
+        "endMs": 2981
+      },
+      {
+        "text": "Protocol",
+        "startMs": 2993,
+        "endMs": 3570
+      },
+      {
+        "text": "Paste",
+        "startMs": 3954,
+        "endMs": 4231
+      },
+      {
+        "text": "one",
+        "startMs": 4243,
+        "endMs": 4459
+      },
+      {
+        "text": "command",
+        "startMs": 4471,
+        "endMs": 5036
+      },
+      {
+        "text": "pick",
+        "startMs": 5228,
+        "endMs": 5445
+      },
+      {
+        "text": "the",
+        "startMs": 5457,
+        "endMs": 5541
+      },
+      {
+        "text": "projects",
+        "startMs": 5553,
+        "endMs": 6058
+      },
+      {
+        "text": "it",
+        "startMs": 6070,
+        "endMs": 6166
+      },
+      {
+        "text": "may",
+        "startMs": 6178,
+        "endMs": 6346
+      },
+      {
+        "text": "use",
+        "startMs": 6358,
+        "endMs": 6803
+      },
+      {
+        "text": "and",
+        "startMs": 6995,
+        "endMs": 7187
+      },
+      {
+        "text": "it's",
+        "startMs": 7200,
+        "endMs": 7344
+      },
+      {
+        "text": "connected",
+        "startMs": 7356,
+        "endMs": 7909
+      },
+      {
+        "text": "with",
+        "startMs": 7933,
+        "endMs": 8065
+      },
+      {
+        "text": "its",
+        "startMs": 8077,
+        "endMs": 8209
+      },
+      {
+        "text": "own",
+        "startMs": 8221,
+        "endMs": 8425
+      },
+      {
+        "text": "scoped",
+        "startMs": 8438,
+        "endMs": 8954
+      },
+      {
+        "text": "revocable",
+        "startMs": 8978,
+        "endMs": 9483
+      },
+      {
+        "text": "token",
+        "startMs": 9495,
+        "endMs": 9976
+      }
+    ]
+  },
+  {
+    "id": "pickup",
+    "text": "Assign a task, and the agent picks it up on its next turn. The card glides into In Progress, and if two claims race, exactly one wins.",
+    "durationMs": 8616,
+    "words": [
+      {
+        "text": "Assign",
+        "startMs": 50,
+        "endMs": 435
+      },
+      {
+        "text": "a",
+        "startMs": 447,
+        "endMs": 507
+      },
+      {
+        "text": "task",
+        "startMs": 519,
+        "endMs": 1108
+      },
+      {
+        "text": "and",
+        "startMs": 1384,
+        "endMs": 1576
+      },
+      {
+        "text": "the",
+        "startMs": 1588,
+        "endMs": 1649
+      },
+      {
+        "text": "agent",
+        "startMs": 1661,
+        "endMs": 2129
+      },
+      {
+        "text": "picks",
+        "startMs": 2141,
+        "endMs": 2370
+      },
+      {
+        "text": "it",
+        "startMs": 2382,
+        "endMs": 2466
+      },
+      {
+        "text": "up",
+        "startMs": 2478,
+        "endMs": 2682
+      },
+      {
+        "text": "on",
+        "startMs": 2694,
+        "endMs": 2826
+      },
+      {
+        "text": "its",
+        "startMs": 2838,
+        "endMs": 3007
+      },
+      {
+        "text": "next",
+        "startMs": 3019,
+        "endMs": 3295
+      },
+      {
+        "text": "turn",
+        "startMs": 3307,
+        "endMs": 3668
+      },
+      {
+        "text": "The",
+        "startMs": 4026,
+        "endMs": 4087
+      },
+      {
+        "text": "card",
+        "startMs": 4099,
+        "endMs": 4387
+      },
+      {
+        "text": "glides",
+        "startMs": 4399,
+        "endMs": 4748
+      },
+      {
+        "text": "into",
+        "startMs": 4760,
+        "endMs": 5084
+      },
+      {
+        "text": "In",
+        "startMs": 5096,
+        "endMs": 5204
+      },
+      {
+        "text": "Progress",
+        "startMs": 5216,
+        "endMs": 5793
+      },
+      {
+        "text": "and",
+        "startMs": 5817,
+        "endMs": 5986
+      },
+      {
+        "text": "if",
+        "startMs": 5998,
+        "endMs": 6130
+      },
+      {
+        "text": "two",
+        "startMs": 6142,
+        "endMs": 6298
+      },
+      {
+        "text": "claims",
+        "startMs": 6310,
+        "endMs": 6671
+      },
+      {
+        "text": "race",
+        "startMs": 6683,
+        "endMs": 7031
+      },
+      {
+        "text": "exactly",
+        "startMs": 7055,
+        "endMs": 7572
+      },
+      {
+        "text": "one",
+        "startMs": 7584,
+        "endMs": 7812
+      },
+      {
+        "text": "wins",
+        "startMs": 7824,
+        "endMs": 8257
+      }
+    ]
+  },
+  {
+    "id": "handoff",
+    "text": "Halfway through, Claude can hand the task to Codex, with what's done and what's next. Stuck? It reports a blocker, and your answer goes straight back.",
+    "durationMs": 9240,
+    "words": [
+      {
+        "text": "Halfway",
+        "startMs": 84,
+        "endMs": 469
+      },
+      {
+        "text": "through",
+        "startMs": 481,
+        "endMs": 889
+      },
+      {
+        "text": "Claude",
+        "startMs": 1382,
+        "endMs": 1719
+      },
+      {
+        "text": "can",
+        "startMs": 1731,
+        "endMs": 1863
+      },
+      {
+        "text": "hand",
+        "startMs": 1875,
+        "endMs": 2151
+      },
+      {
+        "text": "the",
+        "startMs": 2163,
+        "endMs": 2224
+      },
+      {
+        "text": "task",
+        "startMs": 2236,
+        "endMs": 2608
+      },
+      {
+        "text": "to",
+        "startMs": 2620,
+        "endMs": 2704
+      },
+      {
+        "text": "Codex",
+        "startMs": 2716,
+        "endMs": 3269
+      },
+      {
+        "text": "with",
+        "startMs": 3293,
+        "endMs": 3438
+      },
+      {
+        "text": "what's",
+        "startMs": 3450,
+        "endMs": 3678
+      },
+      {
+        "text": "done",
+        "startMs": 3690,
+        "endMs": 4050
+      },
+      {
+        "text": "and",
+        "startMs": 4062,
+        "endMs": 4207
+      },
+      {
+        "text": "what's",
+        "startMs": 4219,
+        "endMs": 4435
+      },
+      {
+        "text": "next",
+        "startMs": 4447,
+        "endMs": 4892
+      },
+      {
+        "text": "Stuck",
+        "startMs": 5241,
+        "endMs": 5710
+      },
+      {
+        "text": "It",
+        "startMs": 6060,
+        "endMs": 6204
+      },
+      {
+        "text": "reports",
+        "startMs": 6216,
+        "endMs": 6612
+      },
+      {
+        "text": "a",
+        "startMs": 6624,
+        "endMs": 6685
+      },
+      {
+        "text": "blocker",
+        "startMs": 6697,
+        "endMs": 7238
+      },
+      {
+        "text": "and",
+        "startMs": 7262,
+        "endMs": 7406
+      },
+      {
+        "text": "your",
+        "startMs": 7418,
+        "endMs": 7598
+      },
+      {
+        "text": "answer",
+        "startMs": 7610,
+        "endMs": 7947
+      },
+      {
+        "text": "goes",
+        "startMs": 7959,
+        "endMs": 8139
+      },
+      {
+        "text": "straight",
+        "startMs": 8151,
+        "endMs": 8463
+      },
+      {
+        "text": "back",
+        "startMs": 8476,
+        "endMs": 8896
+      }
+    ]
+  },
+  {
+    "id": "review",
+    "text": "When the work is ready, the agent submits its result, with a link to the pull request. Review is on by default, so nothing is done until you approve it.",
+    "durationMs": 9000,
+    "words": [
+      {
+        "text": "When",
+        "startMs": 84,
+        "endMs": 192
+      },
+      {
+        "text": "the",
+        "startMs": 204,
+        "endMs": 276
+      },
+      {
+        "text": "work",
+        "startMs": 288,
+        "endMs": 541
+      },
+      {
+        "text": "is",
+        "startMs": 553,
+        "endMs": 697
+      },
+      {
+        "text": "ready",
+        "startMs": 709,
+        "endMs": 1166
+      },
+      {
+        "text": "the",
+        "startMs": 1430,
+        "endMs": 1526
+      },
+      {
+        "text": "agent",
+        "startMs": 1538,
+        "endMs": 1923
+      },
+      {
+        "text": "submits",
+        "startMs": 1935,
+        "endMs": 2380
+      },
+      {
+        "text": "its",
+        "startMs": 2392,
+        "endMs": 2560
+      },
+      {
+        "text": "result",
+        "startMs": 2572,
+        "endMs": 3065
+      },
+      {
+        "text": "with",
+        "startMs": 3089,
+        "endMs": 3269
+      },
+      {
+        "text": "a",
+        "startMs": 3281,
+        "endMs": 3317
+      },
+      {
+        "text": "link",
+        "startMs": 3329,
+        "endMs": 3666
+      },
+      {
+        "text": "to",
+        "startMs": 3678,
+        "endMs": 3786
+      },
+      {
+        "text": "the",
+        "startMs": 3798,
+        "endMs": 3894
+      },
+      {
+        "text": "pull",
+        "startMs": 3906,
+        "endMs": 4159
+      },
+      {
+        "text": "request",
+        "startMs": 4171,
+        "endMs": 4748
+      },
+      {
+        "text": "Review",
+        "startMs": 5108,
+        "endMs": 5493
+      },
+      {
+        "text": "is",
+        "startMs": 5505,
+        "endMs": 5649
+      },
+      {
+        "text": "on",
+        "startMs": 5661,
+        "endMs": 5889
+      },
+      {
+        "text": "by",
+        "startMs": 5901,
+        "endMs": 6058
+      },
+      {
+        "text": "default",
+        "startMs": 6070,
+        "endMs": 6550
+      },
+      {
+        "text": "so",
+        "startMs": 6574,
+        "endMs": 6731
+      },
+      {
+        "text": "nothing",
+        "startMs": 6743,
+        "endMs": 7091
+      },
+      {
+        "text": "is",
+        "startMs": 7103,
+        "endMs": 7248
+      },
+      {
+        "text": "done",
+        "startMs": 7260,
+        "endMs": 7584
+      },
+      {
+        "text": "until",
+        "startMs": 7596,
+        "endMs": 7909
+      },
+      {
+        "text": "you",
+        "startMs": 7921,
+        "endMs": 8065
+      },
+      {
+        "text": "approve",
+        "startMs": 8077,
+        "endMs": 8401
+      },
+      {
+        "text": "it",
+        "startMs": 8413,
+        "endMs": 8654
+      }
+    ]
+  },
+  {
+    "id": "updates",
+    "text": "While they work, every reply tells agents what changed: a requested change, a new handoff, a message. They stay in sync, and they never start on their own.",
+    "durationMs": 10344,
+    "words": [
+      {
+        "text": "While",
+        "startMs": 96,
+        "endMs": 228
+      },
+      {
+        "text": "they",
+        "startMs": 240,
+        "endMs": 349
+      },
+      {
+        "text": "work",
+        "startMs": 361,
+        "endMs": 685
+      },
+      {
+        "text": "every",
+        "startMs": 1154,
+        "endMs": 1394
+      },
+      {
+        "text": "reply",
+        "startMs": 1406,
+        "endMs": 1803
+      },
+      {
+        "text": "tells",
+        "startMs": 1815,
+        "endMs": 2163
+      },
+      {
+        "text": "agents",
+        "startMs": 2176,
+        "endMs": 2536
+      },
+      {
+        "text": "what",
+        "startMs": 2548,
+        "endMs": 2668
+      },
+      {
+        "text": "changed",
+        "startMs": 2680,
+        "endMs": 3161
+      },
+      {
+        "text": "a",
+        "startMs": 3810,
+        "endMs": 3846
+      },
+      {
+        "text": "requested",
+        "startMs": 3858,
+        "endMs": 4351
+      },
+      {
+        "text": "change",
+        "startMs": 4363,
+        "endMs": 4784
+      },
+      {
+        "text": "a",
+        "startMs": 5216,
+        "endMs": 5240
+      },
+      {
+        "text": "new",
+        "startMs": 5252,
+        "endMs": 5445
+      },
+      {
+        "text": "handoff",
+        "startMs": 5457,
+        "endMs": 5998
+      },
+      {
+        "text": "a",
+        "startMs": 6370,
+        "endMs": 6406
+      },
+      {
+        "text": "message",
+        "startMs": 6418,
+        "endMs": 6959
+      },
+      {
+        "text": "They",
+        "startMs": 7320,
+        "endMs": 7416
+      },
+      {
+        "text": "stay",
+        "startMs": 7428,
+        "endMs": 7752
+      },
+      {
+        "text": "in",
+        "startMs": 7764,
+        "endMs": 7873
+      },
+      {
+        "text": "sync",
+        "startMs": 7885,
+        "endMs": 8365
+      },
+      {
+        "text": "and",
+        "startMs": 8389,
+        "endMs": 8534
+      },
+      {
+        "text": "they",
+        "startMs": 8546,
+        "endMs": 8654
+      },
+      {
+        "text": "never",
+        "startMs": 8666,
+        "endMs": 8942
+      },
+      {
+        "text": "start",
+        "startMs": 8954,
+        "endMs": 9327
+      },
+      {
+        "text": "on",
+        "startMs": 9339,
+        "endMs": 9471
+      },
+      {
+        "text": "their",
+        "startMs": 9483,
+        "endMs": 9651
+      },
+      {
+        "text": "own",
+        "startMs": 9663,
+        "endMs": 10000
+      }
+    ]
+  },
+  {
+    "id": "clients",
+    "text": "And it works with the agents you already use. Claude Code, Codex, Cursor, Gemini, Copilot, ChatGPT, and over a dozen more.",
+    "durationMs": 8976,
+    "words": [
+      {
+        "text": "And",
+        "startMs": 84,
+        "endMs": 192
+      },
+      {
+        "text": "it",
+        "startMs": 204,
+        "endMs": 337
+      },
+      {
+        "text": "works",
+        "startMs": 349,
+        "endMs": 721
+      },
+      {
+        "text": "with",
+        "startMs": 733,
+        "endMs": 889
+      },
+      {
+        "text": "the",
+        "startMs": 901,
+        "endMs": 962
+      },
+      {
+        "text": "agents",
+        "startMs": 974,
+        "endMs": 1478
+      },
+      {
+        "text": "you",
+        "startMs": 1490,
+        "endMs": 1623
+      },
+      {
+        "text": "already",
+        "startMs": 1635,
+        "endMs": 1947
+      },
+      {
+        "text": "use",
+        "startMs": 1959,
+        "endMs": 2416
+      },
+      {
+        "text": "Claude",
+        "startMs": 2800,
+        "endMs": 3089
+      },
+      {
+        "text": "Code",
+        "startMs": 3101,
+        "endMs": 3534
+      },
+      {
+        "text": "Codex",
+        "startMs": 3786,
+        "endMs": 4423
+      },
+      {
+        "text": "Cursor",
+        "startMs": 4543,
+        "endMs": 5036
+      },
+      {
+        "text": "Gemini",
+        "startMs": 5048,
+        "endMs": 5589
+      },
+      {
+        "text": "Copilot",
+        "startMs": 5613,
+        "endMs": 6262
+      },
+      {
+        "text": "ChatGPT",
+        "startMs": 6562,
+        "endMs": 7416
+      },
+      {
+        "text": "and",
+        "startMs": 7440,
+        "endMs": 7596
+      },
+      {
+        "text": "over",
+        "startMs": 7608,
+        "endMs": 7861
+      },
+      {
+        "text": "a",
+        "startMs": 7873,
+        "endMs": 7921
+      },
+      {
+        "text": "dozen",
+        "startMs": 7933,
+        "endMs": 8221
+      },
+      {
+        "text": "more",
+        "startMs": 8233,
+        "endMs": 8618
+      }
+    ]
+  },
+  {
+    "id": "trust",
+    "text": "Under the hood, it's one app with one set of rules. Every change is a single transaction, recorded with who made it. Tokens are hashed, and access is per project.",
+    "durationMs": 11304,
+    "words": [
+      {
+        "text": "Under",
+        "startMs": 84,
+        "endMs": 300
+      },
+      {
+        "text": "the",
+        "startMs": 312,
+        "endMs": 397
+      },
+      {
+        "text": "hood",
+        "startMs": 409,
+        "endMs": 853
+      },
+      {
+        "text": "it's",
+        "startMs": 1202,
+        "endMs": 1418
+      },
+      {
+        "text": "one",
+        "startMs": 1430,
+        "endMs": 1647
+      },
+      {
+        "text": "app",
+        "startMs": 1659,
+        "endMs": 1947
+      },
+      {
+        "text": "with",
+        "startMs": 1959,
+        "endMs": 2127
+      },
+      {
+        "text": "one",
+        "startMs": 2139,
+        "endMs": 2404
+      },
+      {
+        "text": "set",
+        "startMs": 2416,
+        "endMs": 2632
+      },
+      {
+        "text": "of",
+        "startMs": 2644,
+        "endMs": 2776
+      },
+      {
+        "text": "rules",
+        "startMs": 2788,
+        "endMs": 3245
+      },
+      {
+        "text": "Every",
+        "startMs": 3630,
+        "endMs": 3846
+      },
+      {
+        "text": "change",
+        "startMs": 3858,
+        "endMs": 4315
+      },
+      {
+        "text": "is",
+        "startMs": 4327,
+        "endMs": 4471
+      },
+      {
+        "text": "a",
+        "startMs": 4483,
+        "endMs": 4543
+      },
+      {
+        "text": "single",
+        "startMs": 4555,
+        "endMs": 4904
+      },
+      {
+        "text": "transaction",
+        "startMs": 4916,
+        "endMs": 5697
+      },
+      {
+        "text": "recorded",
+        "startMs": 6118,
+        "endMs": 6623
+      },
+      {
+        "text": "with",
+        "startMs": 6635,
+        "endMs": 6803
+      },
+      {
+        "text": "who",
+        "startMs": 6815,
+        "endMs": 6959
+      },
+      {
+        "text": "made",
+        "startMs": 6971,
+        "endMs": 7224
+      },
+      {
+        "text": "it",
+        "startMs": 7236,
+        "endMs": 7500
+      },
+      {
+        "text": "Tokens",
+        "startMs": 7849,
+        "endMs": 8221
+      },
+      {
+        "text": "are",
+        "startMs": 8233,
+        "endMs": 8317
+      },
+      {
+        "text": "hashed",
+        "startMs": 8329,
+        "endMs": 8858
+      },
+      {
+        "text": "and",
+        "startMs": 9243,
+        "endMs": 9435
+      },
+      {
+        "text": "access",
+        "startMs": 9447,
+        "endMs": 9976
+      },
+      {
+        "text": "is",
+        "startMs": 9988,
+        "endMs": 10156
+      },
+      {
+        "text": "per",
+        "startMs": 10168,
+        "endMs": 10312
+      },
+      {
+        "text": "project",
+        "startMs": 10324,
+        "endMs": 10938
+      }
+    ]
+  },
+  {
+    "id": "cta",
+    "text": "Roundabout. Open source, and free to try. Give your agents one place to report.",
+    "durationMs": 5712,
+    "words": [
+      {
+        "text": "Roundabout",
+        "startMs": 72,
+        "endMs": 733
+      },
+      {
+        "text": "Open",
+        "startMs": 1084,
+        "endMs": 1360
+      },
+      {
+        "text": "source",
+        "startMs": 1372,
+        "endMs": 1817
+      },
+      {
+        "text": "and",
+        "startMs": 1841,
+        "endMs": 1985
+      },
+      {
+        "text": "free",
+        "startMs": 1997,
+        "endMs": 2262
+      },
+      {
+        "text": "to",
+        "startMs": 2274,
+        "endMs": 2370
+      },
+      {
+        "text": "try",
+        "startMs": 2382,
+        "endMs": 2838
+      },
+      {
+        "text": "Give",
+        "startMs": 3221,
+        "endMs": 3377
+      },
+      {
+        "text": "your",
+        "startMs": 3389,
+        "endMs": 3594
+      },
+      {
+        "text": "agents",
+        "startMs": 3606,
+        "endMs": 4014
+      },
+      {
+        "text": "one",
+        "startMs": 4026,
+        "endMs": 4291
+      },
+      {
+        "text": "place",
+        "startMs": 4303,
+        "endMs": 4663
+      },
+      {
+        "text": "to",
+        "startMs": 4676,
+        "endMs": 4796
+      },
+      {
+        "text": "report",
+        "startMs": 4808,
+        "endMs": 5361
+      }
+    ]
+  }
+]

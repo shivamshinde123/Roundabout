@@ -9,6 +9,7 @@ Roundabout/
 │   ├── Roundabout workflow atlas.html
 │   ├── Crosswalk review and product planning.docx
 │   └── *.md                       # Living engineering docs
+├── video/                         # Product video (D-43): its own Remotion project (scenes, voiceover and music scripts); excluded from the app's lint, typecheck and Vercel upload
 ├── site/                          # Project website (D-42): one static page plus assets/, published to GitHub Pages by .github/workflows/pages.yml
 ├── drizzle/                       # Generated SQL migrations (checked in, never hand-edited after they're applied)
 ├── supabase/
