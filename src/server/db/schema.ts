@@ -2,7 +2,7 @@
 import { sql } from 'drizzle-orm';
 import {
   pgTable, uuid, text, timestamp, integer, boolean, jsonb, bigint, customType,
-  primaryKey, foreignKey, unique, uniqueIndex, index, check,
+  primaryKey, foreignKey, unique, uniqueIndex, index, check, type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { authUsers } from 'drizzle-orm/supabase';
 
@@ -19,7 +19,10 @@ const oneOf = (col: string, values: readonly string[]) =>
 export const TASK_STATUSES = ['backlog', 'todo', 'in_progress', 'review', 'done'] as const;
 // Clients with a setup guide on the Connect agent page (src/lib/agent-setup.ts, D-34). 'other' is any MCP client.
 export const AGENT_CLIENTS = [
-  'claude_code', 'codex', 'cursor', 'windsurf', 'gemini_cli', 'copilot', 'cline', 'opencode', 'zed', 'warp', 'jetbrains', 'other',
+  'claude_code', 'codex', 'cursor', 'windsurf', 'gemini_cli', 'copilot', 'cline', 'opencode', 'zed', 'warp', 'jetbrains',
+  // Hosted apps that connect through OAuth (D-35), and token-based personal agents.
+  'claude_ai', 'claude_duet', 'chatgpt', 'dots', 'gemini_app', 'grok', 'grok_bot', 'muse', 'instinct',
+  'other',
 ] as const;
 export const AGENT_STATUSES = ['setup', 'active', 'error', 'revoked'] as const;
 export const MESSAGE_KINDS = ['update', 'message', 'question'] as const;
@@ -62,6 +65,8 @@ export const agentConnections = pgTable('agent_connections', {
   revokedAt: ts('revoked_at'),
   // Deleted agents vanish from lists but keep attribution in history (D-28).
   deletedAt: ts('deleted_at'),
+  // Set when the connection was created through OAuth consent (D-35); re-authorizing the same client reuses it.
+  oauthClientId: uuid('oauth_client_id').references((): AnyPgColumn => oauthClients.id, { onDelete: 'set null' }),
 }, (t) => [
   // Disconnected agents free their name, so "Claude Code" can be connected again (D-17).
   uniqueIndex('agent_connections_workspace_name').on(t.workspaceId, sql`lower(${t.name})`).where(sql`status <> 'revoked'`),
@@ -98,6 +103,32 @@ export const actors = pgTable('actors', {
   unique('actors_workspace_user').on(t.workspaceId, t.userId),
   check('actors_kind_check', sql`(kind = 'human') = (user_id is not null) and (kind = 'agent') = (agent_connection_id is not null)`),
 ]).enableRLS();
+
+// ── OAuth for hosted connectors (D-35) ─────────────────────────────────────
+
+/** Clients registered through RFC 7591 dynamic registration (Claude, ChatGPT, Grok, Gemini…). */
+export const oauthClients = pgTable('oauth_clients', {
+  id: id(),
+  clientId: text('client_id').notNull().unique(),
+  // Only a hash is stored; public clients (token_endpoint_auth_method "none") have no secret.
+  clientSecretHash: bytea('client_secret_hash'),
+  tokenEndpointAuthMethod: text('token_endpoint_auth_method').notNull(),
+  clientName: text('client_name').notNull(),
+  redirectUris: jsonb('redirect_uris').$type<string[]>().notNull(),
+  createdAt: createdAt(),
+}).enableRLS();
+
+/** Single-use authorization codes (10 minutes), bound to the PKCE challenge and redirect URI. */
+export const oauthCodes = pgTable('oauth_codes', {
+  codeHash: bytea('code_hash').primaryKey(),
+  oauthClientId: uuid('oauth_client_id').notNull().references(() => oauthClients.id, { onDelete: 'cascade' }),
+  agentConnectionId: uuid('agent_connection_id').notNull().references(() => agentConnections.id, { onDelete: 'cascade' }),
+  redirectUri: text('redirect_uri').notNull(),
+  codeChallenge: text('code_challenge').notNull(),
+  expiresAt: ts('expires_at').notNull(),
+  usedAt: ts('used_at'),
+  createdAt: createdAt(),
+}).enableRLS();
 
 // ── Projects and boards ─────────────────────────────────────────────────────
 

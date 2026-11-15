@@ -6,15 +6,17 @@ import { requireOwner } from '@/server/auth';
 import { formAction } from '@/server/actions';
 import { toErrorBody } from '@/server/errors';
 import { createAgentConnection, deleteAgent, revokeAgent, rotateAgentToken, updateAgentGrants } from '@/server/agents';
-import { CLIENT_LABELS, mcpUrl, type AgentClient } from '@/lib/agent-setup';
+import { CLIENT_LABELS, OAUTH_CLIENTS, mcpUrl, type AgentClient } from '@/lib/agent-setup';
 import type { FormState } from '@/components/action-form';
 
-export type TokenState = { error?: string; token?: string; client?: AgentClient; url?: string; agentId?: string } | undefined;
+export type TokenState = { error?: string; token?: string; client?: AgentClient; url?: string; agentId?: string; oauth?: boolean } | undefined;
 const url = () => mcpUrl(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000');
 
 export async function createAgentAction(_: TokenState, form: FormData): Promise<TokenState> {
   try {
     const client = String(form.get('client') ?? '') as AgentClient;
+    // Hosted apps sign in with OAuth: the connection is created when you approve it on the consent screen (D-35).
+    if (OAUTH_CLIENTS.has(client)) return { client, url: url(), oauth: true };
     const { agent, token } = await createAgentConnection(await requireOwner(), {
       name: String(form.get('name') ?? '').trim() || CLIENT_LABELS[client] || '',
       client,

@@ -280,3 +280,11 @@ These items are computed for a project when the page loads. No inbox table exist
 5. Unfinished tasks whose assignee has been revoked or has lost access to the task's project.
 
 In-app alerts are the count of these items, shown in the navigation and refreshed with the board.
+
+## OAuth (D-35)
+
+**oauth_clients**: `id` uuid PK · `client_id` text unique (`rbc_…`) · `client_secret_hash` bytea null (SHA-256; null for public clients) · `token_endpoint_auth_method` text · `client_name` text · `redirect_uris` jsonb (string[]) · `created_at`.
+
+**oauth_codes**: `code_hash` bytea PK (SHA-256 of the code) · `oauth_client_id` → oauth_clients (cascade) · `agent_connection_id` → agent_connections (cascade) · `redirect_uri` · `code_challenge` (S256) · `expires_at` (10 min) · `used_at` · `created_at`.
+
+**agent_connections.oauth_client_id** → oauth_clients (set null): marks a connection created through consent, so re-authorizing the same registered app reuses it.

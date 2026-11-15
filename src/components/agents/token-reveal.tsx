@@ -51,17 +51,27 @@ function CopyBlock({ label, code }: { label?: string; code: string }) {
 }
 
 /** Shows a freshly issued token once, with numbered client setup. Never rendered from stored data. */
-export function TokenReveal({ client, token, url }: { client: AgentClient; token: string; url: string }) {
+export function TokenReveal({ client, token, url }: { client: AgentClient; token?: string; url: string }) {
   return (
     <div className="grid gap-5">
-      <Alert>
-        <AlertDescription>Copy this now. For your security, Roundabout won&apos;t show this token again.</AlertDescription>
-      </Alert>
-      <CopyBlock label="Your token" code={token} />
+      {token ? (
+        <>
+          <Alert>
+            <AlertDescription>Copy this now. For your security, Roundabout won&apos;t show this token again.</AlertDescription>
+          </Alert>
+          <CopyBlock label="Your token" code={token} />
+        </>
+      ) : (
+        <Alert>
+          <AlertDescription>
+            {CLIENT_LABELS[client]} signs in with OAuth, so there&apos;s no token to copy. The agent appears in your Agents list once you approve it.
+          </AlertDescription>
+        </Alert>
+      )}
       <section className="grid gap-3">
         <h3 className="font-medium">Set up {CLIENT_LABELS[client]}</h3>
         <ol className="grid gap-4">
-          {setupSteps(client, url, token).map((step, i) => (
+          {setupSteps(client, url, token ?? '').map((step, i) => (
             <li key={step.title} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3 gap-y-2">
               <span aria-hidden className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
                 {i + 1}

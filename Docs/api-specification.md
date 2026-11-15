@@ -22,6 +22,17 @@ Both call the same functions in `src/server/` and return the same error codes (`
 
 Each client gets numbered steps with the endpoint and token filled in: Claude Code, Codex, Cursor, Windsurf, Gemini CLI, GitHub Copilot (VS Code), Cline, OpenCode, Zed, Warp, JetBrains AI (through the `mcp-remote` bridge), or **Other agent** (URL + header). The config shape for each client, and whether it has been tested, is in `client-compatibility.md`.
 
+### OAuth for hosted connectors (D-35)
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/mcp` (no or invalid token) | 401 with `WWW-Authenticate: Bearer error="invalid_token", resource_metadata="<site>/.well-known/oauth-protected-resource"` |
+| `GET /.well-known/oauth-protected-resource[/api/mcp]` | RFC 9728: `resource` = `<site>/api/mcp`, `authorization_servers` = `[<site>]` |
+| `GET /.well-known/oauth-authorization-server` | RFC 8414: authorize, token and registration endpoints; S256 only; `authorization_code` only; token auth `none`, `client_secret_post` or `client_secret_basic` |
+| `POST /oauth/register` | RFC 7591. `redirect_uris` must be https, or http on localhost. Returns `client_id`, plus `client_secret` unless `token_endpoint_auth_method` is `none` (the default is `client_secret_basic`). |
+| `GET /oauth/authorize` | Consent page. It requires a signed-in owner (otherwise it goes to sign-in with `next=`) and validates the client and exact redirect URI before redirecting anywhere. It needs `response_type=code` and S256 PKCE. Allow creates or reuses the app's agent connection and redirects with `code` and `state`; Deny returns `error=access_denied`. |
+| `POST /oauth/token` | `grant_type=authorization_code` with `code`, `redirect_uri`, `code_verifier` and client auth. Codes are single-use and last 10 minutes. Returns `{ access_token: "rbt_…", token_type: "Bearer", scope: "mcp" }`. The token is the connection's agent token, so Disconnect revokes it, and re-authorizing replaces it. There's no refresh token and no expiry. |
+
 ### Shared shapes
 
 ```ts

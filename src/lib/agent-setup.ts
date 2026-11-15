@@ -12,9 +12,24 @@ export const CLIENT_LABELS = {
   zed: 'Zed',
   warp: 'Warp',
   jetbrains: 'JetBrains AI',
+  claude_ai: 'Claude',
+  claude_duet: 'Claude Duet',
+  chatgpt: 'ChatGPT',
+  dots: 'ChatGPT dots',
+  gemini_app: 'Gemini',
+  grok: 'Grok',
+  grok_bot: 'Grok Bot',
+  muse: 'Meta Muse',
+  instinct: 'Instinct',
   other: 'Other agent',
 } as const;
 export type AgentClient = keyof typeof CLIENT_LABELS;
+
+/**
+ * Hosted apps that add Roundabout as a connector and sign in with OAuth (D-35). Their connection is created on
+ * Roundabout's consent screen, so Connect agent shows the steps without minting a token first.
+ */
+export const OAUTH_CLIENTS: ReadonlySet<AgentClient> = new Set(['claude_ai', 'claude_duet', 'chatgpt', 'dots', 'gemini_app', 'grok', 'grok_bot']);
 
 export function mcpUrl(siteUrl: string) {
   return `${siteUrl.replace(/\/$/, '')}/api/mcp`;
@@ -29,6 +44,12 @@ const firstContact = (client: string): SetupStep => ({
 });
 
 const json = (value: unknown) => JSON.stringify(value, null, 2);
+
+const approve = (app: string): SetupStep => ({
+  title: 'Approve access on Roundabout',
+  blocks: [],
+  note: `${app} opens Roundabout: sign in if asked, name the agent, choose its projects, then click Allow. No token to copy: the app gets its own.`,
+});
 const MERGE = 'If the file already has other servers, add just the "roundabout" entry next to them.';
 const PERSONAL = 'This is your personal config, so the token stays on your machine. Never commit it to a repository.';
 
@@ -188,6 +209,84 @@ export function setupSteps(client: AgentClient, url: string, token: string): Set
         },
         { title: 'Apply and check the connection', blocks: [], note: 'The MCP settings list should show "roundabout" as connected.' },
         firstContact('AI Assistant (Agent mode)'),
+      ];
+    case 'claude_ai':
+      return [
+        { title: 'In Claude, add a custom connector', blocks: [], note: 'claude.ai or the Claude app: Settings → Connectors → Add custom connector. Name it Roundabout.' },
+        { title: 'Paste this URL', blocks: [{ label: 'Remote MCP server URL', code: url }] },
+        approve('Claude'),
+        firstContact('a Claude chat (turn the Roundabout connector on in the chat’s tools menu)'),
+      ];
+    case 'claude_duet':
+      return [
+        { title: 'Add Roundabout to Claude first', blocks: [], note: 'Duet uses your Claude connectors. In claude.ai: Settings → Connectors → Add custom connector, named Roundabout.' },
+        { title: 'Paste this URL', blocks: [{ label: 'Remote MCP server URL', code: url }] },
+        approve('Claude'),
+        firstContact('Claude Duet'),
+      ];
+    case 'chatgpt':
+    case 'dots':
+      return [
+        {
+          title: 'In ChatGPT, turn on Developer mode',
+          blocks: [],
+          note: 'Settings → Apps (Connectors in some versions) → Advanced settings → Developer mode. If you can’t find it, check Settings → Security.',
+        },
+        {
+          title: 'Create a connector with this URL',
+          blocks: [{ label: 'MCP server URL', code: url }],
+          note: 'Click Create, name it Roundabout, choose OAuth for authentication, and confirm you trust it.',
+        },
+        approve('ChatGPT'),
+        client === 'dots'
+          ? firstContact('your dot (add the Roundabout app to it in the dot’s settings)')
+          : firstContact('a ChatGPT chat (enable Roundabout from the + menu)'),
+      ];
+    case 'grok':
+    case 'grok_bot':
+      return [
+        { title: 'Open Grok’s connectors', blocks: [{ code: 'https://grok.com/connectors' }], note: 'Click New Connector → Custom. Custom connectors need a paid Grok plan.' },
+        { title: 'Paste this URL', blocks: [{ label: 'MCP server URL', code: url }] },
+        approve('Grok'),
+        firstContact(client === 'grok_bot' ? 'Grok Bot (grok.com/bot)' : 'a Grok chat'),
+      ];
+    case 'gemini_app':
+      return [
+        {
+          title: 'In Gemini, add a custom app',
+          blocks: [],
+          note: 'gemini.google.com → Settings → Connected Apps → Custom apps → Add a custom app. Availability depends on your account and region, and Keep Activity must be on.',
+        },
+        { title: 'Paste this URL and click Next', blocks: [{ label: 'MCP server URL', code: url }] },
+        approve('Gemini'),
+        firstContact('Gemini'),
+      ];
+    case 'muse':
+      return [
+        {
+          title: 'Ask Meta Muse to add a custom connector',
+          blocks: [{
+            label: 'Send this to Muse',
+            code: `Add a custom MCP connector named Roundabout. Server URL: ${url} (Streamable HTTP). It uses an API key sent in the Authorization header as "Bearer <key>".`,
+          }],
+        },
+        {
+          title: 'Paste your token into Muse’s secure credential prompt',
+          blocks: [{ code: token }],
+          note: 'Only in the secure prompt Muse opens, never in the chat itself. If you pasted it into the chat by mistake, reconnect here to get a new token.',
+        },
+        firstContact('Meta Muse'),
+      ];
+    case 'instinct':
+      return [
+        {
+          title: 'Text Instinct this message',
+          blocks: [{
+            code: `Please connect to my Roundabout workspace over MCP. Server URL: ${url} (Streamable HTTP). Send the header "Authorization: ${bearer}" on every request and keep it private. Then call the whoami tool and tell me what you see.`,
+          }],
+          note: 'Instinct has no settings screen, so it stores the key itself. Treat this message like a password; you can Disconnect the agent here at any time.',
+        },
+        { title: 'Wait for Instinct’s reply', blocks: [], note: 'It should tell you which projects it can see. This agent shows as Active here once it connects.' },
       ];
     case 'other':
       return [
