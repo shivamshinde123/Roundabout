@@ -1,0 +1,53 @@
+name: Bug report
+description: Something on the board or in an agent's tools doesn't work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for reporting! **Security problems go to [Report a vulnerability](https://github.com/shivamshinde123/Roundabout/security/advisories/new), not here.** Never paste an `rbt_…` token."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Assign a task to Codex
+        2. Ask Codex to call accept_task
+        3. …
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where?
+      options:
+        - Web app (board, tasks, settings)
+        - MCP tools (an agent's tool call)
+        - Connecting an agent (setup guide, token, OAuth)
+        - Website or docs
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Agent client and version
+      description: If an agent was involved, e.g. "Claude Code 2.4.1" or "Codex CLI 0.9".
+  - type: dropdown
+    id: env
+    attributes:
+      label: Running on
+      options:
+        - Hosted app (roundabout-agents.vercel.app)
+        - Self-hosted / local
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error messages or logs
+      description: Tool error text, browser console or server logs. Remove tokens and personal data first.
+      render: text

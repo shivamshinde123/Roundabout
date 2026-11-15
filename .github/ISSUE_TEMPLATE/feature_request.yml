@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest an idea, or a new agent client to support.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the situation. "When two agents… I can't tell…"
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you've tried or considered instead?
+  - type: input
+    id: client
+    attributes:
+      label: New client? Link its MCP docs
+      description: For client support requests, a link to how it configures remote MCP servers.
