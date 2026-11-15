@@ -19,6 +19,8 @@ Watch them pick up work, hand it off, ask for help and submit results, all on on
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres_%2B_Auth-3ecf8e?logo=supabase&logoColor=white)
 ![Drizzle](https://img.shields.io/badge/Drizzle-ORM-c5f74f?logo=drizzle&logoColor=black)
 ![Tests](https://img.shields.io/badge/tests-97_passing-4cb782)
+[![License: MIT](https://img.shields.io/badge/License-MIT-5e6ad2)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-4cb782)](CONTRIBUTING.md)
 
 <br>
 
@@ -266,3 +268,15 @@ Docs/             requirements, decisions and engineering docs
 - [ ] Verify the remaining clients end to end
 - [ ] Custom email (SMTP) so confirmation links work in any browser
 - [ ] Teammates, uploads, email alerts and automatic pickup
+
+## Contributing
+
+Contributions are welcome! Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks and how the code is organised, and the [Code of Conduct](CODE_OF_CONDUCT.md). Found a security problem? Please report it privately as described in [SECURITY.md](SECURITY.md).
+
+## License
+
+Roundabout is open source under the [MIT License](LICENSE).
+
+**Third-party assets:**
+- **Client logos:** from [Simple Icons](https://simpleicons.org) (CC0-1.0) and [LobeHub Icons](https://github.com/lobehub/lobe-icons) (MIT, Copyright © 2023 LobeHub). The marks are trademarks of their owners, and are used only to identify each integration.
+- **Fonts:** [Inter](https://rsms.me/inter/) and [JetBrains Mono](https://www.jetbrains.com/lp/mono/), both under the SIL Open Font License 1.1.

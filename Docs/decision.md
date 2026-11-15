@@ -433,3 +433,24 @@ Details are in `technical-design-document.md` and `database-schema.md`.
   - **Rejected:** a GitHub release asset, which is served as a download (`application/octet-stream`) rather than a streamable video; and YouTube, which adds a third-party embed and tracking.
 - **`preload="none"`:** visitors download nothing until they press play. The poster (`roundabout-promo.jpg`, 28 KB) is the logo-and-tagline frame from the Reveal scene.
 - **To update it:** re-render in `video/`, then rerun the same ffmpeg command, which is in `video/README.md`.
+
+## D-45 · Open source under MIT (2026-11-15)
+
+- **What:** the repo, already public, now has a licence and the usual community files:
+  - `LICENSE`: MIT, © 2026 Shivam Shinde; `package.json` gets `"license": "MIT"`
+  - `CODE_OF_CONDUCT.md`: Contributor Covenant 2.0
+  - `SECURITY.md`: private reports through GitHub's vulnerability reporting
+  - `CONTRIBUTING.md`: setup, checks and the code's rules
+  - issue forms (bug, feature) and a PR template under `.github/`
+  - third-party notices in the README
+- **Why MIT:** it's a portfolio project meant to be tried, forked and learned from, and MIT is the licence developers trust at a glance.
+  - **Considered:** AGPL-3.0, which would stop closed hosted copies. Rejected because Roundabout isn't run as a business, and AGPL puts off casual contributors.
+  - **Considered:** Apache-2.0, which adds a patent grant that this project doesn't need.
+- **Notices:**
+  - **Logos:** LobeHub's MIT notice is kept, and Simple Icons is CC0. Client marks are trademarks, used only to identify integrations.
+  - **Fonts:** Inter and JetBrains Mono are OFL-1.1, loaded from Google Fonts rather than committed.
+- **Repo settings turned on:** private vulnerability reporting, Dependabot alerts, and secret scanning with push protection.
+- **Left as is:**
+  - **Author email in commit history:** removing it would mean rewriting history.
+  - **The video's edge-tts narration:** low risk for a demo video.
+  - **Privacy and terms pages for the hosted app:** only needed before inviting strangers (`Roundabout.md` §10).
