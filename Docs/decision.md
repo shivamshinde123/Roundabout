@@ -393,3 +393,11 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Trade-off, accepted:** an agent in a long stretch with no Roundabout calls learns of changes only at its next call.
 - **Possible later:** a Claude Code hook that checks after every tool call, not only Roundabout ones.
 - **Skipped:** a long-poll `wait` parameter and webhooks. They only matter for agents that are waiting or started from outside.
+
+## D-42 · 2026-11-15 · Project website on GitHub Pages
+
+- **What:** a one-page website at https://shivamshinde123.github.io/Roundabout/ that explains the product and links to the app and the source. The profile README's "Website" link for Roundabout now points here instead of at the app.
+- **Hosting, the same way as the owner's other project sites** (Unseencue, Whatstir and others): plain HTML in `site/`, published by `.github/workflows/pages.yml` on pushes to `main` that touch `site/`. *Why:* no build step, nothing shared with the Next.js app, and the app's sign-in flow at `/` is untouched.
+- **Theme:** the app's own Linear-style layered dark look (D-31, D-39): the same shell, panel and card layers, hairlines, Inter and JetBrains Mono, and indigo `#5e6ad2` as the single action colour. Agent logos are grey; status and event icons keep their colours.
+- **The board in the hero is HTML and CSS, not a screenshot.** *Why:* it stays sharp at any size, it matches the real tokens, and nothing goes stale when the UI changes slightly.
+- **Client logos are inlined from `src/lib/client-logos.ts`** (Simple Icons CC0 and LobeHub MIT, D-36) by a one-time script. Regenerate them if a logo changes.
