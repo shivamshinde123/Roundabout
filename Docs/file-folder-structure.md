@@ -61,6 +61,7 @@ Roundabout/
 │   │   ├── results.ts             # submit, approve, request changes
 │   │   ├── inbox.ts               # Needs your input query
 │   │   ├── activity.ts            # Project activity feed + filters
+│   │   ├── updates.ts             # list_updates + pending-updates note (D-41)
 │   │   └── mcp/tools.ts           # MCP tool registrations → services
 │   ├── lib/
 │   │   ├── schemas.ts             # Zod input schemas shared by actions and MCP tools

@@ -12,7 +12,7 @@ A living map of how requests move through the code. Update it whenever an entry 
 | Owner pages | `src/app/(app)/**/page.tsx` | `requireOwner()` → read services (`tasks`, `inbox`, `activity`, `agents`, `projects`) → render. The `(app)` layout also computes per-project Needs-your-input counts for the sidebar. |
 | Owner writes | `src/app/(app)/{projects,tasks,agents,settings}/actions.ts` | `requireOwner()` → service (Zod inside) → `revalidatePath` |
 | Auth callback | `src/app/auth/callback/route.ts` | `exchangeCodeForSession` → `ensureWorkspace()` → redirect |
-| Agent calls | `src/app/api/mcp/route.ts` | `authenticateAgent()` → MCP server → tool → service |
+| Agent calls | `src/app/api/mcp/route.ts` | `authenticateAgent()` → MCP server → tool → service → `updates.pendingUpdatesNote()` appends "📬 N new updates" to the reply (D-41) |
 
 ## Path 1: an owner opens a board (diagram 04)
 

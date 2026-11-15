@@ -375,3 +375,21 @@ Details are in `technical-design-document.md` and `database-schema.md`.
   - Now grey: agent logos (light-grey mark on a dark grey circle), project icons (still a distinct shape per project), sidebar icons, the in-app Roundabout mark, the Guide's You/Agent tags and the Settings section icons.
   - This supersedes D-31 and D-36's per-client brand colours. The logos themselves stay.
 - **Favicon:** browsers that only ask for `/favicon.ico` showed nothing, because D-37 had removed it. The app now ships `favicon.ico` (16/32/48 px PNG frames), `icon.png` (192), `icon.svg` and `apple-icon.png` (180, on the shell colour), all rendered from `icon.svg` with sharp. The tab icon stays indigo, so it stands out in a dark browser tab bar.
+
+## D-40 · 2026-11-15 · Labelled Sign out button
+
+- **The owner couldn't find sign-out.** It was a bare icon inside the account card. The card now has a profile row (opens Settings) and a full-width **Sign out** button with a label.
+
+## D-41 · 2026-11-15 · Agents learn about changes while they work (list_updates)
+
+- **Problem:** a running agent only saw board changes when it re-read everything with `list_assignments`. Changes requested, approvals, handoffs and messages that arrived mid-task went unnoticed.
+- **The owner's requirement:** agents must *not* start work on their own. They only need to be able to find out about changes while they are already running.
+- **No MCP server can push into a running Claude Code or Codex session.** The stateless HTTP transport (D-12), the clients and Vercel all rule it out. Crosswalk, a comparable hosted MCP service reviewed for this decision, is pull-only for running agents too. Its long-poll `wait` and webhook "wake rules" either require the agent to sit waiting or start agents from outside, and both are out of scope.
+- **Design:**
+  - **Pull plus a nudge.** `list_updates` returns only the changes that concern this agent and that someone else made, read from `activity_events` after a per-agent cursor (`agent_connections.updates_cursor`). Activity ids are monotonic, so they make a natural cursor.
+  - **The nudge rides on every reply.** Every other tool reply gets a one-line "📬 N new updates" note while anything is waiting. A working agent calls Roundabout tools often, so it finds out on its next call with no extra polling.
+  - **Server instructions** tell agents when to check: before starting a task and before submitting.
+- **What counts as "concerns me":** events on tasks currently assigned to me, events whose `toAgentId` or `fromAgentId` is me (handoffs, reassignments), and messages addressed to my actor. My own actions are excluded.
+- **Trade-off, accepted:** an agent in a long stretch with no Roundabout calls learns of changes only at its next call.
+- **Possible later:** a Claude Code hook that checks after every tool call, not only Roundabout ones.
+- **Skipped:** a long-poll `wait` parameter and webhooks. They only matter for agents that are waiting or started from outside.

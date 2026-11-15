@@ -50,6 +50,13 @@
       "when": 1794711766652,
       "tag": "0006_oauth_and_hosted_clients",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794732118890,
+      "tag": "0007_agent_updates_cursor",
+      "breakpoints": true
     }
   ]
 }

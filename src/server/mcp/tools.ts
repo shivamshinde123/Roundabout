@@ -10,6 +10,7 @@ import { clearBlocker, reportBlocker } from '../blockers';
 import { submitResult } from '../results';
 import { listProjects } from '../projects';
 import { acceptTask, createTask, queryCards } from '../tasks';
+import { listUpdates, pendingUpdatesNote } from '../updates';
 import { tasks } from '../db/schema';
 import type { AgentActor } from '../policy';
 import { eq } from 'drizzle-orm';
@@ -29,7 +30,22 @@ const ok = (data: object): ToolResult => ({
 
 /** Thin adapters: parse (SDK), call the service, map errors. No business rules here (coding-conventions.md). */
 export function buildMcpServer(actor: AgentActor) {
-  const server = new McpServer({ name: 'roundabout', version: '0.1.0' });
+  const server = new McpServer({ name: 'roundabout', version: '0.1.0' }, {
+    instructions:
+      'Roundabout is a shared task board. Call list_assignments when you start. Call list_updates before you start a task and before you submit a result, ' +
+      'and whenever a tool reply says new updates are waiting: they tell you about changes requested, approvals, handoffs and messages for you.',
+  });
+
+  /** Append the "new updates" nudge to a reply (D-41). Best effort: a failure here never breaks the tool. */
+  const withNote = async (result: ToolResult): Promise<ToolResult> => {
+    const note = await pendingUpdatesNote(actor).catch(() => null);
+    if (!note) return result;
+    return {
+      ...result,
+      content: [...result.content, { type: 'text', text: note.text }],
+      structuredContent: { ...result.structuredContent, pending_updates: note.count },
+    };
+  };
 
   const tool = <S extends z.ZodRawShape>(
     name: string,
@@ -43,13 +59,15 @@ export function buildMcpServer(actor: AgentActor) {
       { description, inputSchema, annotations: { readOnlyHint: readOnly } },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (async (args: any) => {
+        let result: ToolResult;
         try {
-          return ok(await run(args));
+          result = ok(await run(args));
         } catch (e) {
           const error = toErrorBody(e);
           if (error.code === 'INTERNAL') await recordAgentError(actor.agentId, `${name}: ${error.message}`).catch(() => {});
-          return { content: [{ type: 'text', text: JSON.stringify({ error }, null, 2) }], structuredContent: { error }, isError: true };
+          result = { content: [{ type: 'text', text: JSON.stringify({ error }, null, 2) }], structuredContent: { error }, isError: true };
         }
+        return name === 'list_updates' ? result : withNote(result);
       }) as never,
     );
 
@@ -68,6 +86,13 @@ export function buildMcpServer(actor: AgentActor) {
     { project_id: z.string().optional() },
     (a) => listAssignments(actor, { projectId: a.project_id }),
     true,
+  );
+
+  tool(
+    'list_updates',
+    'What changed for you since you last called this: changes requested or approved on your tasks, handoffs to or from you, reassignments, and messages to you. Oldest first; each update is shown once. Call it before starting or submitting work, and whenever a reply says updates are waiting.',
+    {},
+    () => listUpdates(actor),
   );
 
   tool('get_task', 'Full task: instructions, links, repo/branch, messages and history. Marks messages to you as read.', { task_id: taskId },
