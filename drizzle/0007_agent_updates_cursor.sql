@@ -1,0 +1,1 @@
+ALTER TABLE "agent_connections" ADD COLUMN "updates_cursor" bigint;

@@ -67,6 +67,8 @@ export const agentConnections = pgTable('agent_connections', {
   deletedAt: ts('deleted_at'),
   // Set when the connection was created through OAuth consent (D-35); re-authorizing the same client reuses it.
   oauthClientId: uuid('oauth_client_id').references((): AnyPgColumn => oauthClients.id, { onDelete: 'set null' }),
+  // Last activity event id the agent has read through list_updates (D-41); null = since the connection was made.
+  updatesCursor: bigint('updates_cursor', { mode: 'number' }),
 }, (t) => [
   // Disconnected agents free their name, so "Claude Code" can be connected again (D-17).
   uniqueIndex('agent_connections_workspace_name').on(t.workspaceId, sql`lower(${t.name})`).where(sql`status <> 'revoked'`),

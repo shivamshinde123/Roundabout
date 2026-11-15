@@ -21,7 +21,8 @@ The components, what each one is responsible for, and how they connect. Paths ma
 | `server/results` | Submit, approve and request changes | tasks (lock), messages, events, policy | actions, MCP tools |
 | `server/inbox` | Needs your input: pending reviews, open blockers, unanswered questions to the owner, agent-can't-access work and stalled work, ordered by kind then recency, plus per-project counts | db, `tasks.queryCards` | inbox page, overview, project tabs, sidebar alert counts |
 | `server/activity` | Project feed (agent, handoff and type filters) and per-stage counts | db | activity page, overview |
-| `server/mcp/tools` | Registers MCP tools and maps them to services | all services, `lib/schemas` | `api/mcp/route` |
+| `server/mcp/tools` | Registers MCP tools and maps them to services; appends the pending-updates note to each reply | all services, `lib/schemas` | `api/mcp/route` |
+| `server/updates` | `list_updates` and the pending-updates note: changes that concern an agent since its cursor (D-41) | db, `lib/events` | `mcp/tools` |
 
 ## UI components
 

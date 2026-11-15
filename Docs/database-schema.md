@@ -70,6 +70,7 @@ Each connection is one named agent with its own identity, such as "Claude Code â
 | last_error | text null | The last authentication or tool error shown to the owner. Never contains a secret. |
 | created_at | timestamptz not null default now() | |
 | revoked_at | timestamptz null | |
+| updates_cursor | bigint null | The last `activity_events.id` the agent has read with `list_updates` (D-41, migration 0007). Null means the agent has read nothing yet, so its updates start from `created_at`. |
 | deleted_at | timestamptz null | Set by Delete agent (D-28). Deleted agents are always revoked, hidden from every list and 404 on their page, but the row stays so results, handoffs and history keep their author. |
 
 ### `agent_project_grants`
