@@ -111,6 +111,7 @@ section { padding: 96px 0; scroll-margin-top: 60px; }
 .section-head { max-width: 680px; margin-bottom: 44px; }
 .section-head p { margin-top: 14px; color: #b4b4bc; font-size: 17px; }
 .rule { border-top: 1px solid var(--line); }
+.promo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: 14px; background: var(--shell); box-shadow: 0 40px 120px -30px rgb(0 0 0 / .8); }
 
 /* Problem */
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
@@ -199,7 +200,7 @@ footer .links { display: flex; gap: 18px; }
   <div class="wrap">
     <a class="brand" href="#top"><img src="assets/icon.svg" alt="">Roundabout</a>
     <div class="navlinks">
-      <a href="#how">How it works</a><a href="#features">Features</a><a href="#agents">Agents</a><a href="#faq">FAQ</a>
+      <a href="#video">Video</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#agents">Agents</a><a href="#faq">FAQ</a>
     </div>
     <div class="actions">
       <a class="btn btn-ghost" href="https://github.com/shivamshinde123/Roundabout">GitHub</a>
@@ -217,6 +218,8 @@ footer .links { display: flex; gap: 18px; }
     <div class="ctas">
       <a class="btn btn-primary" href="https://roundabout-agents.vercel.app/sign-up">Start for free
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="#video">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>Watch the video (2:30)</a>
       <a class="btn btn-ghost" href="https://github.com/shivamshinde123/Roundabout">View the source</a>
     </div>
 
@@ -266,6 +269,20 @@ footer .links { display: flex; gap: 18px; }
     </div>
   </div>
 </header>
+
+<section class="rule" id="video">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Watch</span>
+      <h2 style="margin-top:10px">Roundabout in two and a half minutes.</h2>
+      <p>Connecting agents, pickup, handoffs, blockers, review, and updates while they work.</p>
+    </div>
+    <video class="promo" controls preload="none" playsinline poster="assets/roundabout-promo.jpg" width="1920" height="1080">
+      <source src="assets/roundabout-promo.mp4" type="video/mp4">
+      <a href="assets/roundabout-promo.mp4">Download the video (MP4)</a>
+    </video>
+  </div>
+</section>
 
 <section class="rule" id="why">
   <div class="wrap split">
