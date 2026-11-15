@@ -362,3 +362,16 @@ Details are in `technical-design-document.md` and `database-schema.md`.
   - Supabase Auth's site URL was switched, and its redirect allow-list now holds the new and old callbacks plus localhost
 - **The old domain stays live, without a redirect.** *Why:* Claude Code and Codex are configured with `…orcin…/api/mcp`, and MCP clients POST to that URL, so redirecting could break them. Both domains serve the same deployment. Confirmed after the switch: `claude mcp get roundabout` still showed ✓ Connected over the old URL, and OAuth metadata, sign-in emails and setup guides now use the new one.
 - **A custom domain** (for example `roundabout.dev`) needs a domain purchase and DNS, which are the owner's calls. Adding one later only requires repeating these three settings.
+
+## D-39 · 2026-11-15 · Real buttons, aligned cards, grey icons, full favicon set
+
+- **No underlined text acting as a button.**
+  - Standalone actions became buttons: Connect agent, All activity, View all, Reset, Go to the agent's page, Back to your projects, and the empty-agents Connect button.
+  - In-sentence links on the auth pages became accent-coloured links with an underline only on hover.
+  - External links (PRs and so on) became chips with an external-link icon (`ExternalChip`), and task references became chips (`TaskChip`), both in `src/components/link-chip.tsx`.
+- **Card details align with the title, not the drag grip.** On draggable cards the assignee, detail and badge rows are indented by the grip's width.
+- **Colour only where it carries meaning.**
+  - Kept coloured: the five status icons, and the activity timeline's event icons.
+  - Now grey: agent logos (light-grey mark on a dark grey circle), project icons (still a distinct shape per project), sidebar icons, the in-app Roundabout mark, the Guide's You/Agent tags and the Settings section icons.
+  - This supersedes D-31 and D-36's per-client brand colours. The logos themselves stay.
+- **Favicon:** browsers that only ask for `/favicon.ico` showed nothing, because D-37 had removed it. The app now ships `favicon.ico` (16/32/48 px PNG frames), `icon.png` (192), `icon.svg` and `apple-icon.png` (180, on the shell colour), all rendered from `icon.svg` with sharp. The tab icon stays indigo, so it stands out in a dark browser tab bar.

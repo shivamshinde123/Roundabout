@@ -43,8 +43,8 @@ export function SidebarNav({ projects }: { projects: { id: string; name: string;
         )}
       </div>
       <p className="mt-4 px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">Workspace</p>
-      {item('/agents', 'Agents', <Bot aria-hidden className="size-4 shrink-0 text-[#26b5ce]" />, path.startsWith('/agents'), 0, 'nav-agents')}
-      {item('/guide', 'Guide', <BookOpen aria-hidden className="size-4 shrink-0 text-[#f2c94c]" />, path === '/guide', 0, 'nav-guide')}
+      {item('/agents', 'Agents', <Bot aria-hidden className="size-4 shrink-0 text-[#a1a1aa]" />, path.startsWith('/agents'), 0, 'nav-agents')}
+      {item('/guide', 'Guide', <BookOpen aria-hidden className="size-4 shrink-0 text-[#a1a1aa]" />, path === '/guide', 0, 'nav-guide')}
     </nav>
   );
 }

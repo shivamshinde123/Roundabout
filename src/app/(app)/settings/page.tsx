@@ -17,7 +17,7 @@ function Section({ icon, title, description, children, danger }: {
   return (
     <section className={`grid gap-4 rounded-xl border bg-card p-5 ${danger ? 'border-destructive/40' : ''}`}>
       <header className="flex items-start gap-3">
-        <span className={`mt-0.5 ${danger ? 'text-destructive' : 'text-muted-foreground'}`}>{icon}</span>
+        <span className="mt-0.5 text-muted-foreground">{icon}</span>
         <div className="grid gap-0.5">
           <h2 className="text-base font-semibold">{title}</h2>
           <p className="text-sm text-muted-foreground">{description}</p>

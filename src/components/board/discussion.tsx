@@ -1,4 +1,5 @@
 import { ActionForm } from '@/components/action-form';
+import { ExternalChip } from '@/components/link-chip';
 import { FormDialog } from '@/components/form-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,7 +37,7 @@ export function Discussion({
                 <ul className="mt-1 text-xs">
                   {m.links.map((l) => (
                     <li key={l.url}>
-                      <a className="underline" href={l.url} target="_blank" rel="noopener noreferrer">{l.label || l.url}</a>
+                      <ExternalChip href={l.url} label={l.label || l.url} />
                     </li>
                   ))}
                 </ul>

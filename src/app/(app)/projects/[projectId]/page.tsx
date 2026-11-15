@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { ChevronRight, Kanban } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ChevronRight, Kanban, Plus } from 'lucide-react';
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { listActivity, stageCounts } from '@/server/activity';
@@ -44,7 +45,9 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
       <section className="grid gap-2" data-tour="needs-input">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Needs your input ({inbox.length})</h2>
-          {inbox.length > 3 && <Link className="text-sm underline" href={`/projects/${project.id}/inbox`}>View all</Link>}
+          {inbox.length > 3 && (
+            <Button asChild variant="ghost" size="sm"><Link href={`/projects/${project.id}/inbox`}>View all <ChevronRight aria-hidden /></Link></Button>
+          )}
         </div>
         <InboxList items={inbox} limit={3} />
       </section>
@@ -54,12 +57,13 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
         <section className="grid content-start gap-2" data-tour="agents">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-medium">Agents</h2>
-            <Link className="text-sm text-muted-foreground underline hover:text-foreground" href="/agents/new">Connect agent</Link>
+            <Button asChild variant="outline" size="sm"><Link href="/agents/new"><Plus aria-hidden /> Connect agent</Link></Button>
           </div>
           {projectAgents.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-              No agents can use this project yet. <Link className="underline" href="/agents/new">Connect an agent</Link>.
-            </p>
+            <div className="grid justify-items-start gap-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+              No agents can use this project yet.
+              <Button asChild size="sm"><Link href="/agents/new"><Plus aria-hidden /> Connect an agent</Link></Button>
+            </div>
           ) : (
             <ul className="grid gap-2 text-sm">
               {projectAgents.map((a) => (
@@ -99,7 +103,7 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
       <section className="grid content-start gap-3 rounded-xl border bg-card/40 p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Recent results and handoffs</h2>
-          <Link className="text-sm text-muted-foreground underline hover:text-foreground" href={`/projects/${project.id}/activity`}>All activity</Link>
+          <Button asChild variant="ghost" size="sm"><Link href={`/projects/${project.id}/activity`}>All activity <ChevronRight aria-hidden /></Link></Button>
         </div>
         {recent.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nothing yet.</p>
