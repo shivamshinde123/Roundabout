@@ -9,6 +9,7 @@ Roundabout/
 │   ├── Roundabout workflow atlas.html
 │   ├── Crosswalk review and product planning.docx
 │   └── *.md                       # Living engineering docs
+├── site/                          # Project website (D-42): one static page plus assets/, published to GitHub Pages by .github/workflows/pages.yml
 ├── drizzle/                       # Generated SQL migrations (checked in, never hand-edited after they're applied)
 ├── supabase/
 │   └── config.toml                # Local Supabase settings (auth providers, redirect URLs)
