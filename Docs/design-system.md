@@ -1,39 +1,31 @@
 # Design system
 
-Roundabout's look follows **Campsite**: a warm paper workspace, quiet, cream and product-forward (decision D-30, which replaces D-29's Linear dark theme). The style comes from the Campsite entry in the Refero Styles library (styles.refero.design). This file is our own adaptation for an app UI. Tokens live in `src/app/globals.css`, and everything else reads them through shadcn/Tailwind tokens. **Don't hard-code colours in components.**
+Roundabout's look follows the **Linear app**: three dark layers, visible hairlines, and a few colourful icons to keep it lively (decision D-31, which replaces D-30's Campsite light theme). The owner chose it from a screenshot of Linear's issue view. Tokens live in `src/app/globals.css`; per-project icons, status icons and agent avatars live in `src/lib/visual.tsx`. **Don't hard-code colours in components.**
 
-## Principles
+## Layers
 
-- **Paper, not screen.** The page is a warm off-white. Cards and panels are pure white and sit on it with hairline borders and barely any shadow.
-- **Almost no colour.** Ink-black text and ink-black filled buttons. Colour appears only where it means something: red for destructive actions and alerts.
-- **Quiet and compact.** One typeface, small radii, a 4px grid, and the product content as the only texture.
+| Layer | Token | Value | Where |
+|---|---|---|---|
+| Shell | `--background`, `--sidebar` | `#0f0f11` | Page and sidebar, the darkest plane |
+| Panel | `--panel` (`bg-panel`) | `#17171a` | The inset content area: `m-2`, `rounded-xl`, bordered |
+| Card | `--card` | `#1d1d21` | Task cards, task panel, stage counters, agent rows |
+| Column | `--muted` | `#1b1b1e` | Board columns, chips |
+| Popover | `--popover` | `#222226` | Menus, dialogs, toasts |
+| Hover | `--accent` | `#26262b` | Hover wash, active tab |
+| Lines | `--border` / `--input` | `#2a2a2f` / `#303036` | Hairlines, which are visible on purpose |
 
-## Colour tokens
+## Colour
 
-| Token | Value | Use |
-|---|---|---|
-| `--background` / `--sidebar` | `#fffdf9` Warm canvas | Page and sidebar. Never pure white for the page. |
-| `--card` / `--popover` | `#ffffff` | Cards, task panel, dialogs, menus, toasts |
-| `--muted`, `--secondary` | `#f5f5f5` Ash mist | Board columns, muted chips, active tab |
-| `--accent` | `#f0f0f0` Soft fog | Hover wash |
-| `--border` / `--input` | `#ebebeb` / `#e5e5e5` | Hairline borders, input outlines |
-| `--foreground` | `#171717` Ink | Text and headings (never pure black) |
-| `--muted-foreground` | `#737373` Steel | Metadata and timestamps (≈4.7:1 on white) |
-| `--primary` | `#171717`, with white text | Filled primary buttons |
-| `--ring` | `#a3a3a3` | Focus ring |
-| `--destructive` | `#ef4444` | Delete buttons, Blocked and no-access badges, alerts |
+- **Text:** `#e6e6e8`. Metadata uses `#8d8d95` (≈5.6:1 on the panel). Headings are white.
+- **One action colour, Linear indigo `#5e6ad2`:** primary buttons, focus ring, and the Done status.
+- **Destructive, coral `#eb5757`:** Delete buttons, Blocked and no-access badges, alerts.
+- **Status icons** (`StatusIcon`): Backlog is a dashed grey circle, To Do a light circle, In Progress a yellow half-filled circle (`#f2c94c`), Review a green ring with a dot (`#4cb782`), Done an indigo check.
+- **Project icons** (`ProjectIcon`): one of 12 lucide icons in one of 8 accent colours, chosen from a hash of the project id. A project always keeps its icon, and nothing is stored.
+- **Agent avatars** (`AgentAvatar`): the agent's initial on a circle coloured by client. Claude Code is `#d97757`, Codex `#10a37f`, other agents indigo.
+- Status is always a **text** label too; colour only supports it.
 
-Status is always a **text** label (Blocked, Waiting for pickup, …); colour only supports it.
+## Type and shape
 
-## Type
-
-- **Inter** (via `next/font`) for everything, at weights 400 (body), 500 (labels) and 600 (headings). `font-bold` maps to 600, so nothing renders heavy.
-- **JetBrains Mono** for tokens, commands and IDs.
-- Headings get slight negative tracking (-0.018em).
-
-## Shape and density
-
-- `--radius: 8px` for buttons and inputs. Cards and dialogs use `radius-xl` (≈11px), and badges are pills.
-- Compact spacing on a 4px grid, with 8px between elements and 16px card padding.
-- Dialog overlays are `black/20` with a light blur.
-- No gradients, no heavy or coloured shadows, no glassmorphism.
+- **Inter** for the UI and **JetBrains Mono** for tokens and commands. `font-semibold` and `font-bold` both map to **590**. Headings use -0.012em tracking.
+- `--radius: 6px` for controls; panels, cards and dialogs use `rounded-xl` or `rounded-lg`. Dialogs sit on a `black/50` overlay.
+- Lucide icons at 14–16px: in the sidebar (projects, Agents, Settings, Sign out) and on project tabs (Overview, Needs your input, Boards, Activity).

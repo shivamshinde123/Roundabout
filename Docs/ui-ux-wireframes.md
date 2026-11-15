@@ -4,7 +4,7 @@ Low-fidelity layouts for the first release. Diagram numbers refer to the workflo
 
 ## Global rules
 
-- **Look:** Campsite-style light theme: a warm paper canvas, white cards, ink text and almost no colour, in Inter. See `design-system.md` (D-30).
+- **Look:** Linear-app-style layered dark theme: the sidebar on the darkest shell, content in an inset bordered panel, colourful per-project icons, status icons and agent avatars. See `design-system.md` (D-31).
 
 - **One shell:** a left sidebar (project switcher, the selected project's boards, Overview, Needs your input with a count, Activity, Agents, Settings) and the content area on the right.
 - **Status is always a text label**, with colour as a supplement. Badges: `Waiting for pickup` · `Handoff → Codex` · `Blocked` · `Stalled` · `Agent can't access` · `Needs review`.

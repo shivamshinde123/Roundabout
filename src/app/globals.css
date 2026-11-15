@@ -6,11 +6,13 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-panel: var(--panel);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  /* Campsite stays between 400 and 600: no heavy bold anywhere. */
-  --font-weight-bold: 600;
+  /* Linear-like weights: 590 for headings, nothing heavier. */
+  --font-weight-semibold: 590;
+  --font-weight-bold: 590;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -51,44 +53,46 @@
 }
 
 /*
- * Campsite-inspired light theme (Docs/design-system.md, D-30): a warm paper canvas, white cards,
- * near-black ink and almost no colour. Colour is kept for meaning: red for destructive, green for done.
+ * Linear-app-style layered dark theme (Docs/design-system.md, D-31). Dark-only: <html class="dark">.
+ * Three planes: the shell (sidebar, darkest) → the content panel (inset, rounded, bordered) →
+ * cards and columns inside it. Borders are visible lines; indigo is the single action colour.
  */
 :root {
-  color-scheme: light;
-  --radius: 0.5rem; /* 8px buttons and inputs; cards/dialogs use radius-xl ≈ 11px */
+  color-scheme: dark;
+  --radius: 0.375rem; /* 6px controls; panels and cards use radius-xl */
 
-  --background: #fffdf9; /* Warm canvas: page background, never pure white */
-  --foreground: #171717; /* Ink: text and headings */
-  --card: #ffffff; /* Cards, board columns, panels */
-  --card-foreground: #171717;
-  --popover: #ffffff;
-  --popover-foreground: #171717;
-  --primary: #171717; /* Filled primary buttons: ink, not a brand colour */
+  --background: #0f0f11; /* Shell: page and sidebar */
+  --panel: #17171a; /* Inset content panel */
+  --foreground: #e6e6e8;
+  --card: #1d1d21; /* Cards and boxes inside the panel */
+  --card-foreground: #e6e6e8;
+  --popover: #222226; /* Menus, dialogs, toasts */
+  --popover-foreground: #e6e6e8;
+  --primary: #5e6ad2; /* Linear indigo: primary buttons, focus, done */
   --primary-foreground: #ffffff;
-  --secondary: #f5f5f5; /* Ash mist */
-  --secondary-foreground: #171717;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373; /* Steel: timestamps, helper text (4.7:1 on white) */
-  --accent: #f0f0f0; /* Soft fog: hover wash */
-  --accent-foreground: #171717;
-  --destructive: #ef4444;
-  --border: #ebebeb;
-  --input: #e5e5e5;
-  --ring: #a3a3a3;
-  --chart-1: #171717;
-  --chart-2: #22c55e;
-  --chart-3: #737373;
-  --chart-4: #a3a3a3;
-  --chart-5: #451a03;
-  --sidebar: #fffdf9;
-  --sidebar-foreground: #171717;
-  --sidebar-primary: #171717;
+  --secondary: #232327;
+  --secondary-foreground: #e6e6e8;
+  --muted: #1b1b1e; /* Board columns, active tab, chips */
+  --muted-foreground: #8d8d95; /* Metadata (≈5.6:1 on the panel) */
+  --accent: #26262b; /* Hover wash */
+  --accent-foreground: #f4f4f5;
+  --destructive: #eb5757;
+  --border: #2a2a2f; /* Visible hairlines */
+  --input: #303036;
+  --ring: #5e6ad2;
+  --chart-1: #5e6ad2;
+  --chart-2: #4cb782;
+  --chart-3: #f2c94c;
+  --chart-4: #eb5757;
+  --chart-5: #26b5ce;
+  --sidebar: #0f0f11;
+  --sidebar-foreground: #c4c4cc;
+  --sidebar-primary: #5e6ad2;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0f0f0;
-  --sidebar-accent-foreground: #171717;
-  --sidebar-border: #ebebeb;
-  --sidebar-ring: #a3a3a3;
+  --sidebar-accent: #1c1c20;
+  --sidebar-accent-foreground: #f4f4f5;
+  --sidebar-border: #2a2a2f;
+  --sidebar-ring: #5e6ad2;
 }
 
 @layer base {
@@ -102,6 +106,6 @@
     @apply font-sans;
   }
   h1, h2, h3 {
-    letter-spacing: -0.018em;
+    letter-spacing: -0.012em;
   }
 }

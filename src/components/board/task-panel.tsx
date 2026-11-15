@@ -33,7 +33,7 @@ export function TaskPanel({
   const canAssign = task.status === 'backlog' || task.status === 'todo';
   const canReassign = task.status === 'in_progress' || task.status === 'review';
   return (
-    <aside aria-label={`Task: ${task.title}`} className="grid content-start gap-4 rounded-lg border bg-background p-4 text-sm">
+    <aside aria-label={`Task: ${task.title}`} className="grid content-start gap-4 rounded-xl border bg-card p-4 text-sm">
       <header className="flex items-start justify-between gap-2">
         <div className="grid gap-1">
           <h2 className="text-base font-semibold">{task.title}</h2>

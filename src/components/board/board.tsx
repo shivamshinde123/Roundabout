@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { approveResultAction, moveTaskStatusAction } from '@/app/(app)/tasks/actions';
 import type { TaskCard, TaskStatus } from '@/server/tasks';
 import { TaskBadges } from './badges';
+import { AgentAvatar, StatusIcon } from '@/lib/visual';
 import { RequestChangesDialog } from './review';
 
 export const COLUMNS: { status: TaskStatus; label: string }[] = [
@@ -118,10 +119,10 @@ function Column({ status, label, count, children }: { status: TaskStatus; label:
     <section
       ref={setNodeRef}
       aria-label={`${label}, ${count} ${count === 1 ? 'task' : 'tasks'}`}
-      className={cn('flex min-h-64 flex-col gap-2 rounded-lg bg-muted/40 p-2', isOver && 'ring-2 ring-primary/40')}
+      className={cn('flex min-h-64 flex-col gap-2 rounded-lg border border-transparent bg-muted p-2', isOver && 'border-primary/60')}
     >
-      <h3 className="flex items-center justify-between px-1 text-sm font-medium">
-        {label} <span className="text-muted-foreground">{count}</span>
+      <h3 className="flex items-center gap-2 px-1 py-0.5 text-sm font-medium">
+        <StatusIcon status={status} /> {label} <span className="font-normal text-muted-foreground">{count}</span>
       </h3>
       {children}
       {count === 0 && status !== 'backlog' && <p className="px-1 text-xs text-muted-foreground">No tasks</p>}
@@ -143,7 +144,7 @@ function Card({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) => vo
     <article
       ref={setNodeRef}
       style={style}
-      className={cn('grid gap-2 rounded-md border bg-background p-3 text-sm shadow-xs', isDragging && 'z-10 opacity-80 shadow-lg')}
+      className={cn('grid gap-2 rounded-lg border bg-card p-3 text-sm transition-colors hover:border-[#3a3a40]', isDragging && 'z-10 opacity-90 shadow-lg')}
     >
       <div className="flex items-start gap-1">
         {draggable && (
@@ -165,7 +166,8 @@ function Card({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) => vo
         </Link>
         <MoveMenu task={task} onMove={onMove} />
       </div>
-      <p className="flex items-center gap-1 text-xs text-muted-foreground">
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        {task.assignee && <AgentAvatar name={task.assignee.name} client={task.assignee.client} className="size-4 text-[9px]" />}
         {task.assignee ? task.assignee.name : 'Unassigned'}
         {task.requireReview && (
           <span title="Review required" className="inline-flex items-center">
