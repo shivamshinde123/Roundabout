@@ -247,3 +247,12 @@ Details are in `technical-design-document.md` and `database-schema.md`.
   - **Project:** deleted with its boards, tasks, grants and history, and logged as a workspace-level `project.deleted` event. Agents stay connected and simply lose that project.
   - **Agent connection: soft delete** (`agent_connections.deleted_at`, migration 0003). Delete revokes the connection if needed (the same code path as Disconnect, so pending handoffs are cancelled), then hides it from every list and makes its page 404. The name becomes free again. *Why not a hard delete:* `task_results.submitted_by_agent_id`, `handoffs.from/to_agent_id`, `actors.agent_connection_id` and the history all point at it. Removing the row would either fail or erase who did the work, and the owner asked to clear out the list, not to rewrite history.
 - Covered by `tests/deletes.test.ts`: cascades, the stranger → `NOT_FOUND` check, the last-board rule, and agent delete keeping attribution while its token gets 401. Browser-checked locally: the dropdown, each confirmation window, and the redirects after each delete.
+
+## D-29 · 2026-11-15 · Linear-style dark theme
+
+- **The owner chose Linear's look** from the Refero Styles library, over the light Campsite style I had suggested. Linear is also the closest product to Roundabout: issue cards, Kanban boards and AI agent panels.
+- **Dark-only** (`<html class="dark">`). *Why:* Linear's system treats darkness as the substrate, not a theme, and the app had no theme switcher anyway, so this adds no toggle code. Add a light theme only if someone asks for one.
+- **Tokens, not component rewrites:** colours, radius (6px), font (Inter with `cv01`/`ss03`) and a 590 weight cap all live in `globals.css` and `layout.tsx`. The only component edit is a darker dialog overlay (`black/60`). Every component already used shadcn tokens, so nothing else needed touching.
+- **Acid lime (`#e4f222`) is the only action colour**: filled primary buttons, the focus ring, and text selection. Destructive actions use Linear's coral (`#eb5757`).
+- **JetBrains Mono replaces Berkeley Mono**, which is a paid licence, for tokens, commands and IDs.
+- Recorded in `Docs/design-system.md`. Browser-checked: overview, board with task panel, dialogs, confirmation windows, the boards menu, and contrast for metadata text.
