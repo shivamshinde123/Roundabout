@@ -9,9 +9,6 @@ import { cn } from '@/lib/utils';
 import type { TaskStatus } from '@/server/tasks';
 
 const PROJECT_ICONS: LucideIcon[] = [Rocket, Zap, Flame, Leaf, Sparkles, Target, Compass, Gem, Palette, Mountain, Feather, Bird];
-// Bright enough to read on the dark shell; each is a Linear-like accent.
-const PROJECT_COLORS = ['#5e6ad2', '#f2c94c', '#eb5757', '#4cb782', '#26b5ce', '#f2994a', '#bb87fc', '#e879a6'];
-
 /** Stable 32-bit hash so a project keeps its icon and colour forever without storing them. */
 function hash(s: string) {
   let h = 0;
@@ -20,9 +17,9 @@ function hash(s: string) {
 }
 
 export function ProjectIcon({ id, className }: { id: string; className?: string }) {
-  const h = hash(id);
-  const Icon = PROJECT_ICONS[h % PROJECT_ICONS.length];
-  return <Icon aria-hidden className={cn('size-4 shrink-0', className)} style={{ color: PROJECT_COLORS[(h >> 4) % PROJECT_COLORS.length] }} />;
+  // Each project keeps its own shape; colour is reserved for status and activity (D-39).
+  const Icon = PROJECT_ICONS[hash(id) % PROJECT_ICONS.length];
+  return <Icon aria-hidden className={cn('size-4 shrink-0 text-[#a1a1aa]', className)} />;
 }
 
 const STATUS: Record<TaskStatus, { Icon: LucideIcon; color: string }> = {
@@ -38,17 +35,10 @@ export function StatusIcon({ status, className }: { status: TaskStatus; classNam
   return <Icon aria-hidden className={cn('size-4 shrink-0', className)} style={{ color }} />;
 }
 
-// Brand-ish tile colours; the logo is drawn white on top (D-36). Dark brands get a lifted grey so they read on the shell.
-const AGENT_COLORS: Record<string, string> = {
-  claude_code: '#d97757', claude_ai: '#d97757', claude_duet: '#c15f3c', codex: '#3f3f46', chatgpt: '#10a37f', dots: '#3f3f46',
-  cursor: '#3f3f46', windsurf: '#0b8a7a', gemini_cli: '#4285f4', gemini_app: '#4285f4', copilot: '#8957e5', cline: '#e11d48',
-  opencode: '#52525b', zed: '#0751cf', warp: '#db2777', jetbrains: '#f43f5e', grok: '#3f3f46', grok_bot: '#3f3f46',
-  muse: '#0866ff', instinct: '#f97316', other: '#5e6ad2',
-};
 // Clients with no published mark get a meaningful symbol instead of a letter.
 const FALLBACK_ICONS: Record<string, LucideIcon> = { instinct: MessageCircle, other: Bot };
 
-/** The client's logo in a coloured circle (Claude Code orange, Codex grey, Gemini blue…). */
+/** The client's logo, light grey on a dark grey circle (D-39: no brand colours outside status and activity). */
 export function AgentAvatar({ name, client, className }: { name: string; client?: string; className?: string }) {
   const key = client && (CLIENT_LOGOS[client] || FALLBACK_ICONS[client]) ? client : 'other';
   const logo = CLIENT_LOGOS[key];
@@ -57,8 +47,7 @@ export function AgentAvatar({ name, client, className }: { name: string; client?
     <span
       aria-hidden
       title={name}
-      className={cn('inline-flex size-5 shrink-0 items-center justify-center rounded-full text-white ring-1 ring-white/10', className)}
-      style={{ background: AGENT_COLORS[key] ?? AGENT_COLORS.other }}
+      className={cn('inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[#2a2a2f] text-[#d4d4d8] ring-1 ring-white/10', className)}
     >
       {logo ? (
         <svg viewBox="0 0 24 24" className="size-[62%]" fill="currentColor">

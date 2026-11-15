@@ -1,4 +1,5 @@
 import { ActionMenu, type MenuItem } from '@/components/action-menu';
+import { ExternalChip } from '@/components/link-chip';
 import { Kanban, Pencil, RotateCcw, Trash2, UserPlus, Users } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { assignTaskAction, deleteTaskAction, moveTaskBoardAction, reassignTaskAction, reopenTaskAction, updateTaskAction } from '@/app/(app)/tasks/actions';
@@ -151,7 +152,7 @@ export function TaskPanel({
           <ul className="grid gap-1">
             {task.links.map((l) => (
               <li key={l.url}>
-                <a href={l.url} target="_blank" rel="noopener noreferrer" className="underline">{l.label || l.url}</a>
+                <ExternalChip href={l.url} label={l.label || l.url} />
               </li>
             ))}
           </ul>

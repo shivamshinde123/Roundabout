@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { TaskChip } from '@/components/link-chip';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
@@ -91,7 +91,7 @@ export default async function AgentPage({ params }: PageProps<'/agents/[agentId]
           <ul className="grid gap-1 text-sm">
             {agent.work.map((t) => (
               <li key={t.id}>
-                <Link className="underline" href={`/projects/${t.projectId}/boards/${t.boardId}?task=${t.id}`}>{t.title}</Link>
+                <TaskChip href={`/projects/${t.projectId}/boards/${t.boardId}?task=${t.id}`} title={t.title} />
                 <span className="text-muted-foreground"> · {t.status === 'todo' ? 'Waiting for pickup' : label(t.status)}</span>
                 {revoked && <span className="text-destructive"> · needs reassignment</span>}
               </li>

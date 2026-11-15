@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { startTransition, useActionState, type FormEvent } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,9 @@ export function ConnectAgentForm({ projects }: { projects: { id: string; name: s
           </Alert>
         )}
         <TokenReveal client={state.client} token={state.token} url={state.url} />
-        {state.agentId && <Link href={`/agents/${state.agentId}`} className="underline">Go to the agent&apos;s page</Link>}
+        {state.agentId && (
+          <Button asChild variant="outline" className="justify-self-start"><Link href={`/agents/${state.agentId}`}>Go to the agent&apos;s page <ChevronRight aria-hidden /></Link></Button>
+        )}
       </div>
     );
   }

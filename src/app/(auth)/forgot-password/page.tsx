@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { textLinkClass } from '@/components/link-chip';
 import { ActionForm } from '@/components/action-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { requestPasswordReset } from '../actions';
@@ -15,7 +16,7 @@ export default function ForgotPasswordPage() {
           <Field name="email" label="Email" type="email" autoComplete="email" />
         </ActionForm>
         <p className="text-sm text-muted-foreground">
-          <Link className="underline" href="/sign-in">Back to sign in</Link>
+          <Link className={textLinkClass} href="/sign-in">Back to sign in</Link>
         </p>
       </CardContent>
     </Card>

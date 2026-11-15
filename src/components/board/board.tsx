@@ -186,21 +186,24 @@ function Card({ task, onMove }: { task: TaskCard; onMove: (to: TaskStatus) => vo
         </Link>
         <MoveMenu task={task} onMove={onMove} />
       </div>
-      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        {task.assignee && <AgentAvatar name={task.assignee.name} client={task.assignee.client} className="size-4 text-[9px]" />}
-        {task.assignee ? task.assignee.name : 'Unassigned'}
-        {task.requireReview && (
-          <span title="Review required" className="inline-flex items-center">
-            <ShieldCheck className="size-3.5" aria-hidden />
-            <span className="sr-only">, review required</span>
-          </span>
+      {/* Details line up with the title, not the drag handle (D-39). */}
+      <div className={cn('grid gap-2', draggable && 'pl-4')}>
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          {task.assignee && <AgentAvatar name={task.assignee.name} client={task.assignee.client} className="size-4 text-[9px]" />}
+          {task.assignee ? task.assignee.name : 'Unassigned'}
+          {task.requireReview && (
+            <span title="Review required" className="inline-flex items-center">
+              <ShieldCheck className="size-3.5" aria-hidden />
+              <span className="sr-only">, review required</span>
+            </span>
+          )}
+        </p>
+        {detailLine && <p className="line-clamp-2 text-xs">{detailLine}</p>}
+        {task.status === 'done' && task.completedBy && (
+          <p className="text-xs text-muted-foreground">{task.requireReview ? 'Approved by' : 'Completed by'} {task.completedBy}</p>
         )}
-      </p>
-      {detailLine && <p className="line-clamp-2 text-xs">{detailLine}</p>}
-      {task.status === 'done' && task.completedBy && (
-        <p className="text-xs text-muted-foreground">{task.requireReview ? 'Approved by' : 'Completed by'} {task.completedBy}</p>
-      )}
-      <TaskBadges task={task} />
+        <TaskBadges task={task} />
+      </div>
     </article>
   );
 }

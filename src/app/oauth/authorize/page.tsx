@@ -33,7 +33,7 @@ export default async function AuthorizePage({ searchParams }: PageProps<'/oauth/
     <main className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="grid w-full max-w-md gap-5 rounded-xl border bg-panel p-6">
         <div className="flex items-center gap-2 text-sm font-semibold text-white">
-          <span className="flex size-6 items-center justify-center rounded-md bg-primary"><Orbit aria-hidden className="size-4 text-white" /></span>
+          <span className="flex size-6 items-center justify-center rounded-md bg-[#2a2a2f] ring-1 ring-white/10"><Orbit aria-hidden className="size-4 text-white" /></span>
           Roundabout
         </div>
         {body}

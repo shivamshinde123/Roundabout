@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { ACTIVITY_KINDS, listActivity, type ActivityKind } from '@/server/activity';
@@ -83,7 +84,7 @@ export default async function ActivityPage({ params, searchParams }: PageProps<'
             <input type="search" name="q" defaultValue={filter.q} placeholder="Search tasks" className={field} />
           </label>
           <button type="submit" className="h-8 rounded-md bg-primary px-3 text-primary-foreground hover:bg-primary/85">Apply</button>
-          {filtered && <Link href={base} className="h-8 content-center text-muted-foreground underline hover:text-foreground">Reset</Link>}
+          {filtered && <Button asChild variant="ghost" size="sm" className="h-8"><Link href={base}>Reset</Link></Button>}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-muted-foreground">Quick ranges:</span>

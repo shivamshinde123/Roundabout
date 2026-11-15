@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { textLinkClass } from '@/components/link-chip';
 import { ActionForm } from '@/components/action-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { signUp } from '../actions';
@@ -16,7 +17,7 @@ export default function SignUpPage() {
           <Field name="password" label="Password (8+ characters)" type="password" autoComplete="new-password" />
         </ActionForm>
         <p className="text-sm text-muted-foreground">
-          Already have an account? <Link className="underline" href="/sign-in">Sign in</Link>
+          Already have an account? <Link className={textLinkClass} href="/sign-in">Sign in</Link>
         </p>
       </CardContent>
     </Card>

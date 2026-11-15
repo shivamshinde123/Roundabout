@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { textLinkClass } from '@/components/link-chip';
 import { ActionForm } from '@/components/action-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,9 +26,9 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
           <Field name="password" label="Password" type="password" autoComplete="current-password" />
         </ActionForm>
         <p className="text-sm text-muted-foreground">
-          <Link className="underline" href="/forgot-password">Forgot password?</Link>
+          <Link className={textLinkClass} href="/forgot-password">Forgot password?</Link>
           {' · '}
-          <Link className="underline" href="/sign-up">Create account</Link>
+          <Link className={textLinkClass} href="/sign-up">Create account</Link>
         </p>
       </CardContent>
     </Card>

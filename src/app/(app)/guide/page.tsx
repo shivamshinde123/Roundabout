@@ -23,7 +23,7 @@ function Section({ id, icon, title, children }: { id: string; icon: ReactNode; t
 }
 
 const Who = ({ agent }: { agent?: boolean }) => (
-  <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${agent ? 'bg-[#26b5ce]/15 text-[#5fd3e6]' : 'bg-primary/15 text-[#a5adf0]'}`}>
+  <span className="rounded border bg-muted px-1.5 py-0.5 text-xs font-medium text-foreground">
     {agent ? 'Agent' : 'You'}
   </span>
 );

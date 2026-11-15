@@ -27,7 +27,7 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
       <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col gap-3 px-3 py-4">
         <div className="flex items-center justify-between px-2">
           <Link href="/" className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-white">
-            <span className="flex size-6 items-center justify-center rounded-md bg-primary">
+            <span className="flex size-6 items-center justify-center rounded-md bg-[#2a2a2f] ring-1 ring-white/10">
               <Orbit aria-hidden className="size-4 text-white" />
             </span>
             Roundabout
