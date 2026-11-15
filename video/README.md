@@ -19,3 +19,11 @@ node scripts/stills.mjs <dir> 120 1281 2869   # render review frames at half siz
 - `src/components/Captions.tsx`: word-by-word captions
 - `src/theme.ts`: design tokens shared with the app and the website
 - Client logos come from `../src/lib/client-logos.ts` (Simple Icons CC0, LobeHub MIT)
+
+## Website copy
+
+The website plays a smaller encode of the render (D-44). After rendering, refresh it with:
+
+```bash
+ffmpeg -y -i out/roundabout-promo.mp4 -c:v libx264 -preset slow -crf 26 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart ../site/assets/roundabout-promo.mp4
+```

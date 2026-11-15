@@ -10,7 +10,7 @@ Roundabout/
 │   ├── Crosswalk review and product planning.docx
 │   └── *.md                       # Living engineering docs
 ├── video/                         # Product video (D-43): its own Remotion project (scenes, voiceover and music scripts); excluded from the app's lint, typecheck and Vercel upload
-├── site/                          # Project website (D-42): one static page plus assets/, published to GitHub Pages by .github/workflows/pages.yml
+├── site/                          # Project website (D-42): one static page plus assets/ (icon, product video + poster, D-44), published to GitHub Pages by .github/workflows/pages.yml
 ├── drizzle/                       # Generated SQL migrations (checked in, never hand-edited after they're applied)
 ├── supabase/
 │   └── config.toml                # Local Supabase settings (auth providers, redirect URLs)
