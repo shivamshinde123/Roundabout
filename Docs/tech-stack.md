@@ -42,4 +42,4 @@ Chosen 2026-11-14 (decision D-8). It's built around the fixed constraint from `R
 
 ## Installed versions (scaffold)
 
-next 16.4.6 · react 19.3 · @supabase/ssr 0.12 · @supabase/supabase-js 2.119 · drizzle-orm 0.45 · drizzle-kit 0.31 · postgres 4.1 · zod 4.6 · @modelcontextprotocol/sdk 1.32 · @dnd-kit/core 6.3 · vitest 5.1 · supabase CLI 3.1 · Tailwind 4.3 · Node 22.
+next 16.4.6 · react 19.3 · @supabase/ssr 0.12 · @supabase/supabase-js 2.119 · drizzle-orm 0.45 · drizzle-kit 0.31 · postgres 3.4.7 (pinned, D-27) · zod 4.6 · @modelcontextprotocol/sdk 1.32 · @dnd-kit/core 6.3 · vitest 5.1 · supabase CLI 3.1 · Tailwind 4.3 · Node 22.
