@@ -208,7 +208,7 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 ## D-24 · 2026-11-14 · Stage 12: deploy
 
 - **Choices (the owner's):** Supabase project `roundabout` in the owner's default org, region `us-east-1`; Vercel personal Hobby project `roundabout`, functions in `iad1` next to the database; Google sign-in **skipped for now**. The app already hides the Google button when the provider is off (stage 2), so turning it on later is a Supabase setting plus an OAuth client, with no code change.
-- **Production URL:** https://roundabout-orcin.vercel.app. Supabase Auth's site URL and allow-list point at its `/auth/callback`, plus localhost. Manual identity linking is on, as it is locally. Email confirmation is on.
+- **Production URL:** https://roundabout-agents.vercel.app. Supabase Auth's site URL and allow-list point at its `/auth/callback`, plus localhost. Manual identity linking is on, as it is locally. Email confirmation is on.
 - **Migrations go over the session pooler (port 5432), not the direct host.** *Why:* the direct `db.<ref>` host is IPv6-only and the dev machine has no IPv6 route. The runtime uses the transaction pooler (6543), as planned in D-8.
 - **Deploys go through the Vercel CLI, not Git integration.** *Why:* the Vercel GitHub app has no access to the private repo, and granting it is the owner's call. CI still gates `main`.
 - **Smoke checks on production:** `/` redirects to `/sign-in`; the sign-up page renders with no console errors and no Google button; security headers are present; `/api/mcp` returns 401 "Missing or malformed bearer token" without a token, and 401 "Invalid or revoked token" for an unknown `rbt_` token. That second check proves the function reaches the database through the pooler.
@@ -352,3 +352,13 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Overview:** Agents and Boards side by side, with the activity timeline last.
 - **Breadcrumbs** (`‹ Agents › Connect agent`) replace the underlined "← Agents" text links.
 - **Favicon:** `src/app/icon.svg` (an indigo tile with a ring and two orbiting agents) replaces the default Next.js `favicon.ico`.
+
+## D-38 · 2026-11-15 · Domain: roundabout-agents.vercel.app
+
+- **The owner found `roundabout-orcin.vercel.app` meaningless.** `roundabout` and `roundabout-app` on vercel.app are taken by others, so I chose `roundabout-agents.vercel.app`, which says what the product does.
+- **What changed:**
+  - the domain was added to the Vercel project
+  - `NEXT_PUBLIC_SITE_URL` was updated in place (`vercel env update`; removing it needs the owner's approval), then the app was redeployed, because `NEXT_PUBLIC_*` values are built in
+  - Supabase Auth's site URL was switched, and its redirect allow-list now holds the new and old callbacks plus localhost
+- **The old domain stays live, without a redirect.** *Why:* Claude Code and Codex are configured with `…orcin…/api/mcp`, and MCP clients POST to that URL, so redirecting could break them. Both domains serve the same deployment. Confirmed after the switch: `claude mcp get roundabout` still showed ✓ Connected over the old URL, and OAuth metadata, sign-in emails and setup guides now use the new one.
+- **A custom domain** (for example `roundabout.dev`) needs a domain purchase and DNS, which are the owner's calls. Adding one later only requires repeating these three settings.

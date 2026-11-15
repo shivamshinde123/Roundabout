@@ -61,7 +61,7 @@ Ask the agent to call `list_assignments` when it starts. Assigned work waits unt
 
 ## Production
 
-Live at https://roundabout-orcin.vercel.app, with Supabase `roundabout` in us-east-1 and Vercel Hobby. Agents connect to `https://roundabout-orcin.vercel.app/api/mcp`. To deploy: `npx vercel deploy --prod`. For migrations, see `Docs/environment-config-reference.md` → Hosted values.
+Live at https://roundabout-agents.vercel.app, with Supabase `roundabout` in us-east-1 and Vercel Hobby. Agents connect to `https://roundabout-agents.vercel.app/api/mcp`. To deploy: `npx vercel deploy --prod`. For migrations, see `Docs/environment-config-reference.md` → Hosted values.
 
 ## Scripts
 
