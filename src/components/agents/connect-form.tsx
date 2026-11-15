@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CLIENT_LABELS } from '@/lib/agent-setup';
+import { AgentAvatar } from '@/lib/visual';
 import { createAgentAction, rotateTokenAction, type TokenState } from '@/app/(app)/agents/actions';
 import { TokenReveal } from './token-reveal';
 
@@ -36,11 +37,18 @@ export function ConnectAgentForm({ projects }: { projects: { id: string; name: s
       <h2 className="text-lg font-medium">Step 1 of 2 · Choose the agent and its access</h2>
       <fieldset className="grid gap-2">
         <legend className="mb-1 text-sm font-medium">Client</legend>
-        {Object.entries(CLIENT_LABELS).map(([value, label], i) => (
-          <label key={value} className="flex items-center gap-2 text-sm">
-            <input type="radio" name="client" value={value} defaultChecked={i === 0} className="accent-primary" /> {label}
-          </label>
-        ))}
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-2">
+          {Object.entries(CLIENT_LABELS).map(([value, label], i) => (
+            <label
+              key={value}
+              className="flex cursor-pointer items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm transition-colors hover:border-[#3a3a40] has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
+            >
+              <input type="radio" name="client" value={value} defaultChecked={i === 0} className="sr-only" />
+              <AgentAvatar name={label} client={value} />
+              <span className="truncate">{label}</span>
+            </label>
+          ))}
+        </div>
       </fieldset>
       <div className="grid gap-2">
         <Label htmlFor="agent-name">Connection name</Label>

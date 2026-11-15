@@ -37,7 +37,10 @@ export function StatusIcon({ status, className }: { status: TaskStatus; classNam
   return <Icon aria-hidden className={cn('size-4 shrink-0', className)} style={{ color }} />;
 }
 
-const AGENT_COLORS: Record<string, string> = { claude_code: '#d97757', codex: '#10a37f', other: '#5e6ad2' };
+const AGENT_COLORS: Record<string, string> = {
+  claude_code: '#d97757', codex: '#10a37f', cursor: '#9ca3af', windsurf: '#14b8a6', gemini_cli: '#4285f4', copilot: '#8957e5',
+  cline: '#e11d48', opencode: '#f59e0b', zed: '#38bdf8', warp: '#ec4899', jetbrains: '#ff318c', other: '#5e6ad2',
+};
 
 /** Round avatar with the agent's initial, coloured by client (Claude Code orange, Codex green). */
 export function AgentAvatar({ name, client, className }: { name: string; client?: string; className?: string }) {
