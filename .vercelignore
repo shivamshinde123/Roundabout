@@ -1,3 +1,7 @@
 video/
 site/
 Docs/
+# Secrets and local tooling never go to Vercel (the CLI's defaults only skip .env.local)
+.env*
+!.env.example
+.claude/
