@@ -256,3 +256,10 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Acid lime (`#e4f222`) is the only action colour**: filled primary buttons, the focus ring, and text selection. Destructive actions use Linear's coral (`#eb5757`).
 - **JetBrains Mono replaces Berkeley Mono**, which is a paid licence, for tokens, commands and IDs.
 - Recorded in `Docs/design-system.md`. Browser-checked: overview, board with task panel, dialogs, confirmation windows, the boards menu, and contrast for metadata text.
+
+## D-30 · 2026-11-15 · Campsite-style light theme (supersedes D-29)
+
+- **The owner didn't like the Linear dark theme** once it was live, and asked for another. I previewed a Campsite-style theme locally, the owner approved it from the preview, and it replaced the Linear theme before anything else changed.
+- **What it is:** a light theme with a warm `#fffdf9` canvas, white cards, `#171717` ink for text and filled buttons, `#737373` metadata, hairline `#ebebeb` borders, `#ef4444` for destructive actions, Inter at 400–600, an 8px radius, and a `black/20` dialog overlay. Full table in `Docs/design-system.md`.
+- **Same mechanism as D-29:** only the tokens in `globals.css` changed, plus the font and toaster theme in `layout.tsx` and the dialog overlay strength. *Why:* every component reads shadcn tokens, so switching themes stays a small and safe change. Trying the next theme costs about as little.
+- **Light-only for now** (the `html.dark` class is removed). Add a dark variant if the owner asks for one.
