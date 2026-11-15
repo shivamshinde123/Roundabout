@@ -29,3 +29,12 @@ Roundabout's look follows the **Linear app**: three dark layers, visible hairlin
 - **Inter** for the UI and **JetBrains Mono** for tokens and commands. `font-semibold` and `font-bold` both map to **590**. Headings use -0.012em tracking.
 - `--radius: 6px` for controls; panels, cards and dialogs use `rounded-xl` or `rounded-lg`. Dialogs sit on a `black/50` overlay.
 - Lucide icons at 14–16px: in the sidebar (projects, Agents, Settings, Sign out) and on project tabs (Overview, Needs your input, Boards, Activity).
+
+## Activity feed
+
+`src/components/activity-feed.tsx` renders both the overview's "Recent results and handoffs" and the Activity page as a Linear-style timeline:
+- an `EventIcon` (a coloured lucide icon per event type) on a thin rail
+- the actor in bold, with an `AgentAvatar` for agents, and the action in muted text, naming the target agent for assignments and handoffs
+- the task as a small bordered chip that links to it
+- the time on the right, with the full date on hover
+- result summaries and decline reasons in a boxed second line

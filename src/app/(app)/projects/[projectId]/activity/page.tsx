@@ -4,8 +4,7 @@ import { orNotFound } from '@/server/actions';
 import { listActivity } from '@/server/activity';
 import { getProject } from '@/server/projects';
 import { listAssignableAgents } from '@/server/tasks';
-import { describeEvent } from '@/lib/events';
-import { ago } from '@/lib/time';
+import { ActivityFeed } from '@/components/activity-feed';
 
 export default async function ActivityPage({ params, searchParams }: PageProps<'/projects/[projectId]/activity'>) {
   const { projectId } = await params;
@@ -44,18 +43,7 @@ export default async function ActivityPage({ params, searchParams }: PageProps<'
           {filtered ? 'Nothing matches these filters.' : 'No activity yet.'}
         </p>
       ) : (
-        <ol className="grid gap-1 text-sm">
-          {events.map((e) => (
-            <li key={e.id} className="flex flex-wrap gap-x-2 border-b py-1.5">
-              <time className="w-28 shrink-0 text-muted-foreground" dateTime={e.createdAt.toISOString()}>{ago(e.createdAt)}</time>
-              <span className="font-medium">{e.actor.name}</span>
-              <span>{describeEvent(e.type, e.data)}</span>
-              {e.task && (
-                <Link className="underline" href={`/projects/${project.id}/boards/${e.task.boardId}?task=${e.task.id}`}>{e.task.title}</Link>
-              )}
-            </li>
-          ))}
-        </ol>
+        <div className="rounded-xl border bg-card/40 p-4"><ActivityFeed items={events} projectId={project.id} /></div>
       )}
     </section>
   );

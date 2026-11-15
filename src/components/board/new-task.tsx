@@ -3,11 +3,13 @@ import { Label } from '@/components/ui/label';
 import { createTaskAction } from '@/app/(app)/tasks/actions';
 import { AgentSelect, NativeSelect, TaskFields } from './task-fields';
 
-export function NewTaskButton({ boardId, agents }: { boardId: string; agents: { id: string; name: string }[] }) {
+export function NewTaskButton({ boardId, agents, defaultRequireReview = true }: {
+  boardId: string; agents: { id: string; name: string }[]; defaultRequireReview?: boolean;
+}) {
   return (
     <FormDialog trigger="+ New task" title="New task" submitLabel="Create task" action={createTaskAction} variant="ghost">
       <input type="hidden" name="boardId" value={boardId} />
-      <TaskFields prefix="new" />
+      <TaskFields prefix="new" values={{ requireReview: defaultRequireReview }} />
       <div className="grid grid-cols-2 gap-3">
         <div className="grid gap-2">
           <Label htmlFor="new-status">Column</Label>

@@ -16,7 +16,7 @@ export function describeEvent(type: string, data: Record<string, unknown>): stri
     case 'handoff.superseded': return 'superseded the handoff';
     case 'blocker.reported': return 'reported a blocker';
     case 'blocker.resolved': return 'resolved a blocker';
-    case 'result.submitted': return `submitted a result: ${data.summary ?? ''}`;
+    case 'result.submitted': return 'submitted a result';
     case 'review.approved': return 'approved the result';
     case 'review.changes_requested': return 'requested changes';
     case 'task.completed': return 'completed the task';
@@ -33,4 +33,11 @@ export function describeEvent(type: string, data: Record<string, unknown>): stri
     case 'board.created': return `added the board ${data.name ?? ''}`.trim();
     default: return type.replace('.', ' ').replace('_', ' ');
   }
+}
+
+/** A second line worth showing under an event (a result summary, a decline reason), if any. */
+export function eventDetail(type: string, data: Record<string, unknown>): string | null {
+  if (type === 'result.submitted' && typeof data.summary === 'string') return data.summary;
+  if (type === 'handoff.declined' && typeof data.reason === 'string') return data.reason;
+  return null;
 }

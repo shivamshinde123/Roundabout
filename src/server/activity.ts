@@ -9,7 +9,9 @@ import { uuid } from '@/lib/schemas';
 export type ActivityItem = {
   id: number;
   type: string;
-  actor: { kind: string; name: string; agentId: string | null };
+  actor: { kind: string; name: string; agentId: string | null; client: string | null };
+  /** Name of the agent an assignment or handoff points at, when there is one. */
+  targetName: string | null;
   task: { id: string; title: string; boardId: string } | null;
   data: Record<string, unknown>;
   createdAt: Date;
@@ -32,6 +34,8 @@ export async function listActivity(
       actorKind: actors.kind,
       agentId: actors.agentConnectionId,
       actorName: sql<string>`coalesce(${agentConnections.name}, 'You')`,
+      actorClient: agentConnections.client,
+      targetName: sql<string | null>`(select a.name from agent_connections a where a.id = nullif(${activityEvents.data}->>'toAgentId', '')::uuid)`,
       taskTitle: tasks.title,
       boardId: tasks.boardId,
     })
@@ -51,7 +55,8 @@ export async function listActivity(
   return rows.map((r) => ({
     id: r.e.id,
     type: r.e.type,
-    actor: { kind: r.actorKind, name: r.actorName, agentId: r.agentId },
+    actor: { kind: r.actorKind, name: r.actorName, agentId: r.agentId, client: r.actorClient },
+    targetName: r.targetName,
     task: r.e.taskId && r.taskTitle ? { id: r.e.taskId, title: r.taskTitle, boardId: r.boardId! } : null,
     data: r.e.data,
     createdAt: r.e.createdAt,

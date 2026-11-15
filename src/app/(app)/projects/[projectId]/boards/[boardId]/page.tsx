@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { getProject } from '@/server/projects';
+import { getWorkspace } from '@/server/workspace';
 import { getTaskDetail, listAssignableAgents, listBoardTasks } from '@/server/tasks';
 import { listMessages } from '@/server/messages';
 import { listHandoffs } from '@/server/handoffs';
@@ -24,7 +25,9 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
   const board = project.boards.find((b) => b.id === boardId); // also rejects malformed ids
   if (!board) notFound();
 
-  const [tasks, agents] = await Promise.all([listBoardTasks(owner, board.id), listAssignableAgents(owner, project.id)]);
+  const [tasks, agents, workspace] = await Promise.all([
+    listBoardTasks(owner, board.id), listAssignableAgents(owner, project.id), getWorkspace(owner),
+  ]);
   const openTask = typeof taskParam === 'string'
     ? await getTaskDetail(owner, taskParam).catch(() => null)
     : null;
@@ -61,8 +64,8 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
         )}
       </div>
       <div className={panelTask ? 'grid gap-4 xl:grid-cols-[1fr_24rem]' : 'grid'}>
-        <div className="overflow-x-auto pb-2">
-          <Board tasks={tasks} newTask={<NewTaskButton boardId={board.id} agents={agents} />} />
+        <div className="min-w-0 overflow-x-auto pb-2">
+          <Board tasks={tasks} newTask={<NewTaskButton boardId={board.id} agents={agents} defaultRequireReview={workspace.defaultRequireReview} />} />
         </div>
         {panelTask && <TaskPanel task={panelTask} agents={agents} boards={project.boards} messages={messages} ownerActorId={owner.actorId} handoffs={handoffs} blockers={blockers} results={results} />}
       </div>

@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ensureWorkspace } from '@/server/workspace';
 import { safeNext } from '@/server/auth';
 
-// Handles email confirmation, password recovery, Google sign-in and Google linking (PKCE code exchange).
+// Handles email confirmation, password recovery and email change (PKCE code exchange).
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');

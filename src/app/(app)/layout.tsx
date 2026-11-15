@@ -3,6 +3,7 @@ import { LogOut, Orbit } from 'lucide-react';
 import { requireOwner } from '@/server/auth';
 import { listProjects } from '@/server/projects';
 import { inboxCounts } from '@/server/inbox';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { signOut } from './settings/actions';
 import { SidebarNav } from './sidebar-nav';
@@ -11,7 +12,10 @@ import { NewProjectButton } from './projects/new-project';
 /** Linear-style shell (D-31): the sidebar sits on the darkest plane; content lives in an inset, bordered panel. */
 export default async function AppLayout({ children }: LayoutProps<'/'>) {
   const owner = await requireOwner();
-  const [projects, counts] = await Promise.all([listProjects(owner), inboxCounts(owner)]);
+  const supabase = await createSupabaseServerClient();
+  const [projects, counts, { data: claims }] = await Promise.all([listProjects(owner), inboxCounts(owner), supabase.auth.getClaims()]);
+  const email = (claims?.claims.email as string | undefined) ?? '';
+  const name = (claims?.claims.user_metadata as { display_name?: string } | undefined)?.display_name || email.split('@')[0];
   return (
     <div className="flex min-h-screen bg-background">
       <a href="#main" className="sr-only rounded bg-background px-3 py-2 focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:ring-2">
@@ -28,11 +32,20 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
         </div>
         <NewProjectButton variant="outline" />
         <SidebarNav projects={projects.map((p) => ({ id: p.id, name: p.name, needsInput: counts[p.id] ?? 0 }))} />
-        <form action={signOut}>
-          <Button type="submit" variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground">
-            <LogOut aria-hidden /> Sign out
-          </Button>
-        </form>
+        <div className="flex items-center gap-2 rounded-lg border bg-panel p-2">
+          <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+            {name.charAt(0).toUpperCase()}
+          </span>
+          <Link href="/settings" className="grid min-w-0 flex-1 leading-tight hover:underline">
+            <span className="truncate text-sm font-medium text-foreground">{name}</span>
+            <span className="truncate text-xs text-muted-foreground">{email}</span>
+          </Link>
+          <form action={signOut}>
+            <Button type="submit" variant="ghost" size="icon-sm" aria-label="Sign out" title="Sign out">
+              <LogOut aria-hidden />
+            </Button>
+          </form>
+        </div>
       </aside>
       <main
         id="main"

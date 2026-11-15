@@ -38,6 +38,7 @@ erDiagram
 |---|---|---|
 | id | uuid PK | |
 | name | text not null | Defaults to "My workspace" |
+| default_require_review | boolean not null default true | Pre-ticks "Require my review" on the New task form (D-32). Tasks agents create always require review (D-11). |
 | created_at | timestamptz not null default now() | |
 
 ### `workspace_members`

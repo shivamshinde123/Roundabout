@@ -270,3 +270,16 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Why D-29's Linear theme failed and this one works:** D-29 used one near-black everywhere with a lime accent, so nothing had depth. This version uses **three planes**: shell `#0f0f11`, an inset bordered panel `#17171a`, and cards `#1d1d21`. It uses **Linear's indigo** `#5e6ad2` instead of lime, and **icons** carry the colour instead of surfaces.
 - **Lively without storing anything:** each project's icon and colour comes from a hash of its id, so it needs no schema change and never changes. Agents get client-coloured avatars, and the board columns get Linear-style status icons. All three live in `src/lib/visual.tsx`.
 - **The structure changed slightly this time** (not only tokens): the app layout puts `main` in a `bg-panel rounded-xl border` inset, and a `--panel` token was added. Task cards and the task panel now use `bg-card`, so they read as raised surfaces. This was previewed locally and approved by the owner before shipping.
+
+## D-32 · 2026-11-15 · Email and password only, real settings, clear board rules, activity timeline
+
+- **Google sign-in removed.** The owner decided it was too much setup; email and password is enough. The sign-in button, Settings linking, `signInWithGoogle`, `linkGoogle` and `isGoogleSignInEnabled` are deleted, not just hidden. The callback still handles confirmation, recovery and email-change links.
+- **Passwords:** verified on production. Supabase Auth stores them only as **bcrypt hashes** (`$2a$`, 60 characters, in `auth.users.encrypted_password`), and no column in the app's own schema holds a password. Changing the password re-checks the current one first.
+- **Settings:**
+  - Display name lives in the Supabase user metadata. Its server action refreshes the session so the sidebar chip, which reads the token's claims, updates immediately.
+  - Email change uses Supabase's double-confirm link.
+  - Workspace name and `workspaces.default_require_review` were added (migration 0004). *Why only a form default:* tasks the owner creates always send the checkbox, and agents can never turn review off (D-11).
+  - Delete account mirrors the test reset order (events → tasks → workspace cascade → `auth.users` row), all over the server's database connection, so there's still no service key.
+- **Board rules unchanged, but explained:** the owner can only move Backlog ↔ To Do and settle Review. In Progress means an agent accepted the task, and Review means it submitted a result. `blockedMoveReason` (`src/lib/board-rules.ts`, unit-tested) gives a reason for each forbidden move, and columns fade or get outlined while dragging. *Why not let the owner drag into In Progress:* the board would then claim an agent is working on something it has never seen.
+- **Activity timeline:** "Recent results and handoffs" and the Activity page share `ActivityFeed`. Activity rows now carry the actor's client and the target agent's name, resolved in SQL from `data.toAgentId`. `describeEvent('result.submitted')` no longer inlines the summary; `eventDetail` shows it as a boxed second line.
+- **Layout fix found in browser testing:** the board's scroll container needed `min-w-0`, or narrow windows scrolled the whole page sideways.
