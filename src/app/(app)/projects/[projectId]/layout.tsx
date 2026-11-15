@@ -4,7 +4,8 @@ import { getProject } from '@/server/projects';
 import { listInbox } from '@/server/inbox';
 import { FormDialog } from '@/components/form-dialog';
 import { Field } from '@/components/field';
-import { createBoardAction, renameProjectAction } from '../actions';
+import { createBoardAction, deleteProjectAction, renameProjectAction } from '../actions';
+import { ConfirmDelete } from '@/components/confirm-delete';
 import { ProjectTabs } from './project-tabs';
 
 export default async function ProjectLayout({ children, params }: LayoutProps<'/projects/[projectId]'>) {
@@ -20,6 +21,13 @@ export default async function ProjectLayout({ children, params }: LayoutProps<'/
           <input type="hidden" name="projectId" value={project.id} />
           <Field name="name" label="Project name" defaultValue={project.name} />
         </FormDialog>
+        <ConfirmDelete trigger="Delete project" title={`Delete ${project.name}?`} action={deleteProjectAction} fields={{ projectId: project.id }}>
+          <p>
+            Deletes <strong>{project.name}</strong> with {project.boards.length === 1 ? 'its board' : `all ${project.boards.length} boards`}, every task on {project.boards.length === 1 ? 'it' : 'them'},
+            and their results, handoffs, blockers and history.
+          </p>
+          <p className="text-muted-foreground">Agents lose access to this project. The agents themselves stay connected.</p>
+        </ConfirmDelete>
       </header>
       <div className="flex flex-wrap items-center gap-2 border-b pb-2">
         <ProjectTabs projectId={project.id} boards={project.boards} needsInput={needsInput} />

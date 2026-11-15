@@ -26,6 +26,10 @@ export function describeEvent(type: string, data: Record<string, unknown>): stri
     case 'agent.revoked': return 'disconnected an agent';
     case 'agent.token_rotated': return 'reconnected an agent';
     case 'project.created': return 'created the project';
+    case 'agent.deleted': return `deleted the agent ${data.name ?? ''}`.trim();
+    case 'project.deleted': return `deleted the project ${data.name ?? ''}`.trim();
+    case 'board.deleted': return `deleted the board ${data.name ?? ''}`.trim();
+    case 'task.deleted': return `deleted the task "${data.title ?? ''}"`;
     case 'board.created': return `added the board ${data.name ?? ''}`.trim();
     default: return type.replace('.', ' ').replace('_', ' ');
   }

@@ -10,7 +10,7 @@ export type EventType =
   | 'handoff.proposed' | 'handoff.accepted' | 'handoff.declined' | 'handoff.cancelled' | 'handoff.superseded'
   | 'result.submitted' | 'review.approved' | 'review.changes_requested' | 'task.completed'
   | 'agent.connected' | 'agent.access_changed' | 'agent.revoked' | 'agent.token_rotated'
-  | 'project.created' | 'board.created';
+  | 'agent.deleted' | 'project.created' | 'project.deleted' | 'board.created' | 'board.deleted' | 'task.deleted';
 
 /** Append one activity event inside the caller's transaction. `data` must stay small and secret-free. */
 export async function appendEvent(

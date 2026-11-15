@@ -1,6 +1,7 @@
 import { FormDialog } from '@/components/form-dialog';
 import { Label } from '@/components/ui/label';
-import { assignTaskAction, moveTaskBoardAction, reassignTaskAction, reopenTaskAction, updateTaskAction } from '@/app/(app)/tasks/actions';
+import { assignTaskAction, deleteTaskAction, moveTaskBoardAction, reassignTaskAction, reopenTaskAction, updateTaskAction } from '@/app/(app)/tasks/actions';
+import { ConfirmDelete } from '@/components/confirm-delete';
 import { label, type TaskDetail } from '@/server/tasks';
 import type { Message } from '@/server/messages';
 import { Discussion } from './discussion';
@@ -100,6 +101,12 @@ export function TaskPanel({
             </div>
           </FormDialog>
         )}
+        <ConfirmDelete trigger="Delete" title={`Delete "${task.title}"?`} action={deleteTaskAction} fields={{ taskId: task.id }}>
+          <p>Deletes this task with its messages, results, handoffs, blockers and history.</p>
+          {task.assignee && task.status !== 'done' && (
+            <p className="text-muted-foreground">{task.assignee.name} is assigned to it and will get &ldquo;not found&rdquo; if it tries to work on it.</p>
+          )}
+        </ConfirmDelete>
       </div>
 
       <ResultList results={results} revision={task.revision} />

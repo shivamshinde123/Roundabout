@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { DeleteAgent } from './delete-agent';
 import { requireOwner } from '@/server/auth';
 import { listAgents } from '@/server/agents';
 import { Button } from '@/components/ui/button';
@@ -46,10 +47,13 @@ export default async function AgentsPage() {
                 <td className="py-3">{a.projects.map((p) => p.name).join(', ') || <span className="text-muted-foreground">None</span>}</td>
                 <td className="py-3">{a.lastContactAt ? ago(a.lastContactAt) : <span className="text-muted-foreground">Never</span>}</td>
                 <td className="py-3">{a.waiting} waiting · {a.inProgress} in progress</td>
-                <td className="py-3 text-right">
-                  <Link className="underline" href={`/agents/${a.id}`}>
-                    Manage<span className="sr-only"> {a.name}</span>
-                  </Link>
+                <td className="py-3">
+                  <div className="flex items-center justify-end gap-2">
+                    <Link className="underline" href={`/agents/${a.id}`}>
+                      Manage<span className="sr-only"> {a.name}</span>
+                    </Link>
+                    <DeleteAgent agent={a} />
+                  </div>
                 </td>
               </tr>
             ))}

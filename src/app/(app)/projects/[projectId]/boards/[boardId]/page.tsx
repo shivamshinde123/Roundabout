@@ -13,7 +13,8 @@ import { AutoRefresh } from '@/components/board/auto-refresh';
 import { Board } from '@/components/board/board';
 import { NewTaskButton } from '@/components/board/new-task';
 import { TaskPanel } from '@/components/board/task-panel';
-import { renameBoardAction } from '../../../actions';
+import { deleteBoardAction, renameBoardAction } from '../../../actions';
+import { ConfirmDelete } from '@/components/confirm-delete';
 
 export default async function BoardPage({ params, searchParams }: PageProps<'/projects/[projectId]/boards/[boardId]'>) {
   const { projectId, boardId } = await params;
@@ -41,6 +42,23 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
           <input type="hidden" name="boardId" value={board.id} />
           <Field name="name" label="Board name" defaultValue={board.name} />
         </FormDialog>
+        {project.boards.length > 1 ? (
+          <ConfirmDelete trigger="Delete board" title={`Delete ${board.name}?`} action={deleteBoardAction} fields={{ boardId: board.id }}>
+            {tasks.length === 0 ? (
+              <p>Deletes the board <strong>{board.name}</strong>. It has no tasks.</p>
+            ) : (
+              <>
+                <p>
+                  Deletes the board <strong>{board.name}</strong> and {tasks.length === 1 ? 'the 1 task' : `all ${tasks.length} tasks`} on it,
+                  with their results, handoffs, blockers and history.
+                </p>
+                <p className="text-muted-foreground">To keep a task, move it to another board first (open it, then Move board).</p>
+              </>
+            )}
+          </ConfirmDelete>
+        ) : (
+          <span className="text-xs text-muted-foreground">This is the project&apos;s only board, so it can&apos;t be deleted.</span>
+        )}
       </div>
       <div className={panelTask ? 'grid gap-4 xl:grid-cols-[1fr_24rem]' : 'grid'}>
         <div className="overflow-x-auto pb-2">

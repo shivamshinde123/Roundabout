@@ -157,6 +157,15 @@ Waiting for first contact… ⟳   (becomes "Connected ✓" once the agent calls
 
 **Agent profile:** status, granted projects (editable), last successful check, waiting assignments, in-progress tasks, recent events, and the actions `[Update access]`, `[Reconnect]` (rotates the token) and `[Disconnect]`, which requires confirmation. After a disconnect, the page lists the affected tasks with Reassign buttons.
 
+## Boards menu and deleting (D-28)
+
+- **Project nav:** `Overview · Needs your input (n) · [Boards (n) ▾ | Board: <name> ▾] · Activity · + Board`. All boards sit in one dropdown, with a check mark next to the current one, so the nav doesn't grow with each board.
+- **Delete everything the owner can add:** each delete is a red button that opens a confirmation window saying what goes with it and "This can't be undone"; nothing happens until the red **Delete** inside the window is pressed.
+  - **Project** (header, next to Rename project): its boards, tasks, results, handoffs, blockers and history. Agents lose access to it but stay connected. Afterwards the app returns to the home page.
+  - **Board** (next to Rename board): its tasks and their history. The window suggests moving tasks first. A project's only board can't be deleted (a note says so; delete the project instead). Afterwards the app shows the project overview.
+  - **Task** (task panel actions): its messages, results, handoffs, blockers and history. The project feed keeps one "deleted the task" line.
+  - **Agent** (each row on Agents, and the agent's page, for connected and disconnected agents alike): disconnects it if needed, then removes it from every list. Past work keeps its name.
+
 ## Shared states
 
 | State | Pattern |

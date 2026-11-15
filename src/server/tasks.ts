@@ -6,7 +6,7 @@ import { AppError, notFound } from './errors';
 import { appendEvent } from './events';
 import { assertOwner, assertProjectAccess, type Actor } from './policy';
 import {
-  acceptTaskInput, assignTaskInput, createTaskInput, moveTaskBoardInput, moveTaskStatusInput, parse, updateTaskInput, uuid,
+  acceptTaskInput, assignTaskInput, createTaskInput, moveTaskBoardInput, moveTaskStatusInput, parse, taskIdInput, updateTaskInput, uuid,
 } from '@/lib/schemas';
 import { once } from './idempotency';
 import type { Link } from './db/schema';
@@ -410,4 +410,17 @@ function snapshotOf(t: typeof tasks.$inferSelect) {
 
 export function label(status: TaskStatus): string {
   return { backlog: 'Backlog', todo: 'To Do', in_progress: 'In Progress', review: 'Review', done: 'Done' }[status];
+}
+
+/** Deletes a task with its messages, results, handoffs, blockers and history (D-28). Owner only. */
+export async function deleteTask(actor: Actor, input: unknown) {
+  assertOwner(actor);
+  const { taskId } = parse(taskIdInput, input);
+  return db.transaction(async (tx) => {
+    const task = await lockTask(tx, actor, taskId);
+    await tx.delete(activityEvents).where(eq(activityEvents.taskId, taskId));
+    await tx.delete(tasks).where(eq(tasks.id, taskId)); // children cascade
+    await appendEvent(tx, actor, 'task.deleted', { projectId: task.projectId }, { title: task.title });
+    return task;
+  });
 }

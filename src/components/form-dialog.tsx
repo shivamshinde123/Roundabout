@@ -13,13 +13,15 @@ export function FormDialog({
   action,
   children,
   variant = 'outline',
+  submitVariant,
 }: {
   trigger: string;
   title: string;
   submitLabel: string;
   action: (state: FormState, form: FormData) => Promise<FormState>;
   children: ReactNode;
-  variant?: 'outline' | 'ghost' | 'default';
+  variant?: 'outline' | 'ghost' | 'default' | 'destructive';
+  submitVariant?: 'default' | 'destructive';
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -31,7 +33,7 @@ export function FormDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <ActionForm action={action} submitLabel={submitLabel} onSuccess={() => setOpen(false)}>
+        <ActionForm action={action} submitLabel={submitLabel} submitVariant={submitVariant} onSuccess={() => setOpen(false)}>
           {children}
         </ActionForm>
       </DialogContent>
