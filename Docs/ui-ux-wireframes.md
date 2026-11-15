@@ -168,6 +168,21 @@ Waiting for first contact… ⟳   (becomes "Connected ✓" once the agent calls
   - **Task** (task panel actions): its messages, results, handoffs, blockers and history. The project feed keeps one "deleted the task" line.
   - **Agent** (each row on Agents, and the agent's page, for connected and disconnected agents alike): disconnects it if needed, then removes it from every list. Past work keeps its name.
 
+## Settings (D-32)
+
+Settings is split into sections, each a card with an icon and right-aligned buttons:
+- **Profile:** display name, shown in the sidebar account chip.
+- **Email:** change it; Supabase emails both addresses a confirmation link.
+- **Password:** current and new password; the current one is checked first.
+- **Workspace:** name, and whether "Require my review" starts ticked on new tasks.
+- **Delete account:** behind a confirmation window that asks you to type DELETE.
+
+The sidebar footer shows an account chip: an avatar, your name and email linking to Settings, and a sign-out icon. Google sign-in has been removed; the app uses email and password only.
+
+## Board moves the owner can't make (D-32)
+
+While a card is being dragged, columns it can't go to fade out and allowed ones get a dashed indigo outline. Dropping on a forbidden column shows the reason, for example "Only the agent can start a task. It moves to In Progress when Codex accepts it." or "A task reaches Review when Codex submits a result."
+
 ## Shared states
 
 | State | Pattern |

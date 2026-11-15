@@ -18,6 +18,7 @@ export function ActionForm({
   className,
   onSuccess,
   submitVariant = 'default',
+  compact = false,
 }: {
   action: (state: FormState, form: FormData) => Promise<FormState>;
   submitLabel: string;
@@ -26,6 +27,8 @@ export function ActionForm({
   /** Called after an action returns `{ ok }`, e.g. to close a dialog. */
   onSuccess?: () => void;
   submitVariant?: 'default' | 'destructive';
+  /** Right-aligned, auto-width submit button (settings forms) instead of full width. */
+  compact?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
   useEffect(() => {
@@ -51,7 +54,7 @@ export function ActionForm({
           </Alert>
         )}
       </div>
-      <Button type="submit" variant={submitVariant} disabled={pending}>
+      <Button type="submit" variant={submitVariant} disabled={pending} className={compact ? 'justify-self-end px-4' : undefined}>
         {pending ? 'Working…' : submitLabel}
       </Button>
     </form>

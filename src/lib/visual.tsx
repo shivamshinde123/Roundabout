@@ -1,7 +1,8 @@
-// Small visual identity helpers (Docs/design-system.md, D-31): per-project icons, status icons, agent avatars.
+// Small visual identity helpers (Docs/design-system.md, D-31, D-32): project, status and event icons, agent avatars.
 import {
-  Bird, Circle, CircleCheck, CircleDashed, CircleDot, Compass, Contrast, Feather, Flame, Gem, Leaf, Mountain, Palette,
-  Rocket, Sparkles, Target, Zap, type LucideIcon,
+  ArrowRight, ArrowRightLeft, Bird, Bot, Circle, CircleCheck, CircleDashed, CircleDot, CircleX, Compass, Contrast, Dot,
+  Feather, FileCheck2, Flame, Gem, Handshake, Kanban, Leaf, MessageSquare, Mountain, OctagonAlert, Palette, Pencil, Play,
+  Plus, Rocket, RotateCcw, ShieldCheck, Sparkles, Target, Trash2, UserPlus, Users, Zap, type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { TaskStatus } from '@/server/tasks';
@@ -47,6 +48,40 @@ export function AgentAvatar({ name, client, className }: { name: string; client?
       style={{ background: AGENT_COLORS[client ?? 'other'] ?? AGENT_COLORS.other }}
     >
       {name.trim().charAt(0).toUpperCase() || '?'}
+    </span>
+  );
+}
+
+const EVENT_ICONS: Record<string, { Icon: LucideIcon; color: string }> = {
+  'result.submitted': { Icon: FileCheck2, color: '#26b5ce' },
+  'review.approved': { Icon: CircleCheck, color: '#4cb782' },
+  'review.changes_requested': { Icon: RotateCcw, color: '#f2994a' },
+  'task.completed': { Icon: CircleCheck, color: '#5e6ad2' },
+  'handoff.proposed': { Icon: ArrowRightLeft, color: '#bb87fc' },
+  'handoff.accepted': { Icon: Handshake, color: '#4cb782' },
+  'handoff.declined': { Icon: CircleX, color: '#eb5757' },
+  'handoff.cancelled': { Icon: CircleX, color: '#8d8d95' },
+  'handoff.superseded': { Icon: CircleX, color: '#8d8d95' },
+  'blocker.reported': { Icon: OctagonAlert, color: '#eb5757' },
+  'blocker.resolved': { Icon: ShieldCheck, color: '#4cb782' },
+  'task.created': { Icon: Plus, color: '#8d8d95' },
+  'task.accepted': { Icon: Play, color: '#f2c94c' },
+  'task.assigned': { Icon: UserPlus, color: '#8d8d95' },
+  'task.reassigned': { Icon: Users, color: '#f2994a' },
+  'task.reopened': { Icon: RotateCcw, color: '#f2994a' },
+  'task.status_changed': { Icon: ArrowRight, color: '#8d8d95' },
+  'task.moved_board': { Icon: Kanban, color: '#8d8d95' },
+  'task.edited': { Icon: Pencil, color: '#8d8d95' },
+  'message.posted': { Icon: MessageSquare, color: '#8d8d95' },
+};
+
+/** Small round marker for an activity event, coloured by what happened. */
+export function EventIcon({ type }: { type: string }) {
+  const { Icon, color } = EVENT_ICONS[type]
+    ?? (type.endsWith('.deleted') ? { Icon: Trash2, color: '#eb5757' } : type.startsWith('agent.') ? { Icon: Bot, color: '#26b5ce' } : { Icon: Dot, color: '#8d8d95' });
+  return (
+    <span aria-hidden className="flex size-6 shrink-0 items-center justify-center rounded-full border bg-card">
+      <Icon className="size-3.5" style={{ color }} />
     </span>
   );
 }

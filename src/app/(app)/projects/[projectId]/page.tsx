@@ -9,7 +9,7 @@ import { getProject } from '@/server/projects';
 import { AutoRefresh } from '@/components/board/auto-refresh';
 import { InboxList } from '@/components/inbox-list';
 import { AgentStatus } from '../../agents/status';
-import { describeEvent } from '@/lib/events';
+import { ActivityFeed } from '@/components/activity-feed';
 import { ago } from '@/lib/time';
 import { AgentAvatar, StatusIcon } from '@/lib/visual';
 
@@ -72,7 +72,7 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
           )}
         </section>
 
-        <section className="grid content-start gap-2">
+        <section className="grid content-start gap-3 rounded-xl border bg-card/40 p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-medium">Recent results and handoffs</h2>
             <Link className="text-sm underline" href={`/projects/${project.id}/activity`}>All activity</Link>
@@ -80,15 +80,7 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
           {recent.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nothing yet.</p>
           ) : (
-            <ol className="grid gap-1 text-sm">
-              {recent.map((e) => (
-                <li key={e.id}>
-                  <span className="text-muted-foreground">{ago(e.createdAt)} · </span>
-                  {e.actor.name} {describeEvent(e.type, e.data)}
-                  {e.task && <> · <Link className="underline" href={`/projects/${project.id}/boards/${e.task.boardId}?task=${e.task.id}`}>{e.task.title}</Link></>}
-                </li>
-              ))}
-            </ol>
+            <ActivityFeed items={recent} projectId={project.id} />
           )}
         </section>
       </div>

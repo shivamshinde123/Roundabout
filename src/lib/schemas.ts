@@ -9,6 +9,12 @@ export const createProjectInput = z.object({ name });
 export const renameProjectInput = z.object({ projectId: uuid, name });
 export const createBoardInput = z.object({ projectId: uuid, name });
 export const renameBoardInput = z.object({ boardId: uuid, name });
+export const workspaceSettingsInput = z.object({ name, defaultRequireReview: z.boolean() });
+export const displayNameInput = z.object({ displayName: z.string().trim().max(60, 'Use at most 60 characters.') });
+export const passwordChangeInput = z.object({
+  currentPassword: z.string().min(1, 'Enter your current password.'),
+  newPassword: z.string().min(8, 'Use at least 8 characters.').max(72, 'Use at most 72 characters.'),
+});
 export const projectIdInput = z.object({ projectId: uuid });
 export const boardIdInput = z.object({ boardId: uuid });
 export const taskIdInput = z.object({ taskId: uuid });

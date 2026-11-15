@@ -28,6 +28,8 @@ export const HANDOFF_STATUSES = ['pending', 'accepted', 'declined', 'cancelled',
 export const workspaces = pgTable('workspaces', {
   id: id(),
   name: text('name').notNull().default('My workspace'),
+  // Pre-ticks "Require my review" on the New task form (D-32). Agent-created tasks always require review (D-11).
+  defaultRequireReview: boolean('default_require_review').notNull().default(true),
   createdAt: createdAt(),
 }).enableRLS();
 

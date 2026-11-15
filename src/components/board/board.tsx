@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { approveResultAction, moveTaskStatusAction } from '@/app/(app)/tasks/actions';
 import type { TaskCard, TaskStatus } from '@/server/tasks';
 import { TaskBadges } from './badges';
+import { blockedMoveReason } from '@/lib/board-rules';
 import { AgentAvatar, StatusIcon } from '@/lib/visual';
 import { RequestChangesDialog } from './review';
 
@@ -44,17 +45,19 @@ export function moveLabel(task: Pick<TaskCard, 'status'>, to: TaskStatus): strin
 
 const labelOf = (s: TaskStatus) => COLUMNS.find((c) => c.status === s)!.label;
 
+
 export function Board({ tasks, newTask }: { tasks: TaskCard[]; newTask: ReactNode }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const dndId = useId(); // stable ids avoid a server/client aria-describedby mismatch
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor));
   const [changesFor, setChangesFor] = useState<TaskCard | null>(null);
+  const [dragging, setDragging] = useState<TaskCard | null>(null);
 
   const move = (task: TaskCard, to: TaskStatus) => {
     if (task.status === to) return;
     if (!ownerMoves(task).includes(to)) {
-      toast.error(`Can't move from ${labelOf(task.status)} to ${labelOf(to)}. Use the task's actions instead.`);
+      toast.error(blockedMoveReason(task, to));
       return;
     }
     if (task.status === 'review' && to === 'in_progress') {
@@ -72,6 +75,7 @@ export function Board({ tasks, newTask }: { tasks: TaskCard[]; newTask: ReactNod
   };
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
+    setDragging(null);
     const task = tasks.find((t) => t.id === active.id);
     if (task && over) move(task, over.id as TaskStatus);
   };
@@ -80,7 +84,9 @@ export function Board({ tasks, newTask }: { tasks: TaskCard[]; newTask: ReactNod
     <DndContext
       id={dndId}
       sensors={sensors}
+      onDragStart={({ active }) => setDragging(tasks.find((t) => t.id === active.id) ?? null)}
       onDragEnd={onDragEnd}
+      onDragCancel={() => setDragging(null)}
       accessibility={{
         announcements: {
           onDragStart: ({ active }) => `Picked up ${tasks.find((t) => t.id === active.id)?.title}.`,
@@ -92,7 +98,14 @@ export function Board({ tasks, newTask }: { tasks: TaskCard[]; newTask: ReactNod
     >
       <div className="grid min-w-[900px] grid-cols-5 gap-3">
         {COLUMNS.map((col) => (
-          <Column key={col.status} status={col.status} label={col.label} count={tasks.filter((t) => t.status === col.status).length}>
+          <Column
+            key={col.status}
+            status={col.status}
+            label={col.label}
+            count={tasks.filter((t) => t.status === col.status).length}
+            // While dragging, fade columns the card can't go to and outline the ones it can.
+            drop={!dragging || dragging.status === col.status ? undefined : ownerMoves(dragging).includes(col.status) ? 'allowed' : 'blocked'}
+          >
             {col.status === 'backlog' && newTask}
             {tasks.filter((t) => t.status === col.status).map((t) => (
               <Card key={t.id} task={t} onMove={(to) => move(t, to)} />
@@ -113,13 +126,20 @@ export function Board({ tasks, newTask }: { tasks: TaskCard[]; newTask: ReactNod
   );
 }
 
-function Column({ status, label, count, children }: { status: TaskStatus; label: string; count: number; children: ReactNode }) {
+function Column({ status, label, count, drop, children }: {
+  status: TaskStatus; label: string; count: number; drop?: 'allowed' | 'blocked'; children: ReactNode;
+}) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
   return (
     <section
       ref={setNodeRef}
       aria-label={`${label}, ${count} ${count === 1 ? 'task' : 'tasks'}`}
-      className={cn('flex min-h-64 flex-col gap-2 rounded-lg border border-transparent bg-muted p-2', isOver && 'border-primary/60')}
+      className={cn(
+        'flex min-h-64 flex-col gap-2 rounded-lg border border-transparent bg-muted p-2 transition-opacity',
+        drop === 'allowed' && 'border-dashed border-primary/60',
+        drop === 'blocked' && 'opacity-35',
+        isOver && drop === 'allowed' && 'border-solid border-primary bg-primary/10',
+      )}
     >
       <h3 className="flex items-center gap-2 px-1 py-0.5 text-sm font-medium">
         <StatusIcon status={status} /> {label} <span className="font-normal text-muted-foreground">{count}</span>

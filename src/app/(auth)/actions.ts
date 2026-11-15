@@ -46,16 +46,6 @@ export async function signUp(_: FormState, form: FormData): Promise<FormState> {
   return { ok: 'Check your inbox for a link to confirm your email.' };
 }
 
-export async function signInWithGoogle(): Promise<FormState> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: `${site()}/auth/callback` },
-  });
-  if (error || !data.url) return fail('Google sign-in is not available right now.');
-  redirect(data.url);
-}
-
 export async function requestPasswordReset(_: FormState, form: FormData): Promise<FormState> {
   const parsed = z.object({ email }).safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail(parsed.error);
