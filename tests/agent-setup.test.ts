@@ -5,8 +5,9 @@ const codes = (client: Parameters<typeof setupSteps>[0]) =>
   setupSteps(client, 'https://x.test/api/mcp', 'rbt_t').flatMap((s) => s.blocks.map((b) => b.code));
 
 describe('setupSteps', () => {
-  it('registers Claude Code for every folder, then checks it', () => {
+  it('removes any old Claude Code entry, registers it for every folder, then checks it', () => {
     expect(codes('claude_code')).toEqual([
+      'claude mcp remove roundabout -s user',
       'claude mcp add --scope user --transport http roundabout https://x.test/api/mcp --header "Authorization: Bearer rbt_t"',
       'claude mcp get roundabout',
     ]);

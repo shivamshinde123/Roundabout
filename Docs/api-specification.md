@@ -22,6 +22,7 @@ Both call the same functions in `src/server/` and return the same error codes (`
 
 **Claude Code.** `--scope user` makes Roundabout available in every folder. Claude Code's default scope is the current folder only.
 ```bash
+claude mcp remove roundabout -s user   # "not found" is fine; add won't replace an existing entry
 claude mcp add --scope user --transport http roundabout https://<host>/api/mcp --header "Authorization: Bearer rbt_..."
 claude mcp get roundabout   # ✓ Connected
 ```
