@@ -29,6 +29,14 @@ export function ConnectAgentForm({ projects }: { projects: { id: string; name: s
         <h2 className="text-lg font-medium">
           Step 2 of 2 · {state.oauth ? 'Set up' : 'Copy your token and set up'} {CLIENT_LABELS[state.client]}
         </h2>
+        {state.reusedName && (
+          <Alert>
+            <AlertDescription>
+              You already had {CLIENT_LABELS[state.client]} connected as <strong>{state.reusedName}</strong>, so Roundabout refreshed that
+              connection instead of adding a second one. Its old token has stopped working; set it up again with the steps below.
+            </AlertDescription>
+          </Alert>
+        )}
         <TokenReveal client={state.client} token={state.token} url={state.url} />
         {state.agentId && <Link href={`/agents/${state.agentId}`} className="underline">Go to the agent&apos;s page</Link>}
       </div>

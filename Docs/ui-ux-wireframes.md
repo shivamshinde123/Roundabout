@@ -187,6 +187,13 @@ While a card is being dragged, columns it can't go to fade out and allowed ones 
 
 Headers show only the name and a ⋯ button. The sidebar has Projects and Agents; Settings is reached only through the account chip at the bottom. The project tab row is Overview · Needs your input · Boards ▾ · Activity. "Add board" moved into the project's ⋯ menu.
 
+## Guide and tour (D-37)
+
+- **Guide** (sidebar → Guide): one scrolling page of short sections with an "On this page" chip row and a "Replay the tour" button.
+- **Tour**: a centred welcome card, then cards next to each highlighted area (New project, Projects, stage counts, Needs your input, Agents, the Agents nav, Guide, account). It dims everything else, with Step n of N and Skip / Back / Next / Done.
+- **Activity filters**: From, To, What, Who, Board (only when there are several), Task title, Apply and Reset, then quick ranges and an event count.
+- **Agents**: live agents, one per client, then a collapsed "Disconnected (n)" section.
+
 ## Shared states
 
 | State | Pattern |

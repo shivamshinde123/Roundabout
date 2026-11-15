@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Breadcrumbs } from '@/components/breadcrumbs';
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { getAgentProfile } from '@/server/agents';
@@ -24,7 +25,7 @@ export default async function AgentPage({ params }: PageProps<'/agents/[agentId]
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
-      <Link href="/agents" className="text-sm underline">← Agents</Link>
+      <Breadcrumbs items={[{ label: 'Agents', href: '/agents' }, { label: agent.name }]} />
       <header className="grid gap-2">
         <div className="flex flex-wrap items-center gap-3">
           <AgentAvatar name={agent.name} client={agent.client} className="size-7 text-xs" />

@@ -93,3 +93,13 @@ export async function deleteAccountAction(_: FormState, form: FormData): Promise
   if (done) redirect('/sign-in?notice=' + encodeURIComponent('Your account and workspace were deleted.'));
   return state;
 }
+
+/** Remembers on the account (not the browser) that the tour was seen, so it shows once per person (D-37). */
+export async function finishTourAction() {
+  await requireOwner();
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getClaims();
+  if ((data?.claims.user_metadata as { tour_done?: boolean } | undefined)?.tour_done) return;
+  await supabase.auth.updateUser({ data: { tour_done: true } });
+  await supabase.auth.refreshSession();
+}

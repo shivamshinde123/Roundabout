@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
+import { Tour } from '@/components/tour';
 import { LogOut, Orbit } from 'lucide-react';
 import { requireOwner } from '@/server/auth';
 import { listProjects } from '@/server/projects';
@@ -15,7 +17,8 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
   const supabase = await createSupabaseServerClient();
   const [projects, counts, { data: claims }] = await Promise.all([listProjects(owner), inboxCounts(owner), supabase.auth.getClaims()]);
   const email = (claims?.claims.email as string | undefined) ?? '';
-  const name = (claims?.claims.user_metadata as { display_name?: string } | undefined)?.display_name || email.split('@')[0];
+  const meta = (claims?.claims.user_metadata ?? {}) as { display_name?: string; tour_done?: boolean };
+  const name = meta.display_name || email.split('@')[0];
   return (
     <div className="flex min-h-screen bg-background">
       <a href="#main" className="sr-only rounded bg-background px-3 py-2 focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:ring-2">
@@ -30,9 +33,9 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
             Roundabout
           </Link>
         </div>
-        <NewProjectButton variant="outline" />
+        <div data-tour="new-project" className="grid"><NewProjectButton variant="outline" /></div>
         <SidebarNav projects={projects.map((p) => ({ id: p.id, name: p.name, needsInput: counts[p.id] ?? 0 }))} />
-        <div className="flex items-center gap-2 rounded-lg border bg-panel p-2 transition-colors hover:border-[#3a3a40]">
+        <div data-tour="account" className="flex items-center gap-2 rounded-lg border bg-panel p-2 transition-colors hover:border-[#3a3a40]">
           <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
             {name.charAt(0).toUpperCase()}
           </span>
@@ -54,6 +57,8 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
       >
         {children}
       </main>
+      {/* First-login tour; replay with ?tour=1 from the Guide (D-37). */}
+      <Suspense fallback={null}><Tour firstRun={!meta.tour_done} /></Suspense>
     </div>
   );
 }

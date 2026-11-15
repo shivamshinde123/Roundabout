@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Kanban } from 'lucide-react';
+import { ChevronRight, Kanban } from 'lucide-react';
 import { requireOwner } from '@/server/auth';
 import { orNotFound } from '@/server/actions';
 import { listActivity, stageCounts } from '@/server/activity';
@@ -32,7 +32,7 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
   return (
     <div className="grid gap-6">
       <AutoRefresh />
-      <section aria-label="Tasks by stage" className="flex flex-wrap gap-2">
+      <section aria-label="Tasks by stage" className="flex flex-wrap gap-2" data-tour="stages">
         {STAGES.map(([key, label]) => (
           <div key={key} className="min-w-28 rounded-lg border bg-card px-3 py-2">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><StatusIcon status={key} className="size-3.5" />{label}</div>
@@ -41,7 +41,7 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
         ))}
       </section>
 
-      <section className="grid gap-2">
+      <section className="grid gap-2" data-tour="needs-input">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium">Needs your input ({inbox.length})</h2>
           {inbox.length > 3 && <Link className="text-sm underline" href={`/projects/${project.id}/inbox`}>View all</Link>}
@@ -49,51 +49,63 @@ export default async function ProjectOverviewPage({ params }: PageProps<'/projec
         <InboxList items={inbox} limit={3} />
       </section>
 
+      {/* Agents and boards side by side; the activity timeline closes the page (D-37). */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="grid content-start gap-2">
-          <h2 className="text-lg font-medium">Agents</h2>
+        <section className="grid content-start gap-2" data-tour="agents">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium">Agents</h2>
+            <Link className="text-sm text-muted-foreground underline hover:text-foreground" href="/agents/new">Connect agent</Link>
+          </div>
           {projectAgents.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
               No agents can use this project yet. <Link className="underline" href="/agents/new">Connect an agent</Link>.
             </p>
           ) : (
             <ul className="grid gap-2 text-sm">
               {projectAgents.map((a) => (
-                <li key={a.id} className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-2">
-                  <AgentAvatar name={a.name} client={a.client} />
-                  <Link href={`/agents/${a.id}`} className="font-medium hover:underline">{a.name}</Link>
-                  <AgentStatus status={a.status} />
-                  <span className="text-muted-foreground">
-                    last check {a.lastContactAt ? ago(a.lastContactAt) : 'never'} · {a.inProgress} in progress · {a.waiting} waiting
-                  </span>
+                <li key={a.id} className="flex items-center gap-2.5 rounded-lg border bg-card p-2.5">
+                  <AgentAvatar name={a.name} client={a.client} className="size-7" />
+                  <div className="grid min-w-0 flex-1 leading-tight">
+                    <span className="flex items-center gap-2">
+                      <Link href={`/agents/${a.id}`} className="truncate font-medium hover:underline">{a.name}</Link>
+                      <AgentStatus status={a.status} />
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      last check {a.lastContactAt ? ago(a.lastContactAt) : 'never'} · {a.inProgress} in progress · {a.waiting} waiting
+                    </span>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </section>
 
-        <section className="grid content-start gap-3 rounded-xl border bg-card/40 p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium">Recent results and handoffs</h2>
-            <Link className="text-sm underline" href={`/projects/${project.id}/activity`}>All activity</Link>
-          </div>
-          {recent.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nothing yet.</p>
-          ) : (
-            <ActivityFeed items={recent} projectId={project.id} />
-          )}
+        <section className="grid content-start gap-2">
+          <h2 className="text-lg font-medium">Boards</h2>
+          <ul className="grid gap-2">
+            {project.boards.map((b) => (
+              <li key={b.id}>
+                <Link href={`/projects/${project.id}/boards/${b.id}`} className="flex items-center gap-2.5 rounded-lg border bg-card p-3.5 text-sm hover:border-[#3a3a40]">
+                  <Kanban aria-hidden className="size-4 text-muted-foreground" />
+                  <span className="flex-1 font-medium">{b.name}</span>
+                  <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
 
-      <section className="grid gap-2">
-        <h2 className="text-lg font-medium">Boards</h2>
-        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {project.boards.map((b) => (
-            <li key={b.id}>
-              <Link href={`/projects/${project.id}/boards/${b.id}`} className="flex items-center gap-2 rounded-lg border bg-card p-4 hover:border-[#3a3a40]"><Kanban aria-hidden className="size-4 text-muted-foreground" />{b.name}</Link>
-            </li>
-          ))}
-        </ul>
+      <section className="grid content-start gap-3 rounded-xl border bg-card/40 p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium">Recent results and handoffs</h2>
+          <Link className="text-sm text-muted-foreground underline hover:text-foreground" href={`/projects/${project.id}/activity`}>All activity</Link>
+        </div>
+        {recent.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Nothing yet.</p>
+        ) : (
+          <ActivityFeed items={recent} projectId={project.id} />
+        )}
       </section>
     </div>
   );
