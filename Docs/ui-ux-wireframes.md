@@ -4,6 +4,8 @@ Low-fidelity layouts for the first release. Diagram numbers refer to the workflo
 
 ## Global rules
 
+- **Look:** Linear-style dark theme, with Inter and a single acid-lime action colour. See `design-system.md` (D-29).
+
 - **One shell:** a left sidebar (project switcher, the selected project's boards, Overview, Needs your input with a count, Activity, Agents, Settings) and the content area on the right.
 - **Status is always a text label**, with colour as a supplement. Badges: `Waiting for pickup` · `Handoff → Codex` · `Blocked` · `Stalled` · `Agent can't access` · `Needs review`.
 - **Keyboard:** every action has a focusable control. Cards have a "Move…" menu as an alternative to dragging. Esc closes the task panel and returns focus to the card.
