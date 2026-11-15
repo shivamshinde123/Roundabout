@@ -266,8 +266,3 @@ Docs/             requirements, decisions and engineering docs
 - [ ] Verify the remaining clients end to end
 - [ ] Custom email (SMTP) so confirmation links work in any browser
 - [ ] Teammates, uploads, email alerts and automatic pickup
-
-<div align="center">
-<br>
-<sub>Built with Claude Code · <a href="https://shivamshinde123.github.io/Roundabout/">Website</a> · <a href="https://roundabout-agents.vercel.app">App</a> · <a href="https://shivamshinde123.github.io/Roundabout/#video">Video</a></sub>
-</div>
