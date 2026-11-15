@@ -342,3 +342,13 @@ Details are in `technical-design-document.md` and `database-schema.md`.
   - LobeHub icons-static-svg 1.102.0 (MIT) for Claude, Claude Code, OpenAI (ChatGPT, dots), Codex, Grok and Meta AI (Muse)
 
   Simple Icons dropped OpenAI at OpenAI's request, so OpenAI's mark comes from LobeHub. Instinct publishes no mark, so it gets a chat-bubble symbol, and Other agent gets a bot symbol. The marks identify integrations only.
+
+## D-37 · 2026-11-15 · Activity filters, Guide, first-login tour, one entry per client, polish
+
+- **Activity filters**, all as GET parameters so refresh and back keep them: date range (`from`/`to`, inclusive days in UTC, with quick ranges Today / 7 / 30 days), **what** (results and reviews, handoffs, blockers, messages and updates, task changes, or projects/boards/agents), **who** (you, or any agent including disconnected ones), **board**, and a **task title** search (wildcards escaped). It lists up to 200 events and says when it's capped. The old `?handoffs=1` still works. *Ideas not built yet:* filtering by task status, and saved filter presets.
+- **Guide (`/guide`)**: quick docs in the app, with the task flow, a who-moves-what table (You versus Agent), badge meanings, handoffs, blockers and review, Needs your input, connecting agents, recovery, and the agent tool list. It's linked in the sidebar.
+- **First-login tour** (`src/components/tour.tsx`): steps that spotlight the shell and overview through `data-tour` anchors, skipping any step whose anchor isn't on the page. It has Next, Back, Skip and Esc, and moves focus to the step's button. "Seen" is stored on the account (`user_metadata.tour_done`), and also in localStorage, because the session token carries the old flag until it refreshes, which made a skipped tour reappear on the next page. The Guide's "Replay the tour" uses `?tour=1`, which the home redirect now keeps.
+- **One entry per client:** connecting a client that already has a live connection refreshes that entry (new token, the old one stops working, access replaced) instead of creating a second one. OAuth consent matches by registration or by client type, because hosted apps register again on every reconnect. "Other agent" can still have several entries. Disconnected entries move into a collapsed "Disconnected (n)" section on Agents, where they can still be deleted.
+- **Overview:** Agents and Boards side by side, with the activity timeline last.
+- **Breadcrumbs** (`‹ Agents › Connect agent`) replace the underlined "← Agents" text links.
+- **Favicon:** `src/app/icon.svg` (an indigo tile with a ring and two orbiting agents) replaces the default Next.js `favicon.ico`.

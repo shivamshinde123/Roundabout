@@ -110,7 +110,7 @@ describe('agent connections', () => {
     expect(await codeOf(revokeAgent(intruder, { agentId: agent.id }))).toBe('NOT_FOUND');
     expect(await codeOf(getAgentProfile(intruder, agent.id))).toBe('NOT_FOUND');
     expect(await codeOf(createAgentConnection(intruder, { name: 'X', client: 'codex', projectIds: [a.project.id] }))).toBe('VALIDATION');
-    expect(await codeOf(createAgentConnection(owner, { name: 'mine', client: 'codex' }))).toBe('VALIDATION');
+    expect(await codeOf(createAgentConnection(owner, { name: 'mine', client: 'claude_code' }))).toBe('VALIDATION');
     expect(await codeOf(createAgentConnection(owner, { name: 'Y', client: 'gpt' }))).toBe('VALIDATION');
   });
 });
@@ -121,5 +121,31 @@ describe('names', () => {
     const { agent } = await createAgentConnection(owner, { name: 'Claude Code', client: 'claude_code' });
     await revokeAgent(owner, { agentId: agent.id });
     await expect(createAgentConnection(owner, { name: 'claude code', client: 'claude_code' })).resolves.toBeTruthy();
+  });
+});
+
+describe('one entry per client (D-37)', () => {
+  it('connecting a client again refreshes its existing connection instead of adding a second one', async () => {
+    const { owner, a, b } = await setup();
+    const first = await createAgentConnection(owner, { name: 'Claude Code', client: 'claude_code', projectIds: [a.project.id] });
+    const again = await createAgentConnection(owner, { name: 'Claude Code', client: 'claude_code', projectIds: [b.project.id] });
+    expect(again.reused).toBe(true);
+    expect(again.agent.id).toBe(first.agent.id);
+    expect(await codeOf(authenticateAgent(bearer(first.token)))).toBe('UNAUTHENTICATED');
+    const actor = await authenticateAgent(bearer(again.token));
+    expect([...actor.projectIds]).toEqual([b.project.id]);
+    expect((await listAgents(owner)).filter((x) => x.client === 'claude_code')).toHaveLength(1);
+    // "Other agent" can still have several entries.
+    await createAgentConnection(owner, { name: 'Tool A', client: 'other', projectIds: [] });
+    await expect(createAgentConnection(owner, { name: 'Tool B', client: 'other', projectIds: [] })).resolves.toMatchObject({ reused: false });
+  });
+
+  it('a disconnected entry does not block a fresh connection', async () => {
+    const { owner } = await setup();
+    const old = await createAgentConnection(owner, { name: 'Codex', client: 'codex', projectIds: [] });
+    await revokeAgent(owner, { agentId: old.agent.id });
+    const fresh = await createAgentConnection(owner, { name: 'Codex', client: 'codex', projectIds: [] });
+    expect(fresh.reused).toBe(false);
+    expect(fresh.agent.id).not.toBe(old.agent.id);
   });
 });

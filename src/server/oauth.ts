@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { and, eq, inArray, isNull, ne, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, ne, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from './db/client';
 import { AGENT_CLIENTS, actors, agentConnections, agentProjectGrants, oauthClients, oauthCodes, projects } from './db/schema';
@@ -171,14 +171,16 @@ export async function approveAuthorization(actor: Actor, req: AuthorizeRequest, 
     if (owned.length !== new Set(projectIds).size) throw new AppError('VALIDATION', 'Choose projects from your workspace.');
 
     // Re-authorizing the same registered app (e.g. a reconnect) reuses its connection instead of piling up new ones.
+    // Hosted apps register a new OAuth client on every reconnect, so match by registration or by client type (D-37).
     const [existing] = await tx.select().from(agentConnections).where(and(
-      eq(agentConnections.oauthClientId, loaded.client.id), eq(agentConnections.workspaceId, actor.workspaceId),
-      ne(agentConnections.status, 'revoked'), isNull(agentConnections.deletedAt),
+      eq(agentConnections.workspaceId, actor.workspaceId), ne(agentConnections.status, 'revoked'), isNull(agentConnections.deletedAt),
+      client === 'other' ? eq(agentConnections.oauthClientId, loaded.client.id)
+        : or(eq(agentConnections.oauthClientId, loaded.client.id), eq(agentConnections.client, client)),
     ));
     let agentId: string;
     if (existing) {
       agentId = existing.id;
-      await tx.update(agentConnections).set({ name, client }).where(eq(agentConnections.id, agentId));
+      await tx.update(agentConnections).set({ name, client, oauthClientId: loaded.client.id }).where(eq(agentConnections.id, agentId));
       await tx.delete(agentProjectGrants).where(eq(agentProjectGrants.agentConnectionId, agentId));
     } else {
       const [agent] = await tx.insert(agentConnections).values({

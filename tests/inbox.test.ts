@@ -89,3 +89,29 @@ describe('activity', () => {
     expect(await stageCounts(owner, a.project.id)).toEqual({ backlog: 1, todo: 0, in_progress: 1, review: 0, done: 0 });
   });
 });
+
+describe('activity filters (D-37)', () => {
+  it('filters by kind, who, board, dates and task title', async () => {
+    const { listActivity } = await import('@/server/activity');
+    const { createBoard, createProject } = await import('@/server/projects');
+    const { createTask } = await import('@/server/tasks');
+    const owner = await seedOwner();
+    const { project, board } = await createProject(owner, { name: 'Filters' });
+    const other = await createBoard(owner, { projectId: project.id, name: 'Other' });
+    await createTask(owner, { boardId: board.id, title: 'Fix login bug' });
+    await createTask(owner, { boardId: other.id, title: 'Write docs' });
+    const types = async (f: Parameters<typeof listActivity>[2]) => (await listActivity(owner, project.id, f)).map((e) => e.type);
+
+    expect(await types({ kind: 'setup' })).toEqual(expect.arrayContaining(['board.created', 'project.created']));
+    expect(await types({ kind: 'tasks' })).toEqual(['task.created', 'task.created']);
+    expect(await types({ kind: 'handoffs' })).toEqual([]);
+    expect((await listActivity(owner, project.id, { q: 'login' })).map((e) => e.task?.title)).toEqual(['Fix login bug']);
+    expect((await listActivity(owner, project.id, { boardId: other.id })).map((e) => e.task?.title)).toEqual(['Write docs']);
+    expect(await types({ agentId: 'owner', kind: 'tasks' })).toHaveLength(2);
+    const today = new Date().toISOString().slice(0, 10);
+    expect(await types({ from: today, to: today, kind: 'tasks' })).toHaveLength(2);
+    expect(await types({ to: '2000-01-01' })).toEqual([]);
+    // Wildcards in the search are literal.
+    expect(await types({ q: '%' })).toEqual([]);
+  });
+});

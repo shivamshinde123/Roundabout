@@ -98,6 +98,28 @@ export async function createAgentConnection(actor: Actor, input: unknown) {
   assertOwner(actor);
   const { name, client, projectIds } = parse(createAgentInput, input);
   const { token, hash, prefix } = newToken();
+  // One entry per client (D-37): connecting Claude Code again refreshes the existing Claude Code connection.
+  // "Other agent" stays many-to-one, since it covers different tools.
+  if (client !== 'other') {
+    const reused = await db.transaction(async (tx) => {
+      await assertOwnProjects(tx, actor, projectIds);
+      const [existing] = await tx.select().from(agentConnections).where(and(
+        eq(agentConnections.workspaceId, actor.workspaceId), eq(agentConnections.client, client),
+        ne(agentConnections.status, 'revoked'), isNull(agentConnections.deletedAt),
+      )).for('update');
+      if (!existing) return null;
+      await tx.update(agentConnections)
+        .set({ tokenHash: hash, tokenPrefix: prefix, status: 'setup', lastError: null })
+        .where(eq(agentConnections.id, existing.id));
+      await tx.delete(agentProjectGrants).where(eq(agentProjectGrants.agentConnectionId, existing.id));
+      if (projectIds.length) {
+        await tx.insert(agentProjectGrants).values([...new Set(projectIds)].map((projectId) => ({ agentConnectionId: existing.id, projectId })));
+      }
+      await appendEvent(tx, actor, 'agent.token_rotated', {}, { agentId: existing.id, projectIds });
+      return existing;
+    });
+    if (reused) return { agent: reused, token, reused: true as const };
+  }
   try {
     const agent = await db.transaction(async (tx) => {
       await assertOwnProjects(tx, actor, projectIds);
@@ -112,7 +134,7 @@ export async function createAgentConnection(actor: Actor, input: unknown) {
       await appendEvent(tx, actor, 'agent.connected', {}, { agentId: agent.id, name, client, projectIds });
       return agent;
     });
-    return { agent, token };
+    return { agent, token, reused: false as const };
   } catch (e) {
     const code = (e as { cause?: { code?: string } }).cause?.code;
     if (code === '23505') throw new AppError('VALIDATION', 'An agent with this name already exists.');
@@ -206,7 +228,7 @@ export type AgentSummary = {
   inProgress: number;
 };
 
-export async function listAgents(actor: Actor): Promise<AgentSummary[]> {
+export async function listAgents(actor: Actor, opts: { includeDisconnected?: boolean } = { includeDisconnected: true }): Promise<AgentSummary[]> {
   assertOwner(actor);
   const rows = await db
     .select({
@@ -215,7 +237,10 @@ export async function listAgents(actor: Actor): Promise<AgentSummary[]> {
       inProgress: sql<number>`(select count(*)::int from tasks t where t.assignee_agent_id = "agent_connections"."id" and t.status = 'in_progress')`,
     })
     .from(agentConnections)
-    .where(and(eq(agentConnections.workspaceId, actor.workspaceId), isNull(agentConnections.deletedAt)))
+    .where(and(
+      eq(agentConnections.workspaceId, actor.workspaceId), isNull(agentConnections.deletedAt),
+      opts.includeDisconnected ? undefined : ne(agentConnections.status, 'revoked'),
+    ))
     .orderBy(sql`${agentConnections.status} = 'revoked'`, asc(agentConnections.name));
   const grants = await db
     .select({ agentId: agentProjectGrants.agentConnectionId, id: projects.id, name: projects.name })
