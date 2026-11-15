@@ -183,6 +183,10 @@ The sidebar footer shows an account chip: an avatar, your name and email linking
 
 While a card is being dragged, columns it can't go to fade out and allowed ones get a dashed indigo outline. Dropping on a forbidden column shows the reason, for example "Only the agent can start a task. It moves to In Progress when Codex accepts it." or "A task reaches Review when Codex submits a result."
 
+## Menus instead of button rows (D-33)
+
+Headers show only the name and a ⋯ button. The sidebar has Projects and Agents; Settings is reached only through the account chip at the bottom. The project tab row is Overview · Needs your input · Boards ▾ · Activity. "Add board" moved into the project's ⋯ menu.
+
 ## Shared states
 
 | State | Pattern |

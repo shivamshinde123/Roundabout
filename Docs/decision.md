@@ -283,3 +283,17 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Board rules unchanged, but explained:** the owner can only move Backlog ↔ To Do and settle Review. In Progress means an agent accepted the task, and Review means it submitted a result. `blockedMoveReason` (`src/lib/board-rules.ts`, unit-tested) gives a reason for each forbidden move, and columns fade or get outlined while dragging. *Why not let the owner drag into In Progress:* the board would then claim an agent is working on something it has never seen.
 - **Activity timeline:** "Recent results and handoffs" and the Activity page share `ActivityFeed`. Activity rows now carry the actor's client and the target agent's name, resolved in SQL from `data.toAgentId`. `describeEvent('result.submitted')` no longer inlines the summary; `eventDetail` shows it as a boxed second line.
 - **Layout fix found in browser testing:** the board's scroll container needed `min-w-0`, or narrow windows scrolled the whole page sideways.
+
+## D-33 · 2026-11-15 · ⋯ menus, aligned panels, one way into Settings
+
+- **The owner asked for actions behind a ⋯ menu** instead of buttons in the view, and for a cleaner left alignment ("not zigzag"). `ActionMenu` takes items that each open their own dialog (a server-action form, custom content, or a link). It replaced `ConfirmDelete`, `SimpleDialog` and the rows of `FormDialog` triggers on the project header, board header, task panel and agent pages. `ConfirmDelete` and `SimpleDialog` were deleted. *Why one component:* every secondary action looks and behaves the same, and destructive items are always last, red and confirmed.
+- **Alignment:**
+  - inline actions became flush-left text links
+  - panel cards share one style, and body text is 13px
+  - section labels are small and muted
+  - the agents table is vertically centred and doesn't wrap
+  - the Activity filters sit in one row
+  - native `<option>` menus follow the dark theme
+- **Readable event text:** status changes now say "from Backlog to To Do", not "from backlog to todo".
+- **Settings is reached only through the sidebar account chip.** The Settings nav item was removed because both pointed to the same page.
+- **Bug found while checking:** the page could scroll sideways after a drag or after opening a menu. An absolutely positioned screen-reader label inside a board card escaped the board's scroll container, because that container wasn't positioned. Adding `relative` to it fixed this, and the page width now matches the window.

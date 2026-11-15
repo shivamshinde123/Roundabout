@@ -15,18 +15,18 @@ export function BlockerList({ taskId, blockers }: { taskId: string; blockers: Bl
   const resolved = blockers.filter((b) => b.status === 'resolved');
   return (
     <section className="grid gap-2">
-      <h3 className="font-medium">Blockers</h3>
+      <h3 className="text-xs font-medium text-muted-foreground">Blockers</h3>
       {open.map((b) => (
-        <div key={b.id} role="group" aria-label="Open blocker" className="grid gap-1 rounded-md border border-destructive/50 p-2">
+        <div key={b.id} role="group" aria-label="Open blocker" className="grid gap-1 rounded-lg border border-destructive/50 bg-panel/60 p-3 text-[13px] leading-relaxed">
           <p className="text-xs text-muted-foreground">
             <span className="font-medium text-destructive">Blocked</span> · raised by {b.raisedBy.name} · needs {b.needs} · {ago(b.createdAt)}
           </p>
           <p>{b.reason}</p>
-          <p><span className="font-medium">Question:</span> {b.question}</p>
+          <p><span className="text-muted-foreground">Question:</span> {b.question}</p>
           {b.missingResource && <p className="text-xs">Missing access: {b.missingResource}</p>}
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-4">
             {b.raisedBy.agentId && (
-              <FormDialog trigger="Answer" title={`Answer ${b.raisedBy.name}`} submitLabel="Send answer" action={postMessageAction} variant="ghost">
+              <FormDialog trigger="Answer" title={`Answer ${b.raisedBy.name}`} submitLabel="Send answer" action={postMessageAction} inline>
                 <input type="hidden" name="taskId" value={taskId} />
                 <input type="hidden" name="to" value={b.raisedBy.agentId} />
                 <blockquote className="border-l-2 pl-2 text-sm text-muted-foreground">{b.question}</blockquote>
@@ -35,7 +35,7 @@ export function BlockerList({ taskId, blockers }: { taskId: string; blockers: Bl
                 <p className="text-xs text-muted-foreground">The blocker stays open until the agent clears it or you mark it resolved.</p>
               </FormDialog>
             )}
-            <FormDialog trigger="Mark resolved" title="Resolve blocker" submitLabel="Resolve" action={resolveBlockerAction} variant="ghost">
+            <FormDialog trigger="Mark resolved" title="Resolve blocker" submitLabel="Resolve" action={resolveBlockerAction} inline>
               <input type="hidden" name="blockerId" value={b.id} />
               <Label htmlFor={`resolution-${b.id}`}>How was it resolved?</Label>
               <Textarea id={`resolution-${b.id}`} name="resolution" rows={2} required />
@@ -62,20 +62,20 @@ export function HandoffList({ handoffs }: { handoffs: HandoffView[] }) {
   if (handoffs.length === 0) return null;
   return (
     <section className="grid gap-2">
-      <h3 className="font-medium">Handoffs</h3>
+      <h3 className="text-xs font-medium text-muted-foreground">Handoffs</h3>
       <ol className="grid gap-2">
         {handoffs.map((h) => (
-          <li key={h.id} className="grid gap-1 rounded-md border p-2">
+          <li key={h.id} className="grid gap-1 rounded-lg border bg-panel/60 p-3 text-[13px] leading-relaxed">
             <p className="text-xs text-muted-foreground">
               <span className="font-medium text-foreground">{h.from.name} → {h.to.name}</span> · {handoffStatus[h.status]} · {ago(h.createdAt)}
             </p>
-            <p><span className="font-medium">Why:</span> {h.reason}</p>
-            <p><span className="font-medium">Done so far:</span> {h.workCompleted}</p>
-            <p><span className="font-medium">Next:</span> {h.nextAction}</p>
+            <p><span className="text-muted-foreground">Why:</span> {h.reason}</p>
+            <p><span className="text-muted-foreground">Done so far:</span> {h.workCompleted}</p>
+            <p><span className="text-muted-foreground">Next:</span> {h.nextAction}</p>
             {h.declineReason && <p className="text-xs">Declined: {h.declineReason}</p>}
             {h.status === 'pending' && (
               <div>
-                <FormDialog trigger="Cancel handoff" title="Cancel this handoff?" submitLabel="Cancel handoff" action={cancelHandoffAction} variant="ghost">
+                <FormDialog trigger="Cancel handoff" title="Cancel this handoff?" submitLabel="Cancel handoff" action={cancelHandoffAction} inline>
                   <input type="hidden" name="handoffId" value={h.id} />
                   <p className="text-sm">{h.from.name} keeps the task. You can reassign it if the work has stalled.</p>
                 </FormDialog>

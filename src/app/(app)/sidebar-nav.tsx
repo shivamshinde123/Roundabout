@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { Bot, Settings } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProjectIcon } from '@/lib/visual';
 
@@ -41,7 +41,6 @@ export function SidebarNav({ projects }: { projects: { id: string; name: string;
       )}
       <p className="mt-4 px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">Workspace</p>
       {item('/agents', 'Agents', <Bot aria-hidden className="size-4 shrink-0 text-[#26b5ce]" />, path.startsWith('/agents'))}
-      {item('/settings', 'Settings', <Settings aria-hidden className="size-4 shrink-0 text-muted-foreground" />, path === '/settings')}
     </nav>
   );
 }

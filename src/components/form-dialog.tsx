@@ -14,6 +14,7 @@ export function FormDialog({
   children,
   variant = 'outline',
   submitVariant,
+  inline = false,
 }: {
   trigger: string;
   title: string;
@@ -22,12 +23,14 @@ export function FormDialog({
   children: ReactNode;
   variant?: 'outline' | 'ghost' | 'default' | 'destructive';
   submitVariant?: 'default' | 'destructive';
+  /** A text-style trigger flush with the content above it (Reply, Answer, Mark resolved). */
+  inline?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={variant} size="sm">{trigger}</Button>
+        <Button variant={inline ? 'link' : variant} size="sm" className={inline ? 'h-auto px-0 text-primary' : undefined}>{trigger}</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>

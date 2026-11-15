@@ -16,7 +16,7 @@ export function Discussion({
   const unread = messages.some((m) => m.recipient?.actorId === ownerActorId && !m.readAt);
   return (
     <section className="grid gap-2" aria-labelledby={`discussion-${taskId}`}>
-      <h3 id={`discussion-${taskId}`} className="font-medium">Discussion</h3>
+      <h3 id={`discussion-${taskId}`} className="text-xs font-medium text-muted-foreground">Discussion</h3>
       <MarkRead taskId={taskId} unread={unread} />
       {messages.length === 0 && <p className="text-muted-foreground">No messages yet.</p>}
       <ol className="grid gap-2">
@@ -24,14 +24,14 @@ export function Discussion({
           const toMe = m.recipient?.actorId === ownerActorId;
           const openQuestion = m.kind === 'question' && toMe && !m.answeredAt;
           return (
-            <li key={m.id} className={openQuestion ? 'rounded-md border border-amber-500/60 p-2' : 'rounded-md border p-2'}>
+            <li key={m.id} className={openQuestion ? 'grid gap-1 rounded-lg border border-amber-500/60 bg-panel/60 p-3' : 'grid gap-1 rounded-lg border bg-panel/60 p-3'}>
               <p className="text-xs text-muted-foreground">
                 <span className="font-medium text-foreground">{m.sender.name}</span>
                 {m.recipient && <> → {toMe ? 'you' : m.recipient.name}</>} · {kindLabel[m.kind]}
                 {openQuestion && ' · needs your answer'} · {ago(m.createdAt)}
                 {m.recipient && !toMe && (m.readAt ? ' · read' : ' · unread')}
               </p>
-              <p className="whitespace-pre-wrap">{m.body}</p>
+              <p className="mt-1 whitespace-pre-wrap text-[13px] leading-relaxed text-foreground/90">{m.body}</p>
               {m.links.length > 0 && (
                 <ul className="mt-1 text-xs">
                   {m.links.map((l) => (
@@ -42,13 +42,13 @@ export function Discussion({
                 </ul>
               )}
               {m.sender.actorId !== ownerActorId && (
-                <div className="mt-1">
+                <div>
                   <FormDialog
                     trigger={openQuestion ? 'Answer' : 'Reply'}
                     title={`Reply to ${m.sender.name}`}
                     submitLabel="Send"
                     action={postMessageAction}
-                    variant="ghost"
+                    inline
                   >
                     <input type="hidden" name="taskId" value={taskId} />
                     <input type="hidden" name="replyTo" value={m.id} />
@@ -62,14 +62,14 @@ export function Discussion({
           );
         })}
       </ol>
-      <ActionForm action={postMessageAction} submitLabel="Send message">
+      <ActionForm compact action={postMessageAction} submitLabel="Send message">
         <input type="hidden" name="taskId" value={taskId} />
         <div className="grid gap-2">
-          <Label htmlFor={`msg-${taskId}`}>New message</Label>
+          <Label htmlFor={`msg-${taskId}`} className="text-xs text-muted-foreground">New message</Label>
           <Textarea id={`msg-${taskId}`} name="body" rows={2} required />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor={`to-${taskId}`}>To</Label>
+          <Label htmlFor={`to-${taskId}`} className="text-xs text-muted-foreground">To</Label>
           <AgentSelect id={`to-${taskId}`} name="to" agents={agents} emptyLabel="Everyone on the task" />
         </div>
       </ActionForm>

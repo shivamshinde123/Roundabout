@@ -38,3 +38,16 @@ Roundabout's look follows the **Linear app**: three dark layers, visible hairlin
 - the task as a small bordered chip that links to it
 - the time on the right, with the full date on hover
 - result summaries and decline reasons in a boxed second line
+
+## Actions and text (D-33)
+
+- **Secondary actions live behind ⋯** (`src/components/action-menu.tsx`):
+  - project header: Add board, Rename project, Delete project
+  - board header: Rename board, Delete board
+  - task panel: Edit, Assign or Change assignee, Reassign, Reopen, Move to board, Delete task
+  - agent rows and agent page: Manage, Reconnect, Disconnect, Delete agent
+
+  Each item opens its own dialog. Destructive items come last, in red, after a separator, and their dialog says "This can't be undone." Only primary actions stay visible: New project, New task, Connect agent, Approve.
+- **Inline actions** (Reply, Answer, Mark resolved, Cancel handoff) are text links flush with the content above them (`FormDialog inline`), so they don't step in from the left edge.
+- **Panel typography:** section labels are `text-xs` muted and in sentence case. Body text (instructions, result details, messages, handoffs, blockers) is 13px with relaxed leading at `foreground/80`. Result, blocker, handoff and message cards share `rounded-lg border bg-panel/60 p-3`.
+- **Tables:** cells are vertically centred and don't wrap; the table scrolls inside its own container on narrow windows.

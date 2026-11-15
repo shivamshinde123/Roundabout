@@ -1,9 +1,12 @@
+const STATUS_NAMES: Record<string, string> = { backlog: 'Backlog', todo: 'To Do', in_progress: 'In Progress', review: 'Review', done: 'Done' };
+const statusName = (s: unknown) => STATUS_NAMES[String(s)] ?? String(s);
+
 /** Human wording for activity events, shared by task history and the project activity feed. */
 export function describeEvent(type: string, data: Record<string, unknown>): string {
   switch (type) {
     case 'task.created': return 'created the task';
     case 'task.edited': return `edited ${(data.fields as string[] | undefined)?.join(', ') ?? 'the task'}`;
-    case 'task.status_changed': return `moved it from ${data.from} to ${data.to}`;
+    case 'task.status_changed': return `moved it from ${statusName(data.from)} to ${statusName(data.to)}`;
     case 'task.moved_board': return 'moved it to another board';
     case 'task.assigned': return data.toAgentId ? 'assigned it' : 'unassigned it';
     case 'task.accepted': return 'accepted it';
