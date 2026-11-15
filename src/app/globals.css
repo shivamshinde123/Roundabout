@@ -9,9 +9,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  /* Linear caps weights at 590: no heavy bold anywhere. */
-  --font-weight-semibold: 590;
-  --font-weight-bold: 590;
+  /* Campsite stays between 400 and 600: no heavy bold anywhere. */
+  --font-weight-bold: 600;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -52,45 +51,44 @@
 }
 
 /*
- * Linear-inspired dark theme (Docs/design-system.md, D-29). Roundabout is dark-only: <html class="dark">.
- * Canvas → card → elevated surfaces step up by a few shades; edges come from hairline borders, not shadows.
- * Acid lime is the single action colour (primary buttons, focus ring); everything else stays grey.
+ * Campsite-inspired light theme (Docs/design-system.md, D-30): a warm paper canvas, white cards,
+ * near-black ink and almost no colour. Colour is kept for meaning: red for destructive, green for done.
  */
 :root {
-  color-scheme: dark;
-  --radius: 0.375rem; /* 6px buttons and inputs; cards/dialogs use radius-xl ≈ 8–12px */
+  color-scheme: light;
+  --radius: 0.5rem; /* 8px buttons and inputs; cards/dialogs use radius-xl ≈ 11px */
 
-  --background: #08090a; /* Void: page canvas */
-  --foreground: #e5e5e6; /* Bone: body text */
-  --card: #0f1011; /* Carbon: cards, columns, panels */
-  --card-foreground: #e5e5e6;
-  --popover: #161718; /* Obsidian: menus, dialogs, toasts */
-  --popover-foreground: #e5e5e6;
-  --primary: #e4f222; /* Acid lime: the one primary action per view */
-  --primary-foreground: #08090a;
-  --secondary: #161718;
-  --secondary-foreground: #e5e5e6;
-  --muted: #161718;
-  --muted-foreground: #8a8f98; /* Fog: metadata, timestamps, helper text */
-  --accent: #1c1e21; /* hover wash */
-  --accent-foreground: #f7f8f8;
-  --destructive: #eb5757; /* Coral red */
-  --border: #23252a; /* Graphite hairlines */
-  --input: #2c2e33;
-  --ring: #e4f222;
-  --chart-1: #e4f222;
-  --chart-2: #02b8cc;
-  --chart-3: #6366f1;
-  --chart-4: #27a644;
-  --chart-5: #8b5cf6;
-  --sidebar: #0f1011;
-  --sidebar-foreground: #d0d6e0;
-  --sidebar-primary: #e4f222;
-  --sidebar-primary-foreground: #08090a;
-  --sidebar-accent: #1c1e21;
-  --sidebar-accent-foreground: #f7f8f8;
-  --sidebar-border: #23252a;
-  --sidebar-ring: #e4f222;
+  --background: #fffdf9; /* Warm canvas: page background, never pure white */
+  --foreground: #171717; /* Ink: text and headings */
+  --card: #ffffff; /* Cards, board columns, panels */
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary: #171717; /* Filled primary buttons: ink, not a brand colour */
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f5; /* Ash mist */
+  --secondary-foreground: #171717;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373; /* Steel: timestamps, helper text (4.7:1 on white) */
+  --accent: #f0f0f0; /* Soft fog: hover wash */
+  --accent-foreground: #171717;
+  --destructive: #ef4444;
+  --border: #ebebeb;
+  --input: #e5e5e5;
+  --ring: #a3a3a3;
+  --chart-1: #171717;
+  --chart-2: #22c55e;
+  --chart-3: #737373;
+  --chart-4: #a3a3a3;
+  --chart-5: #451a03;
+  --sidebar: #fffdf9;
+  --sidebar-foreground: #171717;
+  --sidebar-primary: #171717;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0f0f0;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #ebebeb;
+  --sidebar-ring: #a3a3a3;
 }
 
 @layer base {
@@ -102,14 +100,8 @@
   }
   html {
     @apply font-sans;
-    /* Inter's alternate glyphs that give Linear's type its look. */
-    font-feature-settings: 'cv01', 'ss03';
-  }
-  ::selection {
-    background: color-mix(in oklab, var(--primary) 35%, transparent);
   }
   h1, h2, h3 {
-    @apply text-white;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.018em;
   }
 }
