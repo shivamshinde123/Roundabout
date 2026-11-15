@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHash, randomBytes } from 'node:crypto';
-import { and, asc, desc, eq, inArray, ne, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, ne, or, sql } from 'drizzle-orm';
 import { db, type Tx } from './db/client';
 import {
   activityEvents, actors, agentConnections, agentProjectGrants, handoffs, projects, tasks,
@@ -60,7 +60,7 @@ export async function recordAgentError(agentId: string, message: string) {
 async function loadAgent(q: Tx | typeof db, owner: HumanActor, agentId: string) {
   if (!uuid.safeParse(agentId).success) throw notFound('Agent');
   const [agent] = await q.select().from(agentConnections).where(eq(agentConnections.id, agentId));
-  if (!agent || agent.workspaceId !== owner.workspaceId) throw notFound('Agent');
+  if (!agent || agent.workspaceId !== owner.workspaceId || agent.deletedAt) throw notFound('Agent');
   return agent;
 }
 
@@ -157,18 +157,36 @@ export async function rotateAgentToken(actor: Actor, input: unknown) {
 }
 
 /** Disconnect: revoke the credential and project access; keep attribution and history (diagram 06). */
+/** Revoke inside `tx`: token off, grants gone, pending handoffs cancelled (D-11). */
+async function revokeInTx(tx: Tx, owner: HumanActor, agent: typeof agentConnections.$inferSelect) {
+  if (agent.status === 'revoked') return;
+  await tx.update(agentConnections)
+    .set({ status: 'revoked', tokenHash: null, revokedAt: sql`now()` })
+    .where(eq(agentConnections.id, agent.id));
+  await tx.delete(agentProjectGrants).where(eq(agentProjectGrants.agentConnectionId, agent.id));
+  await cancelPendingHandoffs(tx, owner, agent.id);
+  await appendEvent(tx, owner, 'agent.revoked', {}, { agentId: agent.id, name: agent.name });
+}
+
 export async function revokeAgent(actor: Actor, input: unknown) {
+  assertOwner(actor);
+  const { agentId } = parse(agentIdInput, input);
+  await db.transaction(async (tx) => revokeInTx(tx, actor, await loadAgent(tx, actor, agentId)));
+}
+
+/**
+ * Removes the agent from Roundabout (D-28): disconnects it if needed, then hides it everywhere.
+ * The row stays so past results, handoffs and history keep their author; tasks still assigned to it
+ * show "Agent can't access" until reassigned.
+ */
+export async function deleteAgent(actor: Actor, input: unknown) {
   assertOwner(actor);
   const { agentId } = parse(agentIdInput, input);
   await db.transaction(async (tx) => {
     const agent = await loadAgent(tx, actor, agentId);
-    if (agent.status === 'revoked') return;
-    await tx.update(agentConnections)
-      .set({ status: 'revoked', tokenHash: null, revokedAt: sql`now()` })
-      .where(eq(agentConnections.id, agentId));
-    await tx.delete(agentProjectGrants).where(eq(agentProjectGrants.agentConnectionId, agentId));
-    await cancelPendingHandoffs(tx, actor, agentId);
-    await appendEvent(tx, actor, 'agent.revoked', {}, { agentId, name: agent.name });
+    await revokeInTx(tx, actor, agent);
+    await tx.update(agentConnections).set({ deletedAt: sql`now()` }).where(eq(agentConnections.id, agentId));
+    await appendEvent(tx, actor, 'agent.deleted', {}, { agentId, name: agent.name });
   });
 }
 
@@ -197,7 +215,7 @@ export async function listAgents(actor: Actor): Promise<AgentSummary[]> {
       inProgress: sql<number>`(select count(*)::int from tasks t where t.assignee_agent_id = "agent_connections"."id" and t.status = 'in_progress')`,
     })
     .from(agentConnections)
-    .where(eq(agentConnections.workspaceId, actor.workspaceId))
+    .where(and(eq(agentConnections.workspaceId, actor.workspaceId), isNull(agentConnections.deletedAt)))
     .orderBy(sql`${agentConnections.status} = 'revoked'`, asc(agentConnections.name));
   const grants = await db
     .select({ agentId: agentProjectGrants.agentConnectionId, id: projects.id, name: projects.name })

@@ -69,6 +69,7 @@ Each connection is one named agent with its own identity, such as "Claude Code â
 | last_error | text null | The last authentication or tool error shown to the owner. Never contains a secret. |
 | created_at | timestamptz not null default now() | |
 | revoked_at | timestamptz null | |
+| deleted_at | timestamptz null | Set by Delete agent (D-28). Deleted agents are always revoked, hidden from every list and 404 on their page, but the row stays so results, handoffs and history keep their author. |
 
 ### `agent_project_grants`
 | Column | Type | Notes |

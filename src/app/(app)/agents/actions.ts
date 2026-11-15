@@ -1,10 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { requireOwner } from '@/server/auth';
 import { formAction } from '@/server/actions';
 import { toErrorBody } from '@/server/errors';
-import { createAgentConnection, revokeAgent, rotateAgentToken, updateAgentGrants } from '@/server/agents';
+import { createAgentConnection, deleteAgent, revokeAgent, rotateAgentToken, updateAgentGrants } from '@/server/agents';
 import { CLIENT_LABELS, mcpUrl, type AgentClient } from '@/lib/agent-setup';
 import type { FormState } from '@/components/action-form';
 
@@ -52,4 +53,17 @@ export async function revokeAgentAction(_: FormState, form: FormData): Promise<F
     revalidatePath('/', 'layout');
     return { ok: 'Disconnected.' };
   });
+}
+
+export async function deleteAgentAction(_: FormState, form: FormData): Promise<FormState> {
+  let done = false;
+  const state = await formAction(async () => {
+    await deleteAgent(await requireOwner(), { agentId: String(form.get('agentId')) });
+    done = true;
+  });
+  if (done) {
+    revalidatePath('/', 'layout');
+    redirect('/agents');
+  }
+  return state;
 }

@@ -1,12 +1,13 @@
 import 'server-only';
-import { and, asc, eq, inArray, max } from 'drizzle-orm';
+import { and, asc, count, eq, inArray, max } from 'drizzle-orm';
 import { db, type Tx } from './db/client';
-import { boards, projects } from './db/schema';
+import { activityEvents, boards, projects, tasks } from './db/schema';
 import { AppError, notFound } from './errors';
 import { appendEvent } from './events';
 import { assertOwner, assertProjectAccess, type Actor } from './policy';
 import {
-  createBoardInput, createProjectInput, parse, uuid, renameBoardInput, renameProjectInput, reorderBoardsInput,
+  boardIdInput, createBoardInput, createProjectInput, parse, projectIdInput, uuid, renameBoardInput, renameProjectInput,
+  reorderBoardsInput,
 } from '@/lib/schemas';
 
 export type ProjectWithBoards = { id: string; name: string; boards: { id: string; name: string }[] };
@@ -135,5 +136,39 @@ export async function reorderBoards(actor: Actor, input: unknown) {
     for (const [position, id] of boardIds.entries()) {
       await tx.update(boards).set({ position }).where(eq(boards.id, id));
     }
+  });
+}
+
+// ── Deletes (D-28): owner only, confirmed in the UI, and permanent ────────────
+
+/** Deletes the project with its boards, tasks (and their messages, results, handoffs, blockers), grants and history. */
+export async function deleteProject(actor: Actor, input: unknown) {
+  assertOwner(actor);
+  const { projectId } = parse(projectIdInput, input);
+  await db.transaction(async (tx) => {
+    const project = await loadProject(tx, actor, projectId);
+    await tx.delete(activityEvents).where(eq(activityEvents.projectId, projectId));
+    await tx.delete(tasks).where(eq(tasks.projectId, projectId)); // task children cascade
+    await tx.delete(projects).where(eq(projects.id, projectId)); // boards and grants cascade
+    await appendEvent(tx, actor, 'project.deleted', {}, { name: project.name });
+  });
+}
+
+/** Deletes a board and its tasks. A project keeps at least one board: delete the project instead. */
+export async function deleteBoard(actor: Actor, input: unknown) {
+  assertOwner(actor);
+  const { boardId } = parse(boardIdInput, input);
+  return db.transaction(async (tx) => {
+    const [board] = await tx.select().from(boards).where(eq(boards.id, boardId));
+    if (!board) throw notFound('Board');
+    await loadProject(tx, actor, board.projectId);
+    const [{ n }] = await tx.select({ n: count() }).from(boards).where(eq(boards.projectId, board.projectId));
+    if (n <= 1) throw new AppError('INVALID_STATE', 'A project needs at least one board. Delete the project instead.');
+    const boardTasks = tx.select({ id: tasks.id }).from(tasks).where(eq(tasks.boardId, boardId));
+    await tx.delete(activityEvents).where(inArray(activityEvents.taskId, boardTasks));
+    const removed = await tx.delete(tasks).where(eq(tasks.boardId, boardId)).returning({ id: tasks.id });
+    await tx.delete(boards).where(eq(boards.id, boardId));
+    await appendEvent(tx, actor, 'board.deleted', { projectId: board.projectId }, { name: board.name, tasks: removed.length });
+    return board;
   });
 }

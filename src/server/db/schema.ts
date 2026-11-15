@@ -55,6 +55,8 @@ export const agentConnections = pgTable('agent_connections', {
   lastError: text('last_error'),
   createdAt: createdAt(),
   revokedAt: ts('revoked_at'),
+  // Deleted agents vanish from lists but keep attribution in history (D-28).
+  deletedAt: ts('deleted_at'),
 }, (t) => [
   // Disconnected agents free their name, so "Claude Code" can be connected again (D-17).
   uniqueIndex('agent_connections_workspace_name').on(t.workspaceId, sql`lower(${t.name})`).where(sql`status <> 'revoked'`),

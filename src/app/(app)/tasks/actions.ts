@@ -1,10 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { requireOwner } from '@/server/auth';
 import { formAction } from '@/server/actions';
 import { toErrorBody } from '@/server/errors';
-import { assignTask, createTask, moveTaskBoard, moveTaskStatus, updateTask } from '@/server/tasks';
+import { assignTask, createTask, deleteTask, moveTaskBoard, moveTaskStatus, updateTask } from '@/server/tasks';
 import { markMessagesRead, postMessage } from '@/server/messages';
 import { cancelHandoff } from '@/server/handoffs';
 import { resolveBlocker } from '@/server/blockers';
@@ -175,4 +176,15 @@ export async function reopenTaskAction(_: FormState, form: FormData): Promise<Fo
     refresh(task.projectId);
     return { ok: 'Reopened.' };
   });
+}
+
+export async function deleteTaskAction(_: FormState, form: FormData): Promise<FormState> {
+  let target = '';
+  const state = await formAction(async () => {
+    const task = await deleteTask(await requireOwner(), { taskId: str(form, 'taskId') });
+    target = `/projects/${task.projectId}/boards/${task.boardId}`;
+    refresh(task.projectId);
+  });
+  if (target) redirect(target);
+  return state;
 }

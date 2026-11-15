@@ -12,6 +12,7 @@ import { CLIENT_LABELS, type AgentClient } from '@/lib/agent-setup';
 import { ago } from '@/lib/time';
 import { revokeAgentAction, updateGrantsAction } from '../actions';
 import { AgentStatus } from '../status';
+import { DeleteAgent } from '../delete-agent';
 
 export default async function AgentPage({ params }: PageProps<'/agents/[agentId]'>) {
   const { agentId } = await params;
@@ -85,8 +86,9 @@ export default async function AgentPage({ params }: PageProps<'/agents/[agentId]
         )}
       </section>
 
-      {!revoked && (
-        <section className="flex flex-wrap gap-2 border-t pt-4">
+      <section className="flex flex-wrap gap-2 border-t pt-4">
+        {!revoked && (
+          <>
           <SimpleDialog trigger="Reconnect" title={`Reconnect ${agent.name}`}>
             <ReconnectForm agentId={agent.id} client={agent.client} />
           </SimpleDialog>
@@ -97,8 +99,10 @@ export default async function AgentPage({ params }: PageProps<'/agents/[agentId]
               and tasks assigned to it stay on the board so you can reassign them. This can&apos;t be undone.
             </p>
           </FormDialog>
-        </section>
-      )}
+          </>
+        )}
+        <DeleteAgent agent={agent} />
+      </section>
     </div>
   );
 }
