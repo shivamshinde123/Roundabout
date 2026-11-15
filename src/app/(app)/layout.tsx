@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { Tour } from '@/components/tour';
-import { LogOut, Orbit } from 'lucide-react';
+import { LogOut, Orbit, Settings } from 'lucide-react';
 import { requireOwner } from '@/server/auth';
 import { listProjects } from '@/server/projects';
 import { inboxCounts } from '@/server/inbox';
@@ -35,17 +35,21 @@ export default async function AppLayout({ children }: LayoutProps<'/'>) {
         </div>
         <div data-tour="new-project" className="grid"><NewProjectButton variant="outline" /></div>
         <SidebarNav projects={projects.map((p) => ({ id: p.id, name: p.name, needsInput: counts[p.id] ?? 0 }))} />
-        <div data-tour="account" className="flex items-center gap-2 rounded-lg border bg-panel p-2 transition-colors hover:border-[#3a3a40]">
-          <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
-            {name.charAt(0).toUpperCase()}
-          </span>
-          <Link href="/settings" title="Account and workspace settings" className="grid min-w-0 flex-1 leading-tight">
-            <span className="truncate text-sm font-medium text-foreground">{name}</span>
-            <span className="truncate text-xs text-muted-foreground">{email}</span>
+        {/* Account card: profile row opens Settings; Sign out is a labelled button, not a bare icon (D-40). */}
+        <div data-tour="account" className="grid gap-0.5 rounded-lg border bg-panel p-1">
+          <Link href="/settings" title="Account and workspace settings" className="flex items-center gap-2 rounded-md p-1.5 hover:bg-accent">
+            <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#2a2a2f] text-xs font-semibold text-[#d4d4d8] ring-1 ring-white/10">
+              {name.charAt(0).toUpperCase()}
+            </span>
+            <span className="grid min-w-0 flex-1 leading-tight">
+              <span className="truncate text-sm font-medium text-foreground">{name}</span>
+              <span className="truncate text-xs text-muted-foreground">{email}</span>
+            </span>
+            <Settings aria-hidden className="size-4 shrink-0 text-muted-foreground" />
           </Link>
-          <form action={signOut}>
-            <Button type="submit" variant="ghost" size="icon-sm" aria-label="Sign out" title="Sign out">
-              <LogOut aria-hidden />
+          <form action={signOut} className="border-t pt-0.5">
+            <Button type="submit" variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground">
+              <LogOut aria-hidden /> Sign out
             </Button>
           </form>
         </div>
