@@ -23,15 +23,18 @@ function useTokenAction(action: typeof createAgentAction) {
 
 export function ConnectAgentForm({ projects }: { projects: { id: string; name: string }[] }) {
   const { state, onSubmit, pending } = useTokenAction(createAgentAction);
-  if (state?.token && state.client && state.url) {
+  if (state?.client && state.url && (state.token || state.oauth)) {
     return (
       <div className="grid gap-4">
-        <h2 className="text-lg font-medium">Step 2 of 2 · Copy your token and set up {CLIENT_LABELS[state.client]}</h2>
+        <h2 className="text-lg font-medium">
+          Step 2 of 2 · {state.oauth ? 'Set up' : 'Copy your token and set up'} {CLIENT_LABELS[state.client]}
+        </h2>
         <TokenReveal client={state.client} token={state.token} url={state.url} />
-        <Link href={`/agents/${state.agentId}`} className="underline">Go to the agent&apos;s page</Link>
+        {state.agentId && <Link href={`/agents/${state.agentId}`} className="underline">Go to the agent&apos;s page</Link>}
       </div>
     );
   }
+
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
       <h2 className="text-lg font-medium">Step 1 of 2 · Choose the agent and its access</h2>
@@ -44,7 +47,7 @@ export function ConnectAgentForm({ projects }: { projects: { id: string; name: s
               className="flex cursor-pointer items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm transition-colors hover:border-[#3a3a40] has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"
             >
               <input type="radio" name="client" value={value} defaultChecked={i === 0} className="sr-only" />
-              <AgentAvatar name={label} client={value} />
+              <AgentAvatar name={label} client={value} className="size-6" />
               <span className="truncate">{label}</span>
             </label>
           ))}

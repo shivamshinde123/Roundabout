@@ -26,7 +26,7 @@ export function ActionForm({
   className?: string;
   /** Called after an action returns `{ ok }`, e.g. to close a dialog. */
   onSuccess?: () => void;
-  submitVariant?: 'default' | 'destructive';
+  submitVariant?: 'default' | 'destructive' | 'outline';
   /** Right-aligned, auto-width submit button (settings forms) instead of full width. */
   compact?: boolean;
 }) {

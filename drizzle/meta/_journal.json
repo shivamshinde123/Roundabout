@@ -43,6 +43,13 @@
       "when": 1794710900786,
       "tag": "0005_more_agent_clients",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794711766652,
+      "tag": "0006_oauth_and_hosted_clients",
+      "breakpoints": true
     }
   ]
 }

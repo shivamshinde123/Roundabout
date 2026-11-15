@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { ensureWorkspace } from '@/server/workspace';
+import { safeNext } from '@/server/auth';
 import type { FormState } from '@/components/action-form';
 
 const site = () => process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -26,7 +27,8 @@ export async function signIn(_: FormState, form: FormData): Promise<FormState> {
       : 'Email or password is incorrect.');
   }
   await ensureWorkspace(data.user.id);
-  redirect('/');
+  // ?next= returns you to where you were sent from, e.g. an OAuth consent screen (D-35).
+  redirect(safeNext(String(form.get('next') ?? '')));
 }
 
 export async function signUp(_: FormState, form: FormData): Promise<FormState> {

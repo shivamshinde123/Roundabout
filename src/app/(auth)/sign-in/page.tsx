@@ -6,7 +6,7 @@ import { signIn } from '../actions';
 import { Field } from '@/components/field';
 
 export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
-  const { error, notice } = await searchParams;
+  const { error, notice, next } = await searchParams;
   return (
     <Card>
       <CardHeader>
@@ -20,6 +20,7 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
           <Alert><AlertDescription>{notice}</AlertDescription></Alert>
         )}
         <ActionForm action={signIn} submitLabel="Sign in">
+          {typeof next === 'string' && <input type="hidden" name="next" value={next} />}
           <Field name="email" label="Email" type="email" autoComplete="email" />
           <Field name="password" label="Password" type="password" autoComplete="current-password" />
         </ActionForm>

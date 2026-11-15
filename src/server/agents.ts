@@ -15,7 +15,7 @@ import { agentIdInput, createAgentInput, parse, updateGrantsInput, uuid } from '
 const TOKEN_PREFIX = 'rbt_';
 export const hashToken = (token: string) => createHash('sha256').update(token).digest();
 
-function newToken() {
+export function newToken() {
   const token = TOKEN_PREFIX + randomBytes(32).toString('base64url');
   return { token, hash: hashToken(token), prefix: token.slice(0, TOKEN_PREFIX.length + 8) };
 }

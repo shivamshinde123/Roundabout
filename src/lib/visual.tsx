@@ -2,8 +2,9 @@
 import {
   ArrowRight, ArrowRightLeft, Bird, Bot, Circle, CircleCheck, CircleDashed, CircleDot, CircleX, Compass, Contrast, Dot,
   Feather, FileCheck2, Flame, Gem, Handshake, Kanban, Leaf, MessageSquare, Mountain, OctagonAlert, Palette, Pencil, Play,
-  Plus, Rocket, RotateCcw, ShieldCheck, Sparkles, Target, Trash2, UserPlus, Users, Zap, type LucideIcon,
+  MessageCircle, Plus, Rocket, RotateCcw, ShieldCheck, Sparkles, Target, Trash2, UserPlus, Users, Zap, type LucideIcon,
 } from 'lucide-react';
+import { CLIENT_LOGOS } from './client-logos';
 import { cn } from '@/lib/utils';
 import type { TaskStatus } from '@/server/tasks';
 
@@ -37,20 +38,35 @@ export function StatusIcon({ status, className }: { status: TaskStatus; classNam
   return <Icon aria-hidden className={cn('size-4 shrink-0', className)} style={{ color }} />;
 }
 
+// Brand-ish tile colours; the logo is drawn white on top (D-36). Dark brands get a lifted grey so they read on the shell.
 const AGENT_COLORS: Record<string, string> = {
-  claude_code: '#d97757', codex: '#10a37f', cursor: '#9ca3af', windsurf: '#14b8a6', gemini_cli: '#4285f4', copilot: '#8957e5',
-  cline: '#e11d48', opencode: '#f59e0b', zed: '#38bdf8', warp: '#ec4899', jetbrains: '#ff318c', other: '#5e6ad2',
+  claude_code: '#d97757', claude_ai: '#d97757', claude_duet: '#c15f3c', codex: '#3f3f46', chatgpt: '#10a37f', dots: '#3f3f46',
+  cursor: '#3f3f46', windsurf: '#0b8a7a', gemini_cli: '#4285f4', gemini_app: '#4285f4', copilot: '#8957e5', cline: '#e11d48',
+  opencode: '#52525b', zed: '#0751cf', warp: '#db2777', jetbrains: '#f43f5e', grok: '#3f3f46', grok_bot: '#3f3f46',
+  muse: '#0866ff', instinct: '#f97316', other: '#5e6ad2',
 };
+// Clients with no published mark get a meaningful symbol instead of a letter.
+const FALLBACK_ICONS: Record<string, LucideIcon> = { instinct: MessageCircle, other: Bot };
 
-/** Round avatar with the agent's initial, coloured by client (Claude Code orange, Codex green). */
+/** The client's logo in a coloured circle (Claude Code orange, Codex grey, Gemini blue…). */
 export function AgentAvatar({ name, client, className }: { name: string; client?: string; className?: string }) {
+  const key = client && (CLIENT_LOGOS[client] || FALLBACK_ICONS[client]) ? client : 'other';
+  const logo = CLIENT_LOGOS[key];
+  const Fallback = FALLBACK_ICONS[key] ?? Bot;
   return (
     <span
       aria-hidden
-      className={cn('inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold text-white', className)}
-      style={{ background: AGENT_COLORS[client ?? 'other'] ?? AGENT_COLORS.other }}
+      title={name}
+      className={cn('inline-flex size-5 shrink-0 items-center justify-center rounded-full text-white ring-1 ring-white/10', className)}
+      style={{ background: AGENT_COLORS[key] ?? AGENT_COLORS.other }}
     >
-      {name.trim().charAt(0).toUpperCase() || '?'}
+      {logo ? (
+        <svg viewBox="0 0 24 24" className="size-[62%]" fill="currentColor">
+          <path d={logo.d} fillRule={logo.evenOdd ? 'evenodd' : undefined} clipRule={logo.evenOdd ? 'evenodd' : undefined} />
+        </svg>
+      ) : (
+        <Fallback className="size-[62%]" strokeWidth={2.25} />
+      )}
     </span>
   );
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AGENT_CLIENTS } from '@/server/db/schema';
-import { CLIENT_LABELS, setupSteps, type AgentClient } from '@/lib/agent-setup';
+import { CLIENT_LABELS, OAUTH_CLIENTS, setupSteps, type AgentClient } from '@/lib/agent-setup';
 
 const URL = 'https://x.test/api/mcp';
 const codes = (client: AgentClient) => setupSteps(client, URL, 'rbt_t').flatMap((s) => s.blocks.map((b) => b.code));
@@ -10,10 +10,12 @@ describe('setupSteps (D-26, D-34)', () => {
     expect(Object.keys(CLIENT_LABELS).sort()).toEqual([...AGENT_CLIENTS].sort());
     for (const client of AGENT_CLIENTS) {
       const steps = setupSteps(client, URL, 'rbt_t');
-      expect(steps.at(-1)!.title).toContain('whoami');
+      if (client !== 'instinct') expect(steps.at(-1)!.title).toContain('whoami');
       // Every guide carries the endpoint and the token somewhere the user can copy.
       const all = steps.flatMap((s) => s.blocks.map((b) => b.code)).join('\n');
-      if (client !== 'codex') expect(all).toContain('rbt_t');
+      // OAuth apps get no token (they approve on the consent screen); Codex reads it from an env var step.
+      if (OAUTH_CLIENTS.has(client)) expect(all).not.toContain('rbt_t');
+      else if (client !== 'codex') expect(all).toContain('rbt_t');
       expect(all).toContain(URL);
     }
   });

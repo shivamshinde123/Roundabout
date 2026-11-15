@@ -2,6 +2,7 @@ import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/
 import { authenticateAgent } from '@/server/agents';
 import { AppError } from '@/server/errors';
 import { buildMcpServer } from '@/server/mcp/tools';
+import { siteUrl } from '@/server/oauth';
 
 // Stateless MCP over Streamable HTTP (D-12): every request authenticates on its own; no sessions in memory.
 export async function POST(request: Request) {
@@ -12,7 +13,8 @@ export async function POST(request: Request) {
     const message = e instanceof AppError ? e.message : 'Unauthorized';
     return Response.json(
       { jsonrpc: '2.0', error: { code: -32001, message }, id: null },
-      { status: 401, headers: { 'WWW-Authenticate': 'Bearer error="invalid_token"' } },
+      // resource_metadata tells OAuth-capable connectors where to start sign-in (RFC 9728, D-35).
+      { status: 401, headers: { 'WWW-Authenticate': `Bearer error="invalid_token", resource_metadata="${siteUrl()}/.well-known/oauth-protected-resource"` } },
     );
   }
   const server = buildMcpServer(actor);

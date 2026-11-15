@@ -311,3 +311,34 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Tokens go in each client's personal config only.** Every guide says so, and that they must never be committed.
 - **Connect agent shows clients as a grid of cards** with each client's coloured avatar, instead of a 12-item radio list.
 - **Verified so far:** Gemini CLI connected locally with the guide's exact command (`gemini mcp list` → Connected). The GUI clients need the owner to click through them. Testing the JetBrains bridge locally needs approval to download and run the `mcp-remote` npm package, which wasn't granted in this session.
+
+## D-35 · 2026-11-15 · OAuth 2.1 for hosted connectors; groups B and C
+
+- **Why OAuth now:** Claude (claude.ai, and Claude Duet through it), ChatGPT (and dots), Grok (and Grok Bot) and Gemini add remote MCP servers as **connectors** that sign in with OAuth. None of them accept a pasted header. D-5 had deferred OAuth; group B needs it.
+- **Built into the app, with no new service and no new dependency:**
+  - RFC 9728 and RFC 8414 metadata, with the 401 `resource_metadata` hint
+  - RFC 7591 dynamic registration
+  - authorization code with **PKCE S256 only**
+  - a consent page and a token endpoint (`src/server/oauth.ts`, `src/app/oauth/*`, `src/app/.well-known/*`)
+- **The access token is the connection's ordinary agent token** (`rbt_…`, hash stored). *Why:* every existing rule applies unchanged: per-project grants, NOT_FOUND outside them, Disconnect revoking immediately, Delete, and activity attribution. There's no refresh token and no expiry. Re-authorizing replaces the token, and Disconnect ends it. `ponytail:` no rate limiting on `/oauth/*` yet; add per-IP limits if registration is abused.
+- **Consent decides access:** the owner names the agent, confirms the client type (guessed from the app name and callback host) and ticks projects. The app gets a connection with exactly those grants. Re-authorizing the same registered client reuses its connection (`agent_connections.oauth_client_id`) instead of piling up new ones.
+- **Safety choices:**
+  - an unknown client or a redirect mismatch is shown on Roundabout's page, never redirected
+  - redirect URIs must be https, or http on loopback
+  - codes are single-use, last 10 minutes and are stored hashed
+  - client secrets are stored hashed and compared in constant time
+  - consent requires the owner's session; server actions carry Next's origin check
+  - CORS is open only on metadata, register and token, which never use cookies
+- **Sign-in honours `?next=`** (through `safeNext`), so a connector can bring you back to the consent screen.
+- **Group C:** Meta Muse (a custom connector, with the key pasted into Muse's secure credential prompt) and Instinct (you text it the URL and header) use pasted tokens like the CLI tools.
+- **Connect agent** shows the OAuth apps' steps without minting a token; the connection appears when you approve.
+- **Verified:** 9 OAuth tests (metadata, registration rules, full flow to `whoami`, wrong verifier, reused code, redirect mismatch, confidential-client secrets, reconnect retiring the old token, never redirecting unknown clients). There was also a live browser run: consent → Allow → a real callback listener exchanged the code with PKCE → `whoami` returned agent "Claude" with only the ticked project. The hosted apps themselves still need the owner to connect them.
+
+## D-36 · 2026-11-15 · Real client logos
+
+- **The owner asked for real logos instead of letters.** Each client's mark is drawn in white on a circle in its brand colour. The single-path, 24×24 SVG data is embedded in `src/lib/client-logos.ts`, so there's no runtime dependency or image request.
+- **Sources and licences:**
+  - Simple Icons 16.37.0 (CC0) for Cursor, Windsurf, Gemini, GitHub Copilot, Cline, OpenCode, Zed, Warp and JetBrains
+  - LobeHub icons-static-svg 1.102.0 (MIT) for Claude, Claude Code, OpenAI (ChatGPT, dots), Codex, Grok and Meta AI (Muse)
+
+  Simple Icons dropped OpenAI at OpenAI's request, so OpenAI's mark comes from LobeHub. Instinct publishes no mark, so it gets a chat-bubble symbol, and Other agent gets a bot symbol. The marks identify integrations only.
