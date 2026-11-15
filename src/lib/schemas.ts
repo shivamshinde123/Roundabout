@@ -1,6 +1,7 @@
 // Zod input schemas shared by server actions and MCP tools (technical-design-document.md §10).
 import { z } from 'zod';
 import { AppError } from '@/server/errors';
+import { AGENT_CLIENTS } from '@/server/db/schema';
 
 export const uuid = z.uuid('Invalid id.');
 export const name = z.string().trim().min(1, 'Enter a name.').max(80, 'Use at most 80 characters.');
@@ -82,7 +83,7 @@ export function parseLinkLines(text: string): unknown[] {
 }
 
 // ── Agents ───────────────────────────────────────────────────────────────────
-export const agentClient = z.enum(['claude_code', 'codex', 'other']);
+export const agentClient = z.enum(AGENT_CLIENTS);
 export const createAgentInput = z.object({ name, client: agentClient, projectIds: z.array(uuid).max(200).default([]) });
 export const updateGrantsInput = z.object({ agentId: uuid, projectIds: z.array(uuid).max(200) });
 export const agentIdInput = z.object({ agentId: uuid });

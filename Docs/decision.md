@@ -297,3 +297,17 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **Readable event text:** status changes now say "from Backlog to To Do", not "from backlog to todo".
 - **Settings is reached only through the sidebar account chip.** The Settings nav item was removed because both pointed to the same page.
 - **Bug found while checking:** the page could scroll sideways after a drag or after opening a menu. An absolutely positioned screen-reader label inside a board card escaped the board's scroll container, because that container wasn't positioned. Adding `relative` to it fixed this, and the page width now matches the window.
+
+## D-34 · 2026-11-15 · Group A clients: nine more setup guides
+
+- **Scope:** the nine desktop and CLI clients from `Roundabout.md` §9 that accept a URL plus an `Authorization` header: Cursor, Windsurf, Gemini CLI, GitHub Copilot (VS Code), Cline, OpenCode, Zed, Warp and JetBrains AI. They work with today's bearer tokens, so the server is unchanged. Group B (hosted chat apps that require OAuth) and group C (clients to identify) come later.
+- **`agent_connections.client`** now accepts the nine new ids (migration 0005 only widens the check constraint). `AGENT_CLIENTS` is the single list. The Zod enum reads it, and a test makes sure every id has a label and a guide.
+- **Formats come from each client's current docs** (checked 2026-11-15) and are recorded in `client-compatibility.md`. Notable choices:
+  - **Cursor:** the literal token, because `${env:…}` in remote headers has a reported bug.
+  - **Copilot:** the portable `~/.copilot/mcp-config.json`, because VS Code's editor-managed `mcp.json` is deprecated.
+  - **Windsurf:** the guide opens the file through "View raw config", because the path changed between versions.
+  - **Cline:** an explicit `type: "streamableHttp"`.
+  - **JetBrains AI Assistant:** documents no headers for URL servers, so its guide uses the `mcp-remote` stdio bridge with the header passed through an environment variable. That's a limited fallback.
+- **Tokens go in each client's personal config only.** Every guide says so, and that they must never be committed.
+- **Connect agent shows clients as a grid of cards** with each client's coloured avatar, instead of a 12-item radio list.
+- **Verified so far:** Gemini CLI connected locally with the guide's exact command (`gemini mcp list` → Connected). The GUI clients need the owner to click through them. Testing the JetBrains bridge locally needs approval to download and run the `mcp-remote` npm package, which wasn't granted in this session.

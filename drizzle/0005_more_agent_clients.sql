@@ -1,0 +1,2 @@
+ALTER TABLE "agent_connections" DROP CONSTRAINT "agent_connections_client_check";--> statement-breakpoint
+ALTER TABLE "agent_connections" ADD CONSTRAINT "agent_connections_client_check" CHECK (client in ('claude_code', 'codex', 'cursor', 'windsurf', 'gemini_cli', 'copilot', 'cline', 'opencode', 'zed', 'warp', 'jetbrains', 'other'));

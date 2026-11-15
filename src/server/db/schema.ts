@@ -17,7 +17,10 @@ const oneOf = (col: string, values: readonly string[]) =>
   sql.raw(`${col} in (${values.map((v) => `'${v}'`).join(', ')})`);
 
 export const TASK_STATUSES = ['backlog', 'todo', 'in_progress', 'review', 'done'] as const;
-export const AGENT_CLIENTS = ['claude_code', 'codex', 'other'] as const;
+// Clients with a setup guide on the Connect agent page (src/lib/agent-setup.ts, D-34). 'other' is any MCP client.
+export const AGENT_CLIENTS = [
+  'claude_code', 'codex', 'cursor', 'windsurf', 'gemini_cli', 'copilot', 'cline', 'opencode', 'zed', 'warp', 'jetbrains', 'other',
+] as const;
 export const AGENT_STATUSES = ['setup', 'active', 'error', 'revoked'] as const;
 export const MESSAGE_KINDS = ['update', 'message', 'question'] as const;
 export const REVIEW_STATUSES = ['not_required', 'pending', 'approved', 'changes_requested', 'superseded'] as const;
