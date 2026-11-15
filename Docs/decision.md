@@ -263,3 +263,10 @@ Details are in `technical-design-document.md` and `database-schema.md`.
 - **What it is:** a light theme with a warm `#fffdf9` canvas, white cards, `#171717` ink for text and filled buttons, `#737373` metadata, hairline `#ebebeb` borders, `#ef4444` for destructive actions, Inter at 400–600, an 8px radius, and a `black/20` dialog overlay. Full table in `Docs/design-system.md`.
 - **Same mechanism as D-29:** only the tokens in `globals.css` changed, plus the font and toaster theme in `layout.tsx` and the dialog overlay strength. *Why:* every component reads shadcn tokens, so switching themes stays a small and safe change. Trying the next theme costs about as little.
 - **Light-only for now** (the `html.dark` class is removed). Add a dark variant if the owner asks for one.
+
+## D-31 · 2026-11-15 · Linear-app-style layered dark theme (supersedes D-30)
+
+- **The owner found the Campsite light theme unattractive**, then shared a screenshot of Linear's app and asked for that: a darker sidebar, a grey-dark content area, properly drawn lines, and colourful icons that make it feel lively.
+- **Why D-29's Linear theme failed and this one works:** D-29 used one near-black everywhere with a lime accent, so nothing had depth. This version uses **three planes**: shell `#0f0f11`, an inset bordered panel `#17171a`, and cards `#1d1d21`. It uses **Linear's indigo** `#5e6ad2` instead of lime, and **icons** carry the colour instead of surfaces.
+- **Lively without storing anything:** each project's icon and colour comes from a hash of its id, so it needs no schema change and never changes. Agents get client-coloured avatars, and the board columns get Linear-style status icons. All three live in `src/lib/visual.tsx`.
+- **The structure changed slightly this time** (not only tokens): the app layout puts `main` in a `bg-panel rounded-xl border` inset, and a `--panel` token was added. Task cards and the task panel now use `bg-card`, so they read as raised surfaces. This was previewed locally and approved by the owner before shipping.

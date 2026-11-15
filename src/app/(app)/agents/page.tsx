@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { DeleteAgent } from './delete-agent';
+import { AgentAvatar } from '@/lib/visual';
 import { requireOwner } from '@/server/auth';
 import { listAgents } from '@/server/agents';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,7 @@ export default async function AgentsPage() {
             {agents.map((a) => (
               <tr key={a.id} className="border-t align-top">
                 <td className="py-3">
-                  <div className="font-medium">{a.name}</div>
+                  <div className="flex items-center gap-2 font-medium"><AgentAvatar name={a.name} client={a.client} />{a.name}</div>
                   <div className="text-xs text-muted-foreground">{CLIENT_LABELS[a.client as AgentClient] ?? a.client}</div>
                 </td>
                 <td className="py-3">

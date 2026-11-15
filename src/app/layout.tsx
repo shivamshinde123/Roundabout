@@ -3,7 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
-// Campsite-style type (D-30): Inter for everything, a mono for tokens, IDs and commands.
+// Linear-app-style type (D-31): Inter for everything, a mono for tokens, IDs and commands.
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -23,11 +23,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${mono.variable} h-full antialiased`}
+      className={`${inter.variable} ${mono.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}
-        <Toaster theme="light" />
+        <Toaster theme="dark" />
       </body>
     </html>
   );

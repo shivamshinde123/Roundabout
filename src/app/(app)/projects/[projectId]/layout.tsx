@@ -6,6 +6,7 @@ import { FormDialog } from '@/components/form-dialog';
 import { Field } from '@/components/field';
 import { createBoardAction, deleteProjectAction, renameProjectAction } from '../actions';
 import { ConfirmDelete } from '@/components/confirm-delete';
+import { ProjectIcon } from '@/lib/visual';
 import { ProjectTabs } from './project-tabs';
 
 export default async function ProjectLayout({ children, params }: LayoutProps<'/projects/[projectId]'>) {
@@ -16,7 +17,10 @@ export default async function ProjectLayout({ children, params }: LayoutProps<'/
   return (
     <div className="grid gap-4">
       <header className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold">{project.name}</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold">
+          <ProjectIcon id={project.id} className="size-6" />
+          {project.name}
+        </h1>
         <FormDialog trigger="Rename project" title="Rename project" submitLabel="Save" action={renameProjectAction} variant="ghost">
           <input type="hidden" name="projectId" value={project.id} />
           <Field name="name" label="Project name" defaultValue={project.name} />

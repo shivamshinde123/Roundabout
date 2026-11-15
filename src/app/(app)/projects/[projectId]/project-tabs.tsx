@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Check, ChevronDown } from 'lucide-react';
+import { Activity, Check, ChevronDown, Inbox, Kanban, LayoutGrid, type LucideIcon } from 'lucide-react';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
-const tabClass = (active: boolean) => cn('rounded px-3 py-1.5 hover:bg-muted', active && 'bg-muted font-medium');
+const tabClass = (active: boolean) => cn('rounded-md px-3 py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground', active && 'bg-accent font-medium text-foreground');
 
 export function ProjectTabs({
   projectId, boards, needsInput,
@@ -16,17 +16,23 @@ export function ProjectTabs({
   const path = usePathname();
   const base = `/projects/${projectId}`;
   const current = boards.find((b) => path === `${base}/boards/${b.id}`);
-  const tab = (href: string, label: string, alert = false) => (
-    <Link href={href} aria-current={path === href ? 'page' : undefined} className={cn(tabClass(path === href), alert && 'text-destructive')}>
+  const tab = (href: string, label: string, Icon: LucideIcon, alert = false) => (
+    <Link
+      href={href}
+      aria-current={path === href ? 'page' : undefined}
+      className={cn(tabClass(path === href), 'inline-flex items-center gap-1.5', alert && 'text-destructive')}
+    >
+      <Icon aria-hidden className="size-3.5 opacity-80" />
       {label}
     </Link>
   );
   return (
     <nav aria-label="Project views" className="flex flex-wrap items-center gap-1 text-sm">
-      {tab(base, 'Overview')}
-      {tab(`${base}/inbox`, `Needs your input${needsInput ? ` (${needsInput})` : ''}`, needsInput > 0)}
+      {tab(base, 'Overview', LayoutGrid)}
+      {tab(`${base}/inbox`, `Needs your input${needsInput ? ` (${needsInput})` : ''}`, Inbox, needsInput > 0)}
       <DropdownMenu>
-        <DropdownMenuTrigger className={cn(tabClass(Boolean(current)), 'inline-flex items-center gap-1')}>
+        <DropdownMenuTrigger className={cn(tabClass(Boolean(current)), 'inline-flex items-center gap-1.5')}>
+          <Kanban aria-hidden className="size-3.5 opacity-80" />
           {current ? `Board: ${current.name}` : `Boards (${boards.length})`}
           <ChevronDown aria-hidden className="size-3.5" />
         </DropdownMenuTrigger>
@@ -46,7 +52,7 @@ export function ProjectTabs({
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      {tab(`${base}/activity`, 'Activity')}
+      {tab(`${base}/activity`, 'Activity', Activity)}
     </nav>
   );
 }
