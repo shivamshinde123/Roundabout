@@ -24,19 +24,19 @@ export default async function ActivityPage({ params, searchParams }: PageProps<'
     <section className="grid gap-3">
       <h2 className="text-lg font-medium">Activity</h2>
       {/* Plain GET form: filters live in the URL, so they survive refresh and back/forward (diagram 15, step 04). */}
-      <form className="flex flex-wrap items-end gap-3 text-sm" action={base}>
-        <label className="grid gap-1">
-          <span>Agent</span>
-          <select name="agent" defaultValue={agentId ?? ''} className="h-9 rounded-md border border-input bg-transparent px-2">
-            <option value="">All</option>
+      <form className="flex flex-wrap items-center gap-3 text-sm" action={base}>
+        <label className="flex items-center gap-2">
+          <span className="text-muted-foreground">Agent</span>
+          <select name="agent" defaultValue={agentId ?? ''} className="h-8 rounded-md border border-input bg-card px-2 text-foreground">
+            <option value="">All agents</option>
             {agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
           </select>
         </label>
-        <label className="flex h-9 items-center gap-2">
+        <label className="flex h-8 items-center gap-2">
           <input type="checkbox" name="handoffs" value="1" defaultChecked={handoffsOnly} className="size-4 accent-primary" /> Handoffs only
         </label>
-        <button type="submit" className="h-9 rounded-md border px-3 hover:bg-muted">Apply</button>
-        {filtered && <Link href={base} className="h-9 content-center underline">Reset filters</Link>}
+        <button type="submit" className="h-8 rounded-md border bg-card px-3 hover:bg-accent">Apply</button>
+        {filtered && <Link href={base} className="text-muted-foreground underline hover:text-foreground">Reset</Link>}
       </form>
       {events.length === 0 ? (
         <p className="rounded-lg border border-dashed p-6 text-center text-muted-foreground">

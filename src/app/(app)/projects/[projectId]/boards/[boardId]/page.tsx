@@ -8,14 +8,14 @@ import { listMessages } from '@/server/messages';
 import { listHandoffs } from '@/server/handoffs';
 import { listBlockers } from '@/server/blockers';
 import { listResults } from '@/server/results';
-import { FormDialog } from '@/components/form-dialog';
+import { ActionMenu } from '@/components/action-menu';
+import { Pencil, Trash2 } from 'lucide-react';
 import { Field } from '@/components/field';
 import { AutoRefresh } from '@/components/board/auto-refresh';
 import { Board } from '@/components/board/board';
 import { NewTaskButton } from '@/components/board/new-task';
 import { TaskPanel } from '@/components/board/task-panel';
 import { deleteBoardAction, renameBoardAction } from '../../../actions';
-import { ConfirmDelete } from '@/components/confirm-delete';
 
 export default async function BoardPage({ params, searchParams }: PageProps<'/projects/[projectId]/boards/[boardId]'>) {
   const { projectId, boardId } = await params;
@@ -41,30 +41,39 @@ export default async function BoardPage({ params, searchParams }: PageProps<'/pr
       <AutoRefresh />
       <div className="flex items-center gap-2">
         <h2 className="text-lg font-medium">{board.name}</h2>
-        <FormDialog trigger="Rename board" title="Rename board" submitLabel="Save" action={renameBoardAction} variant="ghost">
-          <input type="hidden" name="boardId" value={board.id} />
-          <Field name="name" label="Board name" defaultValue={board.name} />
-        </FormDialog>
-        {project.boards.length > 1 ? (
-          <ConfirmDelete trigger="Delete board" title={`Delete ${board.name}?`} action={deleteBoardAction} fields={{ boardId: board.id }}>
-            {tasks.length === 0 ? (
-              <p>Deletes the board <strong>{board.name}</strong>. It has no tasks.</p>
-            ) : (
-              <>
-                <p>
-                  Deletes the board <strong>{board.name}</strong> and {tasks.length === 1 ? 'the 1 task' : `all ${tasks.length} tasks`} on it,
-                  with their results, handoffs, blockers and history.
-                </p>
-                <p className="text-muted-foreground">To keep a task, move it to another board first (open it, then Move board).</p>
-              </>
-            )}
-          </ConfirmDelete>
-        ) : (
-          <span className="text-xs text-muted-foreground">This is the project&apos;s only board, so it can&apos;t be deleted.</span>
-        )}
+        <ActionMenu
+          label="Board actions"
+          items={[
+            {
+              label: 'Rename board', icon: <Pencil />, title: 'Rename board', submitLabel: 'Save', action: renameBoardAction,
+              body: <><input type="hidden" name="boardId" value={board.id} /><Field name="name" label="Board name" defaultValue={board.name} /></>,
+            },
+            // A project keeps at least one board (D-28), so the only board has no Delete item.
+            ...(project.boards.length > 1 ? [{
+              label: 'Delete board', icon: <Trash2 />, title: `Delete ${board.name}?`, submitLabel: 'Delete', destructive: true,
+              action: deleteBoardAction,
+              body: (
+                <div className="grid gap-2 text-sm">
+                  <input type="hidden" name="boardId" value={board.id} />
+                  {tasks.length === 0 ? (
+                    <p>Deletes the board <strong>{board.name}</strong>. It has no tasks.</p>
+                  ) : (
+                    <>
+                      <p>
+                        Deletes the board <strong>{board.name}</strong> and {tasks.length === 1 ? 'the 1 task' : `all ${tasks.length} tasks`} on it,
+                        with their results, handoffs, blockers and history.
+                      </p>
+                      <p className="text-muted-foreground">To keep a task, move it to another board first (open it, then Move board).</p>
+                    </>
+                  )}
+                </div>
+              ),
+            }] : []),
+          ]}
+        />
       </div>
       <div className={panelTask ? 'grid gap-4 xl:grid-cols-[1fr_24rem]' : 'grid'}>
-        <div className="min-w-0 overflow-x-auto pb-2">
+        <div className="relative min-w-0 overflow-x-auto pb-2">
           <Board tasks={tasks} newTask={<NewTaskButton boardId={board.id} agents={agents} defaultRequireReview={workspace.defaultRequireReview} />} />
         </div>
         {panelTask && <TaskPanel task={panelTask} agents={agents} boards={project.boards} messages={messages} ownerActorId={owner.actorId} handoffs={handoffs} blockers={blockers} results={results} />}

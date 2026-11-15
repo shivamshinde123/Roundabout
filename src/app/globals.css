@@ -105,6 +105,11 @@
   html {
     @apply font-sans;
   }
+  /* Native <select> menus follow the dark theme instead of the OS's white popup. */
+  option {
+    background: var(--popover);
+    color: var(--popover-foreground);
+  }
   h1, h2, h3 {
     letter-spacing: -0.012em;
   }
