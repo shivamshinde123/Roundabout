@@ -69,7 +69,7 @@ flowchart TB
 
 ## Deployment
 
-- **Production:** https://roundabout-orcin.vercel.app (MCP endpoint `https://roundabout-orcin.vercel.app/api/mcp`). Deployed 2026-11-14 (D-24).
+- **Production:** https://roundabout-agents.vercel.app (MCP endpoint `https://roundabout-agents.vercel.app/api/mcp`). Deployed 2026-11-14 (D-24). The original `roundabout-orcin.vercel.app` still serves the same deployment, so agents set up with it keep working (D-38).
 - **Vercel project:** `roundabout` on the owner's personal Hobby account, Next.js, Node runtime, functions in `iad1` (Washington, D.C.), next to the database. Deploys run from the CLI (`npx vercel deploy --prod`), because the Vercel GitHub app has no access to the private repo.
 - **Supabase project (Free):** `roundabout`, ref `oxwzkpdxhjrxowubeudd`, region `us-east-1`. Postgres and Auth. Google is off for now (D-24). Allowed redirect URLs are the production `/auth/callback` plus `http://localhost:3000/auth/callback`.
 - **Migrations:** run `drizzle-kit migrate` against `DIRECT_URL` (for hosted, the session pooler on port 5432) from a developer machine or a CI step. They never run at app startup.
